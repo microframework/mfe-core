@@ -44,7 +44,7 @@ interface ImfeEngine {
 
 /**
  * Interface ImfeEvents
- * @eng_desc This Interface dictates coding rules for events manager of MFE
+ * rr * @eng_desc This Interface dictates coding rules for events manager of MFE
  * @rus_desc Этот интерфейс диктует правила написания менеджера событий для MFE
  *
  * @standards MFS-5.6
@@ -130,7 +130,7 @@ interface ImfeObjectsStack {
     public function down($count_steps);
 }
 
-//TODO:: ObjectStack with implemented interface ImfeObjectsStack
+//TODO:: ObjectStack with implemented interface ImfeObjectStack
 class mfeObjectStack extends \ArrayObject {
 }
 
@@ -146,6 +146,7 @@ class Exception extends \Exception {
  * @property mixed eventManager
  * @property mixed loader
  * @property mixed di
+ * @property mixed componentManager
  *
  * @standards MFS-4.1, MFS-5
  * @package mfe
@@ -189,12 +190,108 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         ]);
         $this->events = new $stack();
         $this->filesMap = new $stack();
+
+        register_shutdown_function(['mfe\mfe', 'stopEngine']);
     }
 
-    //TODO:: Тут регистрируется движок и готовится к работе вссекомпоненты!
+    public function __destruct() {
+        $this->stopEngine();
+    }
+
+    //TODO:: This is for DI
+    public function __get($key) {
+        if (isset(self::$instance->components->components['di'])) {
+            $di = & self::$instance->di;
+            return $di::getComponent($key);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::getComponent($key);
+        }
+        //TODO:: Write default code here
+        return null;
+    }
+
+    public function __isset($key) {
+        if (isset(self::$instance->components->components['di'])) {
+            $di = & self::$instance->di;
+            return $di::hasComponent($key);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::hasComponent($key);
+        }
+        //TODO:: Write default code here
+        return null;
+    }
+
+    public function __unset($key) {
+        self::unRegisterComponent($key);
+        //TODO:: Write default code here
+        return null;
+    }
+
+    public function __call($method, $arguments) {
+        if (isset(self::$instance->components->components['di'])) {
+            $di = & self::$instance->di;
+            return $di::callComponent($method, $arguments);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::callComponent($method, $arguments);
+        }
+        //TODO:: Write default code here
+        return null;
+    }
+
+    static public function __callStatic($method, $arguments) {
+        if (is_null(self::$instance)) self::init();
+        if (isset(self::$instance->components->components['di'])) {
+            $di = & self::$instance->di;
+            return $di::callCoreComponent($method, $arguments);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::callCoreComponent($method, $arguments);
+        }
+        //TODO:: Write default code here
+        return null;
+    }
+
+    //TODO:: This is for applicationManager()
+    public function __invoke($arguments) {
+    }
+
+    // Close another magic functions
+    final public function __set($key, $value) {
+        return $this;
+    }
+
+    final public function __debugInfo() {
+        return [MFE_VERSION];
+    }
+
+    final public function __toString() {
+        return MFE_VERSION;
+    }
+
+    final static public function __set_state($array) {
+        return [MFE_VERSION];
+    }
+
+    final public function __clone() {
+        throw new Exception('mfe can\'t be cloned');
+    }
+
+    final public function __sleep() {
+        throw new Exception('mfe can\'t be serialized');
+    }
+
+    final public function __wakeup() {
+        throw new Exception('mfe can\'t be serialized');
+    }
+
+
+    //TODO:: Тут регистрируется движок и готовится к работе все компоненты!
     final public function startEngine() {
         global $_SERVER;
-        //TODO:: Where from phar arhive register specific paths
+        //TODO:: Where from phar archive register specific paths
         if (self::options('MFE_PHAR_INIT')) {
 
         }
@@ -202,13 +299,22 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         $RUN = array_reverse(explode('/', $_SERVER['SCRIPT_NAME']))[0];
         $REAL_PATH = dirname(realpath($RUN));
 
-        self::registerAlias('ENGINE', __DIR__);
+        self::registerAlias('@engine', __DIR__);
         if (__DIR__ != $REAL_PATH)
             self::registerAlias('ENGINE', $REAL_PATH . '/engine');
-        self::registerAlias('CORE', 'libs');
-        self::registerAlias('CORE', 'core');
+        self::registerAlias('@core', 'libs');
+        self::registerAlias('@core', 'core');
 
-        self::loadMapFile('core.core');
+        //TODO:: Автоподстановка "*" по имени папки!
+        self::loadMapFile('@core.*');
+
+        self::trigger('startEngine');
+    }
+
+    final static public function stopEngine() {
+        if (is_null(self::$instance)) return TRUE;
+        self::trigger('stopEngine');
+        return TRUE;
     }
 
     /** Instance functions: */
@@ -302,9 +408,15 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         }
         if (is_array($aliases)) {
             foreach ($aliases as $alias) {
-                $this->aliases[strtolower($alias)][] = str_replace(['\\', '//'], '/', $dir);
+                if ((string)$alias[0] === '@') {
+                    $this->aliases[strtolower($alias)][] = str_replace(['\\', '//'], '/', $dir);
+                }
             }
-        } else $this->aliases[strtolower($aliases)][] = str_replace(['\\', '//'], '/', $dir);
+        } else {
+            if ((string)$aliases[0] === '@') {
+                $this->aliases[strtolower($aliases)][] = str_replace(['\\', '//'], '/', $dir);
+            }
+        }
         return $this;
     }
 
@@ -361,7 +473,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
                 unset($paths['extension']);
             } else $extension = '';
             foreach ($paths as $file) {
-                #print $file . '.' . $extension . $EXT . PHP_EOL;
+                print $file . '.' . $extension . $EXT . PHP_EOL;
                 if (file_exists($file . '.' . $extension . $EXT)) {
                     self::trigger('loadFile', [$file . '.' . $extension . $EXT]);
                     /** @noinspection PhpIncludeInspection */
@@ -470,7 +582,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
             $loader = & self::$instance->loader;
             return $loader::loadCore($name);
         }
-        return self::loadFile('engine.core.' . $name . '.core');
+        return self::loadFile('@engine.@core.' . $name . '.'.$name);
     }
 
     static public function loadMapFile($file) {
@@ -479,7 +591,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
             $loader = & self::$instance->loader;
             return $loader::loadMapFile($file);
         }
-        return self::loadFile('engine.' . $file . '.map');
+        return self::loadFile('@engine.' . $file . '.map');
     }
 
     static public function map($catalog, $index, $file) {
@@ -523,6 +635,9 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         if (isset(self::$instance->components->components['di'])) {
             $di = & self::$instance->di;
             return $di::registerComponent($name, $callback, $core, $override);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::registerComponent($name, $callback, $core, $override);
         }
         if (isset(self::$instance->components->coreComponents[$name]) && !$override) {
             return false;
@@ -562,6 +677,9 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         if (isset(self::$instance->components->components['di'])) {
             $di = & self::$instance->di;
             return $di::overrideComponent($name, $callback, $core);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::overrideComponent($name, $callback, $core);
         }
         return self::registerComponent($name, $callback, $core, TRUE);
     }
@@ -576,6 +694,9 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         if (isset(self::$instance->components->components['di'])) {
             $di = & self::$instance->di;
             return $di::unRegisterComponent($name, $core);
+        } elseif (isset(self::$instance->components->components['componentManager'])) {
+            $componentManager = & self::$instance->componentManager;
+            return $componentManager::unRegisterComponent($name, $core);
         }
 
         if (self::$instance->components->coreComponents[$name] && !$core) {
