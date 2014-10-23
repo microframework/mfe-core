@@ -200,44 +200,45 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
     //TODO:: This is for DI
     public function __get($key) {
-        if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+        if (isset($this->components->components['di'])) {
+            $di = & $this->di;
             return $di::getComponent($key);
-        } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+        } elseif (isset($this->components->components['componentManager'])) {
+            $componentManager = & $this->componentManager;
             return $componentManager::getComponent($key);
         }
-        //TODO:: Write default code here
-        return null;
+        if (isset($this->$key)) {
+            return (object)$this->$key;
+        } else throw new Exception('Call unregistered component: ' . $key);
     }
 
     public function __isset($key) {
-        if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+        if (isset($this->components->components['di'])) {
+            $di = & $this->di;
             return $di::hasComponent($key);
-        } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+        } elseif (isset($this->components->components['componentManager'])) {
+            $componentManager = & $this->componentManager;
             return $componentManager::hasComponent($key);
         }
-        //TODO:: Write default code here
-        return null;
+        if (isset($this->$key)) {
+            return true;
+        } else return false;
     }
 
     public function __unset($key) {
-        self::unRegisterComponent($key);
-        //TODO:: Write default code here
-        return null;
+        return self::unRegisterComponent($key);
     }
 
     public function __call($method, $arguments) {
-        if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+        if (isset($this->components->components['di'])) {
+            $di = & $this->di;
             return $di::callComponent($method, $arguments);
-        } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+        } elseif (isset($this->components->components['componentManager'])) {
+            $componentManager = & $this->componentManager;
             return $componentManager::callComponent($method, $arguments);
         }
         //TODO:: Write default code here
+
         return null;
     }
 
@@ -582,7 +583,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
             $loader = & self::$instance->loader;
             return $loader::loadCore($name);
         }
-        return self::loadFile('@engine.@core.' . $name . '.'.$name);
+        return self::loadFile('@engine.@core.' . $name . '.' . $name);
     }
 
     static public function loadMapFile($file) {
