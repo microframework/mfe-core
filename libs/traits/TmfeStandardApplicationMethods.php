@@ -1,4 +1,5 @@
 <?php namespace mfe;
+//TODO:: Разгрузить трейт,
 /**
  * Class TmfeStandardApplicationMethods
  *
@@ -42,27 +43,30 @@ trait TmfeStandardApplicationMethods {
     //TODO:: This is for DI
     /**
      * @param $key
-     * @throws Exception
+     * @throws CmfeException
      */
     public function __get($key) {
         if (isset($this->components->components['di'])) {
-            $di = & $this->di;
+            $di = &$this->di;
             return $di::getComponent($key);
         } elseif (isset($this->components->components['componentManager'])) {
-            $componentManager = & $this->componentManager;
+            $componentManager = &$this->componentManager;
             return $componentManager::getComponent($key);
         }
         if (isset($this->$key)) {
             return (object)$this->$key;
-        } else throw new Exception('Call unregistered component: ' . $key);
+        } elseif (isset($this->components->components[$key])) {
+            return (object)$this->components->components[$key];
+        }
+        throw new CmfeException('Call unregistered component: ' . $key);
     }
 
     public function __isset($key) {
         if (isset($this->components->components['di'])) {
-            $di = & $this->di;
+            $di = &$this->di;
             return $di::hasComponent($key);
         } elseif (isset($this->components->components['componentManager'])) {
-            $componentManager = & $this->componentManager;
+            $componentManager = &$this->componentManager;
             return $componentManager::hasComponent($key);
         }
         if (isset($this->$key)) {
@@ -76,10 +80,10 @@ trait TmfeStandardApplicationMethods {
 
     public function __call($method, $arguments) {
         if (isset($this->components->components['di'])) {
-            $di = & $this->di;
+            $di = &$this->di;
             return $di::callComponent($method, $arguments);
         } elseif (isset($this->components->components['componentManager'])) {
-            $componentManager = & $this->componentManager;
+            $componentManager = &$this->componentManager;
             return $componentManager::callComponent($method, $arguments);
         }
         //TODO:: Write default code here
@@ -90,10 +94,10 @@ trait TmfeStandardApplicationMethods {
     static public function __callStatic($method, $arguments) {
         if (is_null(self::$instance)) self::init();
         if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+            $di = &self::$instance->di;
             return $di::callCoreComponent($method, $arguments);
         } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+            $componentManager = &self::$instance->componentManager;
             return $componentManager::callCoreComponent($method, $arguments);
         }
         //TODO:: Write default code here
@@ -122,15 +126,15 @@ trait TmfeStandardApplicationMethods {
     }
 
     final public function __clone() {
-        throw new Exception('mfe can\'t be cloned');
+        throw new CmfeException('mfe can\'t be cloned');
     }
 
     final public function __sleep() {
-        throw new Exception('mfe can\'t be serialized');
+        throw new CmfeException('mfe can\'t be serialized');
     }
 
     final public function __wakeup() {
-        throw new Exception('mfe can\'t be serialized');
+        throw new CmfeException('mfe can\'t be serialized');
     }
 
     /** MFE Functions
@@ -142,9 +146,9 @@ trait TmfeStandardApplicationMethods {
         if (is_null(self::$instance)) {
             $class = get_called_class();
             self::$instance = new $class();
-            if(is_callable($callback))
+            if (is_callable($callback))
                 $callback();
-            self::trigger('mfeInit');
+            self::trigger('mfe.init');
         }
         return (object)self::$instance;
     }
@@ -156,23 +160,14 @@ trait TmfeStandardApplicationMethods {
     }
 
     static public function options($option) {
-        if ($option == 'MFE_AUTOLOAD'
-            && defined('MFE_AUTOLOAD')
-            && MFE_AUTOLOAD == true
-        ) {
-            return self::$options['MFE_AUTOLOAD'] = true;
-        }
-        if ($option == 'MFE_PHAR_INIT'
-            && defined('MFE_PHAR_INIT')
-            && MFE_PHAR_INIT == true
-        ) {
-            return self::$options['MFE_PHAR_INIT'] = true;
+        if (defined($option) && constant($option) == true) {
+            return self::$options[$option] = true;
         }
         return (isset(self::$options[$option])) ? self::$options[$option] : null;
     }
 
     /** Instance functions: /
-    /* +ImfeEventsManager */
+     * /* +ImfeEventsManager */
 
     /**
      * @param $event_node
@@ -180,7 +175,7 @@ trait TmfeStandardApplicationMethods {
      */
     public function registerEvent($event_node) {
         if (!is_string($event_node)) return false;
-        self::trigger('registerEvent', [$event_node]);
+        self::trigger('event.register', [$event_node]);
         if (isset($this->components->components['event'])) {
             return $this->event->registerEvent($event_node);
         } elseif (isset($this->components->components['eventManager'])) {
@@ -194,7 +189,7 @@ trait TmfeStandardApplicationMethods {
 
     public function addEvent($event_node, $callback) {
         if (!is_string($event_node)) return false;
-        self::trigger('addEvent', [$event_node, $callback]);
+        self::trigger('event.add', [$event_node, $callback]);
         if (!isset($this->events[$event_node])) $this->registerEvent($event_node);
         if (isset($this->components->components['event'])) {
             return $this->event->addEvent($event_node, $callback);
@@ -208,7 +203,7 @@ trait TmfeStandardApplicationMethods {
 
     public function removeEvent($event_node, $callback) {
         if (!is_string($event_node)) return false;
-        self::trigger('removeEvent', [$event_node, $callback]);
+        self::trigger('event.remove', [$event_node, $callback]);
         if (!isset($this->events[$event_node])) return true;
         if (isset($this->components->components['event'])) {
             return $this->event->removeEvent($event_node, $callback);
@@ -223,7 +218,7 @@ trait TmfeStandardApplicationMethods {
 
     public function fireEvent($event_node, $params = []) {
         if (!is_string($event_node)) return false;
-        if ($event_node !== 'fireEvent') self::trigger('fireEvent', [$event_node, $params]);
+        if ($event_node !== 'event.fire') self::trigger('event.fire', [$event_node, $params]);
         if (isset($this->components->components['event'])) {
             return $this->event->fireEvent($event_node);
         } elseif (isset($this->components->components['eventManager'])) {
@@ -247,7 +242,7 @@ trait TmfeStandardApplicationMethods {
 
     public function clearEvent($event_node) {
         if (!is_string($event_node)) return false;
-        self::trigger('clearEvent', [$event_node]);
+        self::trigger('event.clear', [$event_node]);
         if (isset($this->components->components['event'])) {
             return $this->event->clearEvent($event_node);
         } elseif (isset($this->components->components['eventManager'])) {
@@ -293,13 +288,9 @@ trait TmfeStandardApplicationMethods {
                     foreach (array_reverse($this->aliases[$path]) as $part) {
                         if (!empty($nodes)) {
                             foreach ($nodes as $node) {
-                                if ($node !== $part) {
-                                    $result[] = $node . $FileHelper::$SEPARATOR . $part;
-                                }
+                                if ($node !== $part) $result[] = $node . $FileHelper::$SEPARATOR . $part;
                             }
-                        } else {
-                            $result[] = $part;
-                        }
+                        } else $result[] = $part;
                     }
                 } else {
                     $nodes = $result;
@@ -308,14 +299,10 @@ trait TmfeStandardApplicationMethods {
                         foreach ($nodes as $node) {
                             $result[] = $node . $FileHelper::$SEPARATOR . $path;
                         }
-                    } else {
-                        $result[] = $path;
-                    }
+                    } else $result[] = $path;
                 }
             }
-        } else {
-            $result[] = $path;
-        }
+        } else $result[] = $path;
         if (isset($extension)) $result['extension'] = $extension;
         return $result;
     }
@@ -334,7 +321,7 @@ trait TmfeStandardApplicationMethods {
             foreach ($paths as $file) {
                 print $file . '.' . $extension . $EXT . PHP_EOL;
                 if (file_exists($file . '.' . $extension . $EXT)) {
-                    self::trigger('loadFile', [$file . '.' . $extension . $EXT]);
+                    self::trigger('file.load', [$file . '.' . $extension . $EXT]);
                     /** @noinspection PhpIncludeInspection */
                     return include_once $file . '.' . $extension . $EXT;
                 }
@@ -359,41 +346,41 @@ trait TmfeStandardApplicationMethods {
     /* +ImfeLoader+Engine */
     static public function registerAlias($aliases, $dir) {
         if (is_null(self::$instance)) self::init();
-        self::trigger('registerAlias', [$aliases, $dir]);
+        self::trigger('alias.register', [$aliases, $dir]);
         self::$instance->registerAliasDirectory($aliases, $dir);
     }
 
     static public function loadFile($file, $PHAR = false) {
         if (is_null(self::$instance)) self::init();
         if (isset(self::$instance->components->components['loader'])) {
-            $loader = & self::$instance->loader;
+            $loader = &self::$instance->loader;
             return $loader::loadFile($file, $PHAR);
         }
         return self::$instance->load($file, $PHAR);
     }
 
     static public function loadPhar($file) {
-        self::trigger('loadPhar', [$file]);
+        self::trigger('phar.load', [$file]);
         if (isset(self::$instance->components->components['loader'])) {
-            $loader = & self::$instance->loader;
+            $loader = &self::$instance->loader;
             return $loader::loadPhar($file);
         }
         return self::loadFile($file, TRUE);
     }
 
     static public function loadCore($name) {
-        self::trigger('loadCoreFile', [$name]);
+        self::trigger('file.loadCore', [$name]);
         if (isset(self::$instance->components->components['loader'])) {
-            $loader = & self::$instance->loader;
+            $loader = &self::$instance->loader;
             return $loader::loadCore($name);
         }
-        return self::loadFile('@engine.@core.' . $name . '.' . $name);
+        return self::loadFile('@engine.@core.' . $name . '.core');
     }
 
     static public function loadMapFile($file) {
-        self::trigger('loadMapFile', [$file]);
+        self::trigger('file.loadMap', [$file]);
         if (isset(self::$instance->components->components['loader'])) {
-            $loader = & self::$instance->loader;
+            $loader = &self::$instance->loader;
             return $loader::loadMapFile($file);
         }
         return self::loadFile('@engine.' . $file . '.map');
@@ -401,16 +388,16 @@ trait TmfeStandardApplicationMethods {
 
     static public function map($catalog, $index, $file) {
         if (isset(self::$instance->components->components['loader'])) {
-            $loader = & self::$instance->loader;
+            $loader = &self::$instance->loader;
             return $loader::map($file);
         }
         return self::$instance->filesMap[$catalog][$index] = $file;
     }
 
     static public function loadMap($map, $autoload = false) {
-        self::trigger('loadMap', [$map, $autoload]);
+        self::trigger('map.load', [$map, $autoload]);
         if (isset(self::$instance->components->components['loader'])) {
-            $loader = & self::$instance->loader;
+            $loader = &self::$instance->loader;
             return $loader::loadMap($map);
         }
         if (is_string($map)) {
@@ -456,37 +443,39 @@ trait TmfeStandardApplicationMethods {
     /* +ImfeComponentsManager+Engine */
     static public function registerComponent($name, $callback, $core = false, $override = false) {
         if (is_null(self::$instance)) self::init();
-        self::trigger('registerComponent', [$name, $callback, $core, $override]);
+        self::trigger('component.register', [$name, $callback, $core, $override]);
         if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+            $di = &self::$instance->di;
             return $di::registerComponent($name, $callback, $core, $override);
         } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+            $componentManager = &self::$instance->componentManager;
             return $componentManager::registerComponent($name, $callback, $core, $override);
         }
-        if (isset(self::$instance->components->coreComponents[$name]) && !$override) {
+        if (isset(self::$instance->components->coreComponents[$name]) && $override) {
+            self::unRegisterComponent($name, $core);
+        } elseif (isset(self::$instance->components->coreComponents[$name]) && !$override) {
             return false;
-        } else self::unRegisterComponent($name, $core);
+        }
         if (!$core) {
             if (is_array($callback) && count($callback) == 2) {
-                if (class_exists($callback[0])
-                    && method_exists($callback[0], $callback[1])
-                ) {
-                    self::$instance->components->coreComponents[$name] = $callback;
-                    if ($callback[0] instanceof ImfeComponent)
-                        return call_user_func_array([$callback[0], 'registerComponent'], []);
-                    return true;
+                if (class_exists($callback[0]) && method_exists($callback[0], $callback[1]))
+                    return self::$instance->components->components[$name] = call_user_func_array($callback, []);
+            } elseif (is_string($callback) || (is_array($callback) && count($callback) == 1)) {
+                if (is_string($callback)) $callback = [$callback];
+                if (is_subclass_of($callback[0], 'mfe\ImfeComponent')) {
+                    return self::$instance->components->components[$name]
+                        = call_user_func_array([$callback[0], 'registerComponent'], []);
                 }
             }
         } else {
             if (is_array($callback) && count($callback) == 2) {
-                if (class_exists($callback[0])
-                    && method_exists($callback[0], $callback[1])
-                ) {
-                    self::$instance->components->coreComponents[$name] = $callback;
-                    if ($callback[0] instanceof ImfeCoreComponent)
-                        return call_user_func_array([$callback[0], 'registerCoreComponent'], []);
-                    return true;
+                if (class_exists($callback[0]) && method_exists($callback[0], $callback[1]))
+                    return self::$instance->components->coreComponents[$name] = call_user_func_array($callback, []);
+            } elseif (is_string($callback) || (is_array($callback) && count($callback) == 1)) {
+                if (is_string($callback)) $callback = [$callback];
+                if (is_subclass_of($callback[0], 'mfe\ImfeCoreComponent')) {
+                    return self::$instance->components->coreComponents[$name]
+                        = call_user_func_array([$callback[0], 'registerCoreComponent'], []);
                 }
             }
         }
@@ -500,10 +489,10 @@ trait TmfeStandardApplicationMethods {
     static public function overrideComponent($name, $callback = null, $core = false) {
         if (is_null(self::$instance)) self::init();
         if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+            $di = &self::$instance->di;
             return $di::overrideComponent($name, $callback, $core);
         } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+            $componentManager = &self::$instance->componentManager;
             return $componentManager::overrideComponent($name, $callback, $core);
         }
         return self::registerComponent($name, $callback, $core, TRUE);
@@ -515,12 +504,12 @@ trait TmfeStandardApplicationMethods {
 
     static public function unRegisterComponent($name, $core = false) {
         if (is_null(self::$instance)) self::init();
-        self::trigger('unRegisterComponent', [$name, $core]);
+        self::trigger('component.unRegister', [$name, $core]);
         if (isset(self::$instance->components->components['di'])) {
-            $di = & self::$instance->di;
+            $di = &self::$instance->di;
             return $di::unRegisterComponent($name, $core);
         } elseif (isset(self::$instance->components->components['componentManager'])) {
-            $componentManager = & self::$instance->componentManager;
+            $componentManager = &self::$instance->componentManager;
             return $componentManager::unRegisterComponent($name, $core);
         }
 

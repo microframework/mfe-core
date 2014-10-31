@@ -4,5 +4,5 @@
  * @package mfe
  */
 interface ImfeCoreComponent {
-    function registerCoreComponent();
+    static function registerCoreComponent();
 }

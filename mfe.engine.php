@@ -15,7 +15,7 @@
 (defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.1');
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
 
-include_once __DIR__.'/libs/autoload.php';
+include_once __DIR__ . '/libs/autoload.php';
 
 /**
  * Class mfe
@@ -41,7 +41,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         $this->filesMap = new $stack();
 
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
-        $this->events['mfeInit'][] = function () {
+        $this->events['mfe.init'][] = function () {
             $this->startEngine();
         };
     }
@@ -62,21 +62,21 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         $REAL_PATH = dirname(realpath($RUN));
 
         self::registerAlias('@engine', __DIR__);
-        if (__DIR__ != $REAL_PATH)
-            self::registerAlias('ENGINE', $REAL_PATH . '/engine');
+        if (__DIR__ !== $REAL_PATH && file_exists($REAL_PATH . '/engine') && is_dir($REAL_PATH . '/engine'))
+            self::registerAlias('@engine', $REAL_PATH . '/engine');
         self::registerAlias('@libs', 'libs');
         self::registerAlias('@core', 'core');
 
         //Load main libs & core files by map file!
-        self::loadMapFile('@libs.libs');
-        self::loadMapFile('@core.core');
+        if (self::loadMapFile('@libs.libs')) self::loadMap('libs');
+        if (self::loadMapFile('@core.core')) self::loadMap('core');
 
-        self::trigger('startEngine');
+        self::trigger('engine.start');
     }
 
     final static public function stopEngine() {
         if (is_null(self::$instance)) return TRUE;
-        self::trigger('stopEngine');
+        self::trigger('engine.stop');
         return TRUE;
     }
 }
