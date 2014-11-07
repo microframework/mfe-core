@@ -7,12 +7,12 @@
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.1
+ * @version 1.0.2
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
 //!if mod this, mod & doc before commit!
-(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.1');
+(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.2');
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
 
 include_once __DIR__ . '/libs/autoload.php';
@@ -26,10 +26,17 @@ include_once __DIR__ . '/libs/autoload.php';
  * @package mfe
  */
 final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
+    /** @var mfe */
+    static public $instance = null;
+
+    use TmfeStandardEngineMethods;
+    use TmfeStandardEventsMethods;
+    use TmfeStandardLoaderMethods;
+    use TmfeStandardComponentsMethods;
     use TmfeStandardApplicationMethods;
 
     private function __construct() {
-        $stack = self::$options['stackObject'];
+        $stack = self::option('stackObject');
 
         $this->aliases = new $stack();
         $this->applications = new $stack();
@@ -37,11 +44,11 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
             'coreComponents' => new $stack(),
             'components' => new $stack()
         ]);
-        $this->events = new $stack();
+        $this->eventsMap = new $stack();
         $this->filesMap = new $stack();
 
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
-        $this->events['mfe.init'][] = function () {
+        $this->eventsMap['mfe.init'][] = function () {
             $this->startEngine();
         };
     }
@@ -50,11 +57,11 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         $this->stopEngine();
     }
 
-    //TODO:: Тут регистрируется движок и готовится к работе все компоненты!
+    // Here the engine is registered and prepares for work all components
     final public function startEngine() {
         global $_SERVER;
         //TODO:: Where from phar archive register specific paths
-        if (self::options('MFE_PHAR_INIT')) {
+        if (self::option('MFE_PHAR_INIT')) {
 
         }
 
@@ -85,4 +92,4 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
  * Auto register self in system
  * @standards MFS-5.5
  */
-(mfe::options('MFE_AUTOLOAD')) ? (mfe::init()) : false;
+(mfe::option('MFE_AUTOLOAD')) ? (mfe::init()) : false;
