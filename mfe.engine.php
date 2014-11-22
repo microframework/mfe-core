@@ -78,13 +78,16 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         if (self::loadMapFile('@libs.libs')) self::loadMap('libs');
         if (self::loadMapFile('@core.core')) self::loadMap('core');
 
-        self::trigger('engine.start');
+        try {
+            return self::trigger('engine.start');
+        } catch (CmfeException $e) {CmfeDebug::criticalStopEngine($e->getCode());}
+        return false;
     }
 
     final static public function stopEngine() {
-        if (is_null(self::$instance)) return TRUE;
+        if (is_null(self::$instance)) return true;
         self::trigger('engine.stop');
-        return TRUE;
+        return true;
     }
 }
 

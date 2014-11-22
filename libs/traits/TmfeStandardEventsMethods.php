@@ -67,7 +67,7 @@ trait TmfeStandardEventsMethods {
         } elseif (isset($this->components->components['eventsManager'])) {
             return $this->eventManager->fireEvent($event_node);
         } else {
-            if (!isset($this->eventsMap[$event_node])) return false;
+            if (!isset($this->eventsMap[$event_node])) return null;
             foreach ($this->eventsMap[$event_node] as $event) {
                 if (is_object($event) && is_callable($event)) {
                     // TODO:: Fix second param, to link with stats object
@@ -102,7 +102,7 @@ trait TmfeStandardEventsMethods {
     static public function trigger($event, $params = []) {
         $class = get_called_class();
         /** @var mfe $class */
-        $class::init()->fireEvent($event, $params);
+        return $class::init()->fireEvent($event, $params);
     }
 
     static public function on($event, $callback) {
