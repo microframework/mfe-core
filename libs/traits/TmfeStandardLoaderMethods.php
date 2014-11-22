@@ -82,7 +82,7 @@ trait TmfeStandardLoaderMethods {
                 unset($paths['extension']);
             } else $extension = '';
             foreach ($paths as $file) {
-                print $file . '.' . $extension . $EXT . PHP_EOL;
+                #print $file . '.' . $extension . $EXT . PHP_EOL;
                 if (file_exists($file . '.' . $extension . $EXT)) {
                     $class::trigger('file.load', [$file . '.' . $extension . $EXT]);
                     /** @noinspection PhpIncludeInspection */

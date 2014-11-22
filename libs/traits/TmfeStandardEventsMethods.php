@@ -71,12 +71,13 @@ trait TmfeStandardEventsMethods {
             foreach ($this->eventsMap[$event_node] as $event) {
                 if (is_object($event) && is_callable($event)) {
                     // TODO:: Fix second param, to link with stats object
-                    $event($params, mfe::init());
-                } elseif (is_string($event)
-                    && isset($this->eventsMap[$event])
-                    && $event_node !== $event
-                ) {
-                    self::trigger($event);
+                    if($event($params, mfe::init()) === false) {
+                        throw new CmfeException("Event \r\n" . print_r($event, true) ."\r\n return false", 0x00000E1);
+                    }
+                } elseif (is_string($event) && isset($this->eventsMap[$event]) && $event_node !== $event) {
+                    if(self::trigger($event) === false){
+                        throw new CmfeException("Event \r\n{$event}\r\n return false", 0x00000E1);
+                    }
                 }
             }
         }

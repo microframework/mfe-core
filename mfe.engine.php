@@ -26,6 +26,8 @@ include_once __DIR__ . '/libs/autoload.php';
  * @package mfe
  */
 final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
+    static public $DEBUG = false;
+
     /** @var mfe */
     static public $instance = null;
 
