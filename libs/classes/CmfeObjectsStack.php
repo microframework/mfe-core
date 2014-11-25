@@ -127,7 +127,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
             $this->{$offset} = $value;
         }
         if(!$inserted) $this->$key = $temp_value;
-        //$this->save_reposition();
+        $this->save_reposition();
         return $this;
     }
 
