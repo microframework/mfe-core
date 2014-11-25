@@ -8,19 +8,13 @@ interface ImfeObjectsStack {
 
     public function __get($key);
 
-    public function __isset($key);
-
     public function add($key, $value);
-
-    public function register($value);
-
-    public function override($key, $value);
 
     public function remove($key);
 
     public function position($value);
 
-    public function up($count_steps);
+    public function up($key, $count_steps = 1);
 
-    public function down($count_steps);
+    public function down($key, $count_steps = 1);
 }

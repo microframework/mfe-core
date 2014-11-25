@@ -82,7 +82,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
         try {
             return self::trigger('engine.start');
-        } catch (CmfeException $e) {CmfeDebug::criticalStopEngine($e->getCode());}
+        } catch (CmfeException $e) {CmfeDebug::criticalStopEngine(0x00000E1);}
         return false;
     }
 
