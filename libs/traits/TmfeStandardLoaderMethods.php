@@ -15,6 +15,11 @@ trait TmfeStandardLoaderMethods {
     /** @var array */
     protected $filesMap = null;
 
+    static public function TmfeStandardLoaderMethodsInit(){
+        mfe::$register[] = 'aliases';
+        mfe::$register[] = 'filesMap';
+    }
+
     public function registerAliasDirectory($aliases, $dir) {
         if (isset($this->components->components['loader'])) {
             return $this->loader->registerAliasDirectory($aliases, $dir);

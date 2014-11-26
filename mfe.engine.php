@@ -7,13 +7,14 @@
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.2
+ * @version 1.0.3
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
 //!if mod this, mod & doc before commit!
-(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.2');
+(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.3');
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
+(defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
 
 include_once __DIR__ . '/libs/autoload.php';
 
@@ -30,6 +31,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
     /** @var mfe */
     static public $instance = null;
+    static public $options = [];
+    static public $register = [];
 
     use TmfeStandardEngineMethods;
     use TmfeStandardEventsMethods;
@@ -38,16 +41,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     use TmfeStandardApplicationMethods;
 
     private function __construct() {
-        $stack = self::option('stackObject');
-
-        $this->aliases = new $stack();
-        $this->applications = new $stack();
-        $this->components = new $stack([
-            'coreComponents' => new $stack(),
-            'components' => new $stack()
-        ]);
-        $this->eventsMap = new $stack();
-        $this->filesMap = new $stack();
+        $this->initRegister(mfe::option('stackObject'));
+        $this->initComponentsStackInRegister(); //Fix for components stack;
 
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
         $this->eventsMap['mfe.init'][] = function () {
@@ -56,7 +51,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     }
 
     public function __destruct() {
-        $this->stopEngine();
+        $time = round(microtime(true) - MFE_TIME, 4);
+        file_put_contents('php://stdout', PHP_EOL . 'Done: ' . (($time >= 0.0001) ? $time : '0.0001') . ' ms');
     }
 
     // Here the engine is registered and prepares for work all components
@@ -71,8 +67,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         $REAL_PATH = dirname(realpath($RUN));
 
         self::registerAlias('@engine', __DIR__);
-        if (__DIR__ !== $REAL_PATH && file_exists($REAL_PATH . '/engine') && is_dir($REAL_PATH . '/engine'))
-            self::registerAlias('@engine', $REAL_PATH . '/engine');
+        if (__DIR__ !== $REAL_PATH && file_exists($REAL_PATH . '/') && is_dir($REAL_PATH . '/'))
+            self::registerAlias('@engine', $REAL_PATH . '/');
         self::registerAlias('@libs', 'libs');
         self::registerAlias('@core', 'core');
 
@@ -87,8 +83,9 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     }
 
     final static public function stopEngine() {
-        if (is_null(self::$instance)) return true;
+        if (isset(self::$instance) && is_null(self::$instance)) return true;
         self::trigger('engine.stop');
+        self::$instance = null;
         return true;
     }
 }

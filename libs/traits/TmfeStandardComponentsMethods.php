@@ -13,9 +13,21 @@ trait TmfeStandardComponentsMethods {
     /** @var CmfeObjectsStack */
     protected $components = null;
 
-    // TODO:: This is for DI
+    static public function TmfeStandardComponentsMethodsInit() {
+        mfe::$register[] = 'components';
+    }
+
+    protected function initComponentsStackInRegister() {
+        $stackObject = mfe::option('stackObject');
+        /** @var CmfeObjectsStack $components */
+        $components = new $stackObject();
+        $components->add('coreComponents', new $stackObject([], 0));
+        $components->add('components', new $stackObject([], 1));
+        $this->components = $components;
+    }
+
     final public function __set($key, $value) {
-        return $this;
+        return $this->components->$key = $value;
     }
 
     public function __get($key) {
@@ -49,7 +61,7 @@ trait TmfeStandardComponentsMethods {
         if (isset($this->components->components[$method])) {
             return call_user_func_array([get_class($this->components->components[$method]), '__invoke'], $arguments);
         }
-        return null;
+        throw new CmfeException("Call undefined method: {$method}");
     }
 
     static public function __callStatic($method, $arguments) {
@@ -63,7 +75,7 @@ trait TmfeStandardComponentsMethods {
         if ($class::init()->hasCoreComponent($method)) {
             return call_user_func_array([get_class($class::init()->getCoreComponent($method)), '__invoke'], $arguments);
         }
-        return null;
+        throw new CmfeException("Call undefined core method: {$method}");
     }
 
     public function hasComponent($method) {

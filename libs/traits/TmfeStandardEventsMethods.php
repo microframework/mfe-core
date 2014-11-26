@@ -13,6 +13,10 @@ trait TmfeStandardEventsMethods {
     /** @var CmfeObjectsStack */
     protected $eventsMap = null;
 
+    static public function  TmfeStandardEventsMethodsInit() {
+        mfe::$register[] = 'eventsMap';
+    }
+
     public function registerEvent($event_node) {
         if (!is_string($event_node)) return false;
         self::trigger('event.register', [$event_node]);

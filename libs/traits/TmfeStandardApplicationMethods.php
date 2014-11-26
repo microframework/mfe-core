@@ -7,6 +7,9 @@ trait TmfeStandardApplicationMethods {
     /** @var CmfeObjectsStack */
     protected $applications = null;
 
+    static public function TmfeStandardApplicationMethodsInit(){
+        mfe::$register[] = 'applications';
+    }
 
     //TODO:: Application stack
     static public function app($id = null) {
@@ -28,10 +31,6 @@ trait TmfeStandardApplicationMethods {
 
     final public function __debugInfo() {
         return [MFE_VERSION];
-    }
-
-    final public function __toString() {
-        return MFE_VERSION;
     }
 
     final static public function __set_state($array) {

@@ -1,10 +1,20 @@
 <?php namespace mfe;
 
 class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
+    private $sid = null;
     private $objectStack = [];
     private $index = 0;
     protected $limit = 4096;
     protected $min_limit = 16;
+
+    public function __construct($array = [], $sid = null){
+        if(!is_null($sid)) $this->sid = md5($sid);
+        if(is_array($array) && !empty($array)){
+            foreach($array as $key => $value){
+                $this->$key = $value;
+            }
+        }
+    }
 
     public function setLimit($new_limit = 4096){
         if($new_limit < $this->min_limit) $new_limit = $this->min_limit;
@@ -17,13 +27,13 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     }
 
     public function __get($key){
-        return parent::offsetGet($key);
+        return $this->objectStack[$key];
     }
 
     public function __set($key, $value){
         if($this->index > $this->limit)
             throw new \Exception("The limit({$this->limit}) in a stack is reached");
-        if(array_search($value, parent::getArrayCopy())) return;
+        if(array_search($value, parent::getArrayCopy(), true)) return;
         parent::offsetSet($this->index, $value);
         $this->objectStack[$key] = $value;
         $this->index++;
@@ -32,7 +42,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     public function add($key, $value){
         if($this->index > $this->limit)
             throw new \Exception("The limit({$this->limit}) in a stack is reached");
-        if(array_search($value, parent::getArrayCopy())) return $this;
+        if(array_search($value, parent::getArrayCopy(), true)) return $this;
         parent::offsetSet($this->index, $value);
         $this->objectStack[$key] = $value;
         $this->index++;
@@ -40,7 +50,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     }
 
     public function remove($key, $reorder = true){
-        $offset = array_search($this->objectStack[$key], parent::getArrayCopy());
+        $offset = array_search($this->objectStack[$key], parent::getArrayCopy(), true);
         parent::offsetUnset($offset);
         unset($this->objectStack[$key]);
         if($reorder) $this->reorder();
@@ -59,7 +69,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     }
 
     public function position($key, $to_position = false){
-        $position = array_search($this->objectStack[$key], parent::getArrayCopy());
+        $position = array_search($this->objectStack[$key], parent::getArrayCopy(), true);
         if(!$to_position){
             return $position;
         }
@@ -78,7 +88,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     }
 
     public function up($key, $count_steps = 1, $reorder = true){
-        $position = array_search($this->objectStack[$key], parent::getArrayCopy());
+        $position = array_search($this->objectStack[$key], parent::getArrayCopy(),true);
         $new_position = $position + $count_steps;
         if($position + $count_steps < 0) $new_position = 0;
         if($position + $count_steps > $this->limit) $new_position = $this->limit;
@@ -105,7 +115,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     }
 
     public function down($key, $count_steps = 1){
-        $position = array_search($this->objectStack[$key], parent::getArrayCopy());
+        $position = array_search($this->objectStack[$key], parent::getArrayCopy(), true);
         $new_position = $position - $count_steps;
         if($position - $count_steps < 0) $new_position = 0;
         if($position - $count_steps > $this->limit) $new_position = $this->limit;
@@ -144,7 +154,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
 
         $array = [];
         foreach($copy_stack as $key => $value){
-            $array[array_search($value, $copy_array)] = $value;
+            $array[array_search($value, $copy_array, true)] = $value;
         }
 
         $this->flush();
