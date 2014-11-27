@@ -17,7 +17,7 @@ class LoaderCore implements ImfeComponent {
     static private $instance = null;
 
     public function __construct(){
-        $stack = engine::$options['stackObject'];
+        $stack = engine::options('stackObject');
 
         $this->aliases = new $stack();
         $this->filesMap = new $stack();
@@ -32,7 +32,7 @@ class LoaderCore implements ImfeComponent {
     }
 
     public function load($file, $PHAR = false) {
-        $FileHelper = engine::$options['FileHelper'];
+        $FileHelper = engine::options('FileHelper');
         $EXT = (!$PHAR) ? $FileHelper::$PHP : $FileHelper::$Phar;
         $paths = $this->getRealPaths($file);
         if (isset($paths['extension'])) {
@@ -78,7 +78,7 @@ class LoaderCore implements ImfeComponent {
     }
 
     protected function getRealPaths($path) {
-        $FileHelper = engine::$options['FileHelper'];
+        $FileHelper = engine::options('FileHelper');
         $result = [];
         $path_nodes = explode('.', $path);
         if (!empty($path_nodes) && count($path_nodes) >= 2) {
