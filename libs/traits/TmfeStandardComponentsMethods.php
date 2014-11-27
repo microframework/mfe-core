@@ -17,12 +17,13 @@ trait TmfeStandardComponentsMethods {
         mfe::$register[] = 'components';
     }
 
-    protected function initComponentsStackInRegister() {
+    protected function __TmfeStandardComponentsMethodsInit() {
         $stackObject = mfe::option('stackObject');
         /** @var CmfeObjectsStack $components */
-        $components = new $stackObject();
-        $components->add('coreComponents', new $stackObject([], 0));
-        $components->add('components', new $stackObject([], 1));
+        $components = new $stackObject([
+            'coreComponents' => new $stackObject([], 0),
+            'components' => new $stackObject([], 1)
+        ]);
         $this->components = $components;
     }
 

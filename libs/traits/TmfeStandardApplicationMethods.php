@@ -7,7 +7,7 @@ trait TmfeStandardApplicationMethods {
     /** @var CmfeObjectsStack */
     protected $applications = null;
 
-    static public function TmfeStandardApplicationMethodsInit(){
+    static public function TmfeStandardApplicationMethodsInit() {
         mfe::$register[] = 'applications';
     }
 
@@ -23,8 +23,6 @@ trait TmfeStandardApplicationMethods {
     public function __invoke($arguments) {
 
     }
-
-
 
 
     /** Заглушки */

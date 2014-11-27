@@ -4,11 +4,11 @@ class CmfeLog {
     /** @var CmfeLog $instance */
     static private $instance = null;
 
-    public function __construct(){
+    public function __construct() {
 
     }
 
-    public function addToLog($type, $message, $backtrace){
+    public function addToLog($type, $message, $backtrace) {
 
     }
 
@@ -23,7 +23,7 @@ class CmfeLog {
     }
 
     static public function error($message, $backtrace = false) {
-        if(is_null(self::$instance)) self::init();
+        if (is_null(self::$instance)) self::init();
         self::$instance->addToLog('error', $message, $backtrace);
     }
 }

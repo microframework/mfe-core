@@ -41,9 +41,10 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     use TmfeStandardApplicationMethods;
 
     private function __construct() {
-        $this->initRegister(mfe::option('stackObject'));
-        $this->initComponentsStackInRegister(); //Fix for components stack;
+        @ini_set('display_errors', false);
 
+        set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
+        set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
         $this->eventsMap['mfe.init'][] = function () {
             $this->startEngine();
@@ -51,8 +52,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     }
 
     public function __destruct() {
-        $time = round(microtime(true) - MFE_TIME, 4);
-        file_put_contents('php://stdout', PHP_EOL . 'Done: ' . (($time >= 0.0001) ? $time : '0.0001') . ' ms');
+        $time = round(microtime(true) - MFE_TIME, 3);
+        file_put_contents('php://stdout', PHP_EOL . 'Done: ' . (($time >= 0.001) ? $time : '0.001') . ' ms');
     }
 
     // Here the engine is registered and prepares for work all components
@@ -78,11 +79,15 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
         try {
             return self::trigger('engine.start');
-        } catch (CmfeException $e) {CmfeDebug::criticalStopEngine(0x00000E1);}
+        } catch (CmfeException $e) {
+            CmfeDebug::criticalStopEngine(0x00000E1);
+        }
         return false;
     }
 
     final static public function stopEngine() {
+        if (!is_null(error_get_last()) && error_get_last()['type'] == 1)
+            CmfeRunHandler::FatalErrorHandler();
         if (isset(self::$instance) && is_null(self::$instance)) return true;
         self::trigger('engine.stop');
         self::$instance = null;

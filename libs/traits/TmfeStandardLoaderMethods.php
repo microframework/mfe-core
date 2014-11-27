@@ -15,7 +15,7 @@ trait TmfeStandardLoaderMethods {
     /** @var array */
     protected $filesMap = null;
 
-    static public function TmfeStandardLoaderMethodsInit(){
+    static public function TmfeStandardLoaderMethodsInit() {
         mfe::$register[] = 'aliases';
         mfe::$register[] = 'filesMap';
     }
@@ -111,7 +111,6 @@ trait TmfeStandardLoaderMethods {
     }
 
 
-
     static public function registerAlias($aliases, $dir) {
         $class = get_called_class();
         /** @var mfe $class */
@@ -143,7 +142,7 @@ trait TmfeStandardLoaderMethods {
         /** @var mfe $class */
         $class::trigger('file.loadCore', [$name]);
         if (isset($class::init()->loader)) {
-           return call_user_func_array([get_class($class::init()->loader), __METHOD__], [$name]);
+            return call_user_func_array([get_class($class::init()->loader), __METHOD__], [$name]);
         }
         return self::loadFile('@engine.@core.' . $name . '.core');
     }

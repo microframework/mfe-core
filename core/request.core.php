@@ -30,7 +30,7 @@ class RequestCore implements ImfeComponent {
 
     }
 
-    public function registerComponent() {
+    static public function registerComponent() {
     }
 }
 

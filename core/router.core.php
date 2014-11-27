@@ -15,7 +15,7 @@ class RouterCore implements ImfeComponent {
 
     static public $mainRoute = '';
 
-    public function registerComponent() {
+    static public function registerComponent() {
         return true;
     }
 

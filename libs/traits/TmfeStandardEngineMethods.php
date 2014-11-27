@@ -6,9 +6,7 @@
  */
 trait TmfeStandardEngineMethods {
 
-    protected $time;
-
-    static public function TmfeStandardEngineMethodsInit(){
+    static public function TmfeStandardEngineMethodsInit() {
         mfe::$options = [
             'MFE_PHAR_INIT' => false,
             'MFE_AUTOLOAD' => false,
@@ -22,8 +20,9 @@ trait TmfeStandardEngineMethods {
         $class = get_called_class();
         /** @var mfe $class */
         if (is_null($class::$instance)) {
-            self::initTraits();
+            self::initTraitsBefore();
             $class::$instance = new $class();
+            $class::$instance->__initTraitsAfter();
             if (is_callable($callback))
                 $callback();
             $class::trigger('mfe.init');
@@ -31,7 +30,7 @@ trait TmfeStandardEngineMethods {
         return (object)$class::$instance;
     }
 
-    static public function initTraits(){
+    static public function initTraitsBefore() {
         foreach (class_uses(__CLASS__) as $trait) {
             /** @var TmfeStandardEngineMethods $trait */
             $method = (substr($trait, 0, 4) == 'mfe\\') ? substr($trait, 4) . 'Init' : $trait . 'Init';
@@ -39,9 +38,17 @@ trait TmfeStandardEngineMethods {
         }
     }
 
-    protected function initRegister($stackObject = null){
-        if(is_null($stackObject)) $stackObject = self::option('stackObject');
-        foreach(mfe::$register as $stack){
+    public function __initTraitsAfter() {
+        foreach (class_uses(__CLASS__) as $trait) {
+            /** @var TmfeStandardEngineMethods $trait */
+            $method = (substr($trait, 0, 4) == 'mfe\\') ? '__' . substr($trait, 4) . 'Init' : '__' . $trait . 'Init';
+            if (method_exists($trait, $method)) call_user_func_array([__CLASS__, $method], []);
+        }
+    }
+
+    protected function __TmfeStandardEngineMethodsInit() {
+        $stackObject = self::option('stackObject');
+        foreach (mfe::$register as $stack) {
             $this->$stack = new $stackObject;
         }
     }
@@ -53,7 +60,7 @@ trait TmfeStandardEngineMethods {
         return (isset(mfe::$options[$option])) ? mfe::$options[$option] : null;
     }
 
-    public function __toString(){
+    public function __toString() {
         return (__TRAIT__) ? __TRAIT__ : __CLASS__;
     }
 }

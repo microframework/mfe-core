@@ -17,4 +17,6 @@ interface ImfeObjectsStack {
     public function up($key, $count_steps = 1);
 
     public function down($key, $count_steps = 1);
+
+    public function flush();
 }

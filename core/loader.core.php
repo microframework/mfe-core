@@ -159,7 +159,7 @@ class LoaderCore implements ImfeComponent {
         return true;
     }
 
-    static public function registerComponent(){
+    static public function registerComponent() {
         return self::loaderInit();
     }
 }
