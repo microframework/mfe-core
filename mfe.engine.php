@@ -53,7 +53,7 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
     public function __destruct() {
         $time = round(microtime(true) - MFE_TIME, 3);
-        file_put_contents('php://stdout', PHP_EOL . 'Done: ' . (($time >= 0.001) ? $time : '0.001') . ' ms');
+        file_put_contents('php://stdout', PHP_EOL . 'Done: ' . (($time >= 0.001) ? $time : '0.001') . ' ms' . PHP_EOL);
     }
 
     // Here the engine is registered and prepares for work all components

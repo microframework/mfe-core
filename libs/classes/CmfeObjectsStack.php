@@ -60,7 +60,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
     public function reorder() {
         $this->index = 0;
         foreach (parent::getArrayCopy() as $key => $value) {
-            parent::offsetUnset($key);
+            if (!is_null($value)) parent::offsetUnset($key);
         }
         foreach ($this->objectStack as $key => $value) {
             if (!is_null($value)) $this->$key = $value;
@@ -100,14 +100,14 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
         $inserted = false;
         $this->index = 0;
         foreach (parent::getArrayCopy() as $offset => $value) {
-            parent::offsetUnset($offset);
+            if (!is_null($value)) parent::offsetUnset($offset);
         }
         foreach ($this->objectStack as $offset => $value) {
             if ($this->index == $new_position) {
                 $this->$key = $temp_value;
                 $inserted = true;
             }
-            $this->{$offset} = $value;
+            if (!is_null($value)) $this->{$offset} = $value;
         }
         if (!$inserted) $this->$key = $temp_value;
         $this->save_reposition();
@@ -127,14 +127,14 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
         $inserted = false;
         $this->index = 0;
         foreach (parent::getArrayCopy() as $offset => $value) {
-            parent::offsetUnset($offset);
+            if (!is_null($value)) parent::offsetUnset($offset);
         }
         foreach ($this->objectStack as $offset => $value) {
             if ($this->index == $new_position) {
                 $this->$key = $temp_value;
                 $inserted = true;
             }
-            $this->{$offset} = $value;
+            if (!is_null($value)) $this->{$offset} = $value;
         }
         if (!$inserted) $this->$key = $temp_value;
         $this->save_reposition();
@@ -154,7 +154,7 @@ class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
 
         $array = [];
         foreach ($copy_stack as $key => $value) {
-            $array[array_search($value, $copy_array, true)] = $value;
+            if (!is_null($value)) $array[array_search($value, $copy_array, true)] = $value;
         }
 
         $this->flush();

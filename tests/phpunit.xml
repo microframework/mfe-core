@@ -1,1 +1,1 @@
-<phpunit bootstrap="bootstrap.php" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" stopOnFailure="false"/>
+<phpunit bootstrap="bootstrap.php" colors="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" stopOnFailure="false"/>
