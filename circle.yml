@@ -1,3 +1,0 @@
-test:
-  override:
-    - php ./tests/bootstrap.php --unit-tests
