@@ -23,6 +23,9 @@ trait TmfeStandardEngineMethods {
             self::initTraitsBefore();
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();
+            $class::$instance->on('mfe.init', function () {
+                call_user_func_array([mfe::$instance, 'startEngine'], []);
+            });
             if (is_callable($callback))
                 $callback();
             $class::trigger('mfe.init');

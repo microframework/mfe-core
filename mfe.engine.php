@@ -46,9 +46,6 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
         set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
-        $this->eventsMap['mfe.init'][] = function () {
-            $this->startEngine();
-        };
     }
 
     public function __destruct() {
@@ -100,3 +97,17 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
  * @standards MFS-5.5
  */
 (mfe::option('MFE_AUTOLOAD')) ? (mfe::init()) : false;
+
+//$page = &mfe::init()->page;
+//
+//$page->_author = 'DeVinterX';
+//$page->_keywords = 'key,word';
+//$page->_description = 'Description';
+//$page->_icon = 'favicon.ico';
+//$page->addMeta("Dex", "PexMex");
+//$page->addStyles("OnePage", "text/css");
+//$page->addScripts("OnePage", "js/one.js");
+//$page->_content = "<p>Hello World!</p>";
+//header("Content-type: text/html; charset=utf-8");
+//header("X-Powered-By: Bubu");
+//print $page;

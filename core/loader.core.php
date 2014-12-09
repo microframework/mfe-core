@@ -17,10 +17,16 @@ class LoaderCore implements ImfeComponent {
     static private $instance = null;
 
     public function __construct(){
-        $stack = engine::options('stackObject');
+        $stack = engine::option('stackObject');
 
         $this->aliases = new $stack();
-        $this->filesMap = new $stack();
+        $this->filesMap = new $stack(engine::init()->getFilesMap());
+
+        foreach(engine::init()->getAliases() as $alias => $array){
+            foreach($array as $value){
+                $this->registerAliasDirectory($alias, $value);
+            }
+        }
     }
 
     static public function loaderInit(){
@@ -32,7 +38,7 @@ class LoaderCore implements ImfeComponent {
     }
 
     public function load($file, $PHAR = false) {
-        $FileHelper = engine::options('FileHelper');
+        $FileHelper = engine::option('FileHelper');
         $EXT = (!$PHAR) ? $FileHelper::$PHP : $FileHelper::$Phar;
         $paths = $this->getRealPaths($file);
         if (isset($paths['extension'])) {
@@ -40,7 +46,7 @@ class LoaderCore implements ImfeComponent {
             unset($paths['extension']);
         } else $extension = '';
         foreach ($paths as $file) {
-            print $file . '.' . $extension . $EXT . PHP_EOL;
+            #print $file . '.' . $extension . $EXT . PHP_EOL;
             if (file_exists($file . '.' . $extension . $EXT)) {
                 engine::trigger('file.load', [$file . '.' . $extension . $EXT]);
                 /** @noinspection PhpIncludeInspection */
@@ -78,7 +84,7 @@ class LoaderCore implements ImfeComponent {
     }
 
     protected function getRealPaths($path) {
-        $FileHelper = engine::options('FileHelper');
+        $FileHelper = engine::option('FileHelper');
         $result = [];
         $path_nodes = explode('.', $path);
         if (!empty($path_nodes) && count($path_nodes) >= 2) {

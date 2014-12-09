@@ -4,11 +4,11 @@
  * Class Page
  * @package mfe
  */
-class Page {
-    public $guid = null;
-    public $layout = null;
+class PageCore implements ImfeComponent {
+    public $uid = null;
 
     public $_language = 'en_US';
+    public $_dir = 'ltr';
     public $_charset = 'utf-8';
     public $_type = 'text\html';
 
@@ -18,19 +18,22 @@ class Page {
 
     public $_author = null;
     public $_keywords = null;
-    public $_descriptions = null;
+    public $_description = null;
 
-    public $_auto_refresh = [false, 0];
-    public $_auto_redirect = [false, '/', 0];
+    protected $_auto_refresh = [false, 0];
+    protected $_auto_redirect = [false, '/', 0];
 
-    public $meta = [];
-    public $styles = [];
-    public $scripts = [];
+    protected $meta = [];
+    protected $styles = [];
+    protected $scripts = [];
 
     public $data = [];
 
+    protected $layout = null;
+    protected $layout_extension = '.tpl';
+
     public function __toString() {
-        return (string) $this->layout();
+        return (string)$this->layout();
     }
 
     public function __get($value) {
@@ -49,8 +52,25 @@ class Page {
         return true;
     }
 
-    public function __construct($layout = null, $data = [], $guid = null) {
-        $this->guid = 'page_' . md5($this);
+    public function __construct($layout = null, $data = [], $uid = null) {
+        if (!is_null($layout)) {
+            //TODO:: File check, integrate with Loader
+            //$this->layout = $layout . $this->layout_extension;
+        }
+        if (!is_null($data)) $this->data = $data;
+        if (!is_null($uid)) {
+            $this->guid = 'page_' . $uid;
+        } else {
+            $this->guid = 'page_' . md5($this);
+        }
+    }
+
+    public function render($data) {
+        array_merge($this->data, $data);
+        if (method_exists('\mfe\Display', 'display')) {
+            call_user_func_array(['\mfe\Display', 'display'], (string)$this, $this->layout . '_' . $this->uid);
+        }
+        return (string)$this;
     }
 
     protected function parse($layout) {
@@ -66,83 +86,67 @@ class Page {
             $this->parse($this->layout) : $this->parse($this->get_default_layout());
     }
 
-    private function get_default_layout() {
-        return "<!DOCTYPE html>\r\n<html lang=\"{_language}\">
+    protected function get_default_layout() {
+        return "<!DOCTYPE html>\r\n<html lang=\"{_language}\" dir=\"{_dir}\">
     <head>
         <meta charset='{_charset}'>
-        <meta name='viewport' content='{_viewport}'>
-        <title>{_title}</title>\r\n" .
-((!is_null($this->_author)) ? ("        <meta name='author' content='{_author}'>\r\n") : '') .
-((!is_null($this->_keywords)) ? ("        <meta name='keywords' content='{_keywords}'>\r\n") : '') .
-((!is_null($this->_description)) ? ("        <meta name='description' content='{_description}'>\r\n") : '') .
-((!is_null($this->_icon)) ? ("        <link rel='shortcut icon' href='{_icon}' type='image/x-icon'>") : '') .
-        (!empty($this->meta) ? $this->generateMetaTags() : '').
-        (!empty($this->styles) ? $this->generateStylesTypes() : '').
-        (!empty($this->scripts) ? $this->generateScriptsTags() : '');
-    "</head>
+        <meta name='viewport' content='{_viewport}'>\r\n" .
+        ((!is_null($this->_icon)) ? ("\r\n        <link rel='shortcut icon' href='{_icon}' type='image/x-icon'>") : '') .
+        "\r\n        <title>{_title}</title>" .
+        ((!is_null($this->_author)) ? ("\r\n        <meta name='author' content='{_author}'>") : '') .
+        ((!is_null($this->_keywords)) ? ("\r\n        <meta name='keywords' content='{_keywords}'>") : '') .
+        ((!is_null($this->_description)) ? ("\r\n        <meta name='description' content='{_description}'>") : '') .
+        (!empty($this->meta) ? $this->generateMetaTags() . "\r\n" : '') .
+        (!empty($this->styles) ? $this->generateStyles() . "\r\n" : '') .
+        (!empty($this->scripts) ? $this->generateScripts() : '') .
+        "\r\n    </head>
     <body>
         {_content}
     </body>\r\n</html>\r\n";
     }
 
-    public function addMeta($key,$content) {
-        $this->meta[$key]=$content;
+    public function addMeta($key, $content) {
+        $this->meta[$key] = $content;
         return $this;
     }
 
-    private function generateMetaTags() {
-        $html='';
+    public function addStyles($key, $src, $type = 'application/javascript', $media = 'screen', $rel = 'stylesheet') {
+        $this->styles[$key] = [$src, $type, $media, $rel];
+        return $this;
+    }
+
+    public function addScripts($key, $src, $type = 'application/javascript') {
+        $this->scripts[$key] = [$src, $type];
+        return $this;
+    }
+
+    protected function generateMetaTags() {
+        $html = '';
         foreach ($this->meta as $key => $content) {
-            $html.= "\r\n\t\t<meta name='$key' content='$content'>\r";
+            $html .= "\r\n        <meta name='$key' content='$content' />";
         }
         return $html;
     }
 
-    public function addStyles($key,$types) {
-        $this->styles[$key]=$types;
-        return $this;
-    }
-
-    private function generateStylesTypes() {
-        $html='';
-        foreach ($this->styles as $key => $types) {
-            $html.= "\r\n\t\t<style type='$types'></style>\r";
+    protected function generateStyles() {
+        $html = '';
+        foreach ($this->styles as $key => $i) {
+            $html .= "\r\n        <link rel='{$i[3]}' media='{$i[2]}' type='{$i[1]}' href='{$i[0]}' />";
         }
         return $html;
     }
 
-    public function addScripts($key,$src) {
-        $this->scripts[$key]=$src;
-        return $this;
-    }
-
-    private function generateScriptsTags() {
-        $html='';
-        foreach ($this->scripts as $key => $src) {
-            $html.= "\r\n\t\t<script type='$key' src='//$src'></script>\r";
+    protected function generateScripts() {
+        $html = '';
+        foreach ($this->scripts as $key => $i) {
+            $html .= "\r\n        <script type='{$i[1]}' src='{$i[0]}'></script>";
         }
         return $html;
     }
-/*
-    public function add_styles_string() {
 
+    static public function registerComponent() {
+        return new self;
     }
-
-    public function add_scripts_string() {
-
-    }
-*/
 }
 
-$page = new Page('layout.alias', $data = []);
-
-$page->_author = 'DeVinterX';
-$page->_keywords = 'key,word';
-$page->_description = 'Description';
-$page->_icon = 'favicon.ico';
-$page->addMeta("Dex","PexMex");
-$page->addStyles("OnePage","text/css");
-$page->addScripts("OnePage","js/one.js");
-header("Content-type: text/html; charset=utf-8");
-header("X-Powered-By: Bubu");
-print $page;
+mfe::registerComponent('page', 'mfe\PageCore');

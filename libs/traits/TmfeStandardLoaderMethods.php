@@ -12,12 +12,20 @@ trait TmfeStandardLoaderMethods {
     /** @var CmfeObjectsStack */
     protected $aliases = null;
 
-    /** @var array */
+    /** @var CmfeObjectsStack */
     protected $filesMap = null;
 
     static public function TmfeStandardLoaderMethodsInit() {
         mfe::$register[] = 'aliases';
         mfe::$register[] = 'filesMap';
+    }
+
+    public function getFilesMap(){
+        return (array)$this->filesMap;
+    }
+
+    public function getAliases(){
+        return (array)$this->aliases;
     }
 
     public function registerAliasDirectory($aliases, $dir) {
