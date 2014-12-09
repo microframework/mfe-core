@@ -29,7 +29,7 @@ include_once __DIR__ . '/libs/autoload.php';
 final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     static public $DEBUG = false;
 
-    /** @var mfe */
+    /** @var mfe $instance */
     static public $instance = null;
     static public $options = [];
     static public $register = [];
