@@ -1,0 +1,24 @@
+{
+	"name": "microframework/mfe-core",
+	"type": "framework",
+	"description": "Simple frame for PHP 5.5",
+	"keywords": ["framework"],
+	"homepage": "https://github.com/microframework/mfe-core",
+	"license": "BSD",
+	"authors": [
+		{
+			"name": "Dimitriy Kalugin",
+			"email": "devinterx@gmail.com",
+			"homepage": "https://github.com/devinterx",
+			"role": "Main Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.5.0"
+	},
+	"autoload": {
+		"classmap" : [
+			"mfe.engine.php"
+		]
+	}
+}
