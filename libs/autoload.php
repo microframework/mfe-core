@@ -7,15 +7,15 @@ spl_autoload_register(function ($file) {
     switch ($index) {
         case 'mfe\Cmfe':
             /** @noinspection PhpIncludeInspection */
-            return include_once 'classes/' . $file . '.php';
+            return include_once str_replace(['\/', '//', '\\\\', '/\\'], '/', 'classes/' . $file . '.php');
             break;
         case 'mfe\Imfe':
             /** @noinspection PhpIncludeInspection */
-            return include_once 'interfaces/' . $file . '.php';
+            return include_once str_replace(['\/', '//', '\\\\', '/\\'], '/', 'interfaces/' . $file . '.php');
             break;
         case 'mfe\Tmfe':
             /** @noinspection PhpIncludeInspection */
-            return include_once 'traits/' . $file . '.php';
+            return include_once str_replace(['\/', '//', '\\\\', '/\\'], '/', 'traits/' . $file . '.php');
             break;
         default:
             return false;
