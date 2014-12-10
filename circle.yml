@@ -2,6 +2,6 @@ machine:
   timezone:
     Europe/Kiev
   php:
-    version: 5.5.19
+    version: 5.5.0
   hosts:
     app.test: 127.0.0.1
