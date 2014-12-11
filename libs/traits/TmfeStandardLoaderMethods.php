@@ -87,7 +87,7 @@ trait TmfeStandardLoaderMethods {
         return $result;
     }
 
-    public function load($file, $PHAR = false) {
+    public function load($file, $PHAR = false, $returnContent = false) {
         if (isset($this->components->components['loader'])) {
             return $this->loader->load($file, $PHAR);
         } else {
@@ -105,7 +105,8 @@ trait TmfeStandardLoaderMethods {
                 if (file_exists($file . '.' . $extension . $EXT)) {
                     $class::trigger('file.load', [$file . '.' . $extension . $EXT]);
                     /** @noinspection PhpIncludeInspection */
-                    return include_once $file . '.' . $extension . $EXT;
+                    return (!$returnContent) ?
+                        include_once $file . '.' . $extension . $EXT : file_get_contents($file . '.' . $extension . $EXT);
                 }
             }
             return false;
@@ -132,13 +133,13 @@ trait TmfeStandardLoaderMethods {
         $class::init()->registerAliasDirectory($aliases, $dir);
     }
 
-    static public function loadFile($file, $PHAR = false) {
+    static public function loadFile($file, $PHAR = false, $returnContent = false) {
         $class = get_called_class();
         /** @var mfe $class */
         if (isset($class::init()->loader)) {
             return call_user_func_array([get_class($class::init()->loader), __METHOD__], [$file, $PHAR]);
         }
-        return $class::init()->load($file, $PHAR);
+        return $class::init()->load($file, $PHAR, $returnContent);
     }
 
     static public function loadPhar($file) {
