@@ -1,9 +1,11 @@
 MicroFramework Engine (Core)
 ===========================
 [![GitHub version](https://badge.fury.io/gh/microframework%2Fmfe-core.svg)](http://badge.fury.io/gh/microframework%2Fmfe-core)
+[![Latest Unstable Version](https://poser.pugx.org/microframework/mfe-core/v/unstable.svg)](https://packagist.org/packages/microframework/mfe-core) 
 [![Circle CI](https://circleci.com/gh/microframework/mfe-core.svg?style=shield&circle-token=977c2ad4d9467778c6278df581355579c37c473f)](https://github.com/microframework/mfe-core/)
 [![Code Climate](https://codeclimate.com/github/microframework/mfe-core/badges/gpa.svg)](https://codeclimate.com/github/microframework/mfe-core)
 [![GitHub](http://img.shields.io/github/issues/microframework/mfe-core.svg)](https://github.com/microframework/mfe-core/issues)
+[![License](https://poser.pugx.org/microframework/mfe-core/license.svg)](https://packagist.org/packages/microframework/mfe-core)
 
 
 There are main files of a framework. Supporting simple dependency injection of components for expansion of functionality, and also for primary loading of the engine. The project in the course of writing therefore the files located here aren't recommended for use in the production project.
