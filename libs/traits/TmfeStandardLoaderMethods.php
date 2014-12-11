@@ -46,6 +46,12 @@ trait TmfeStandardLoaderMethods {
         return $this;
     }
 
+    public function aliasDirectoryExist($alias){
+        if(isset($this->aliases[strtolower($alias)]) && count($this->aliases[strtolower($alias)]) >= 1)
+            return (array) $this->aliases[strtolower($alias)];
+        return false;
+    }
+
     protected function getRealPaths($path) {
         $class = get_called_class();
         /** @var mfe $class */
