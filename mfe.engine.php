@@ -7,12 +7,12 @@
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.3
+ * @version 1.0.4
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
 //!if mod this, mod & doc before commit!
-(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.3');
+(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.4');
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
 (defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
 
