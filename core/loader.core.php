@@ -37,20 +37,20 @@ class LoaderCore implements ImfeComponent {
         return self::$instance;
     }
 
-    public function load($file, $PHAR = false, $returnContent = false) {
+    public function load($file, $EXT = false) {
         $FileHelper = engine::option('FileHelper');
-        $EXT = (!$PHAR) ? $FileHelper::$PHP : $FileHelper::$Phar;
+        $EXT = (!$EXT) ? $FileHelper::$PHP : $EXT;
         $paths = $this->getRealPaths($file);
         if (isset($paths['extension'])) {
             $extension = $paths['extension'];
             unset($paths['extension']);
         } else $extension = '';
         foreach ($paths as $file) {
-            #print $file . '.' . $extension . $EXT . PHP_EOL;
+            print $file . '.' . $extension . $EXT . PHP_EOL;
             if (file_exists($file . '.' . $extension . $EXT)) {
                 engine::trigger('file.load', [$file . '.' . $extension . $EXT]);
                 /** @noinspection PhpIncludeInspection */
-                return (!$returnContent) ?
+                return ($EXT == $FileHelper::$PHP || $EXT == $FileHelper::$Phar) ?
                     include_once $file . '.' . $extension . $EXT : file_get_contents($file . '.' . $extension . $EXT);
             }
         }
@@ -128,8 +128,8 @@ class LoaderCore implements ImfeComponent {
         self::$instance->registerAliasDirectory($aliases, $dir);
     }
 
-    static public function loadFile($file, $PHAR = false, $returnContent = false) {
-        return self::$instance->load($file, $PHAR, $returnContent);
+    static public function loadFile($file, $EXT = false) {
+        return self::$instance->load($file, $EXT);
     }
 
     static public function loadPhar($file) {

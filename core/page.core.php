@@ -53,10 +53,13 @@ class PageCore implements ImfeComponent {
     }
 
     public function __construct($layout = null, $data = [], $uid = null) {
+        if (!mfe::init()->loader->aliasDirectoryExist('@layout'))
+            mfe::init()->loader->registerAliasDirectory('@layout', 'assets/layouts');
+
         if (!is_null($layout)) {
-            //TODO:: File check, integrate with Loader
-            //$this->layout = $layout . $this->layout_extension;
+            $this->setLayout($layout);
         }
+
         if (!is_null($data)) $this->data = $data;
         if (!is_null($uid)) {
             $this->guid = 'page_' . $uid;
@@ -146,6 +149,17 @@ class PageCore implements ImfeComponent {
 
     static public function registerComponent() {
         return new self;
+    }
+
+    public function setLayout($layout) {
+        /** @var CmfeSimpleFileHelper $FileHelper**/
+        $FileHelper = mfe::option('FileHelper');
+
+        if(!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
+            throw new CmfeException('Not found layout file: ' . $layout . $this->layout_extension);
+        }
+
+        return $this;
     }
 }
 

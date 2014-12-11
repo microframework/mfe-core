@@ -8,11 +8,13 @@
  * @package mfe
  */
 interface ImfeLoader {
-    function load($file, $PHAR = false);
+    function load($file, $EXT = '.php');
 
     function registerAliasDirectory($alias, $dir);
 
-    static function loadFile($file, $PHAR = false);
+    function aliasDirectoryExist($alias);
+
+    static function loadFile($file, $EXT = '.php');
 
     static function loadCore($file);
 

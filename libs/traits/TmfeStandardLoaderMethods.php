@@ -87,14 +87,14 @@ trait TmfeStandardLoaderMethods {
         return $result;
     }
 
-    public function load($file, $PHAR = false, $returnContent = false) {
+    public function load($file, $EXT = false) {
         if (isset($this->components->components['loader'])) {
-            return $this->loader->load($file, $PHAR);
+            return $this->loader->load($file, $EXT);
         } else {
             $class = get_called_class();
             /** @var mfe $class */
             $FileHelper = $class::option('FileHelper');
-            $EXT = (!$PHAR) ? $FileHelper::$PHP : $FileHelper::$Phar;
+            $EXT = (!$EXT) ? $FileHelper::$PHP : $EXT;
             $paths = $this->getRealPaths($file);
             if (isset($paths['extension'])) {
                 $extension = $paths['extension'];
@@ -105,7 +105,7 @@ trait TmfeStandardLoaderMethods {
                 if (file_exists($file . '.' . $extension . $EXT)) {
                     $class::trigger('file.load', [$file . '.' . $extension . $EXT]);
                     /** @noinspection PhpIncludeInspection */
-                    return (!$returnContent) ?
+                    return ($EXT == $FileHelper::$PHP || $EXT == $FileHelper::$Phar) ?
                         include_once $file . '.' . $extension . $EXT : file_get_contents($file . '.' . $extension . $EXT);
                 }
             }
@@ -133,13 +133,13 @@ trait TmfeStandardLoaderMethods {
         $class::init()->registerAliasDirectory($aliases, $dir);
     }
 
-    static public function loadFile($file, $PHAR = false, $returnContent = false) {
+    static public function loadFile($file, $EXT = false) {
         $class = get_called_class();
         /** @var mfe $class */
         if (isset($class::init()->loader)) {
-            return call_user_func_array([get_class($class::init()->loader), __METHOD__], [$file, $PHAR]);
+            return call_user_func_array([get_class($class::init()->loader), __METHOD__], [$file, $EXT]);
         }
-        return $class::init()->load($file, $PHAR, $returnContent);
+        return $class::init()->load($file, $EXT);
     }
 
     static public function loadPhar($file) {

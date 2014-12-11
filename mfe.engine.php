@@ -43,8 +43,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     private function __construct() {
         @ini_set('display_errors', false);
 
-        set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
-        set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
+        //set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
+        //set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
     }
 
@@ -98,7 +98,9 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
  */
 (mfe::option('MFE_AUTOLOAD')) ? (mfe::init()) : false;
 
-//$page = &mfe::init()->page;
+//$page = mfe::init()->page;
+///** @var PageCore $page */
+//$page->setLayout('test');
 //
 //$page->_author = 'DeVinterX';
 //$page->_keywords = 'key,word';

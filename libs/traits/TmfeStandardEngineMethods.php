@@ -16,6 +16,10 @@ trait TmfeStandardEngineMethods {
         ];
     }
 
+    /**
+     * @param callable $callback
+     * @return mfe
+     */
     static public function init(\Closure $callback = null) {
         $class = get_called_class();
         /** @var mfe $class */
