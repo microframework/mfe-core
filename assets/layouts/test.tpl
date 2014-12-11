@@ -1,1 +1,1 @@
-<?xml hello ?>
+<?tpl hello {_content} tpl?>

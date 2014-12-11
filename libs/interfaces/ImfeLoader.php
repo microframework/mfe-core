@@ -14,6 +14,8 @@ interface ImfeLoader {
 
     function aliasDirectoryExist($alias);
 
+    function getRealPaths($path);
+
     static function loadFile($file, $EXT = '.php');
 
     static function loadCore($file);

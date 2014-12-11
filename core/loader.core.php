@@ -41,17 +41,14 @@ class LoaderCore implements ImfeComponent {
         $FileHelper = engine::option('FileHelper');
         $EXT = (!$EXT) ? $FileHelper::$PHP : $EXT;
         $paths = $this->getRealPaths($file);
-        if (isset($paths['extension'])) {
-            $extension = $paths['extension'];
-            unset($paths['extension']);
-        } else $extension = '';
+
         foreach ($paths as $file) {
-            print $file . '.' . $extension . $EXT . PHP_EOL;
-            if (file_exists($file . '.' . $extension . $EXT)) {
-                engine::trigger('file.load', [$file . '.' . $extension . $EXT]);
+            #print $file . $EXT . PHP_EOL;
+            if (file_exists($file . $EXT)) {
+                engine::trigger('file.load', [$file . $EXT]);
                 /** @noinspection PhpIncludeInspection */
                 return ($EXT == $FileHelper::$PHP || $EXT == $FileHelper::$Phar) ?
-                    include_once $file . '.' . $extension . $EXT : file_get_contents($file . '.' . $extension . $EXT);
+                    include_once $file . $EXT : file_get_contents($file . $EXT);
             }
         }
         return false;
@@ -90,7 +87,7 @@ class LoaderCore implements ImfeComponent {
         return false;
     }
 
-    protected function getRealPaths($path) {
+    public function getRealPaths($path, $without_extension = false) {
         $FileHelper = engine::option('FileHelper');
         $result = [];
         $path_nodes = explode('.', $path);
@@ -119,7 +116,15 @@ class LoaderCore implements ImfeComponent {
                 }
             }
         } else $result[] = $path;
-        if (isset($extension)) $result['extension'] = $extension;
+
+        if (isset($extension) && !$without_extension) {
+            $temp = [];
+            foreach($result as $path){
+                $temp[] = $path . '.' . $extension;
+                $temp[] = $path . '/' . $extension;
+            }
+            $result = $temp;
+        };
         return $result;
     }
 

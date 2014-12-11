@@ -52,7 +52,7 @@ trait TmfeStandardLoaderMethods {
         return false;
     }
 
-    protected function getRealPaths($path) {
+    public function getRealPaths($path, $without_extension = false) {
         $class = get_called_class();
         /** @var mfe $class */
         $FileHelper = $class::option('FileHelper');
@@ -83,7 +83,15 @@ trait TmfeStandardLoaderMethods {
                 }
             }
         } else $result[] = $path;
-        if (isset($extension)) $result['extension'] = $extension;
+
+        if (isset($extension) && !$without_extension) {
+            $temp = [];
+            foreach($result as $path){
+                $temp[] = $path . '.' . $extension;
+                $temp[] = $path . '/' . $extension;
+            }
+            $result = $temp;
+        };
         return $result;
     }
 
@@ -96,17 +104,14 @@ trait TmfeStandardLoaderMethods {
             $FileHelper = $class::option('FileHelper');
             $EXT = (!$EXT) ? $FileHelper::$PHP : $EXT;
             $paths = $this->getRealPaths($file);
-            if (isset($paths['extension'])) {
-                $extension = $paths['extension'];
-                unset($paths['extension']);
-            } else $extension = '';
+
             foreach ($paths as $file) {
-                #print $file . '.' . $extension . $EXT . PHP_EOL;
-                if (file_exists($file . '.' . $extension . $EXT)) {
-                    $class::trigger('file.load', [$file . '.' . $extension . $EXT]);
+                #print $file . $EXT . PHP_EOL;
+                if (file_exists($file . $EXT)) {
+                    mfe::trigger('file.load', [$file . $EXT]);
                     /** @noinspection PhpIncludeInspection */
                     return ($EXT == $FileHelper::$PHP || $EXT == $FileHelper::$Phar) ?
-                        include_once $file . '.' . $extension . $EXT : file_get_contents($file . '.' . $extension . $EXT);
+                        include_once $file . $EXT : file_get_contents($file . $EXT);
                 }
             }
             return false;

@@ -12,6 +12,10 @@ trait TmfeStandardApplicationMethods {
     }
 
     //TODO:: Application stack
+    /**
+     * @param mixed|null $id
+     * @return mfe
+     */
     static public function app($id = null) {
         $class = get_called_class();
         /** @var mfe $class */

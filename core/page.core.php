@@ -20,6 +20,8 @@ class PageCore implements ImfeComponent {
     public $_keywords = null;
     public $_description = null;
 
+    public $_content = null;
+
     protected $_auto_refresh = [false, 0];
     protected $_auto_redirect = [false, '/', 0];
 
@@ -152,13 +154,10 @@ class PageCore implements ImfeComponent {
     }
 
     public function setLayout($layout) {
-        /** @var CmfeSimpleFileHelper $FileHelper**/
-        $FileHelper = mfe::option('FileHelper');
-
         if(!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
-            throw new CmfeException('Not found layout file: ' . $layout . $this->layout_extension);
+            throw new CmfeException('Not found layout file: ' . $layout . $this->layout_extension . ' in directories: '
+                . PHP_EOL . implode('; ' . PHP_EOL,  mfe::init()->loader->getRealPaths('@engine.@layout.', true)));
         }
-
         return $this;
     }
 }

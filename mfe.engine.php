@@ -98,18 +98,18 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
  */
 (mfe::option('MFE_AUTOLOAD')) ? (mfe::init()) : false;
 
-//$page = mfe::init()->page;
-///** @var PageCore $page */
-//$page->setLayout('test');
-//
-//$page->_author = 'DeVinterX';
-//$page->_keywords = 'key,word';
-//$page->_description = 'Description';
-//$page->_icon = 'favicon.ico';
-//$page->addMeta("Dex", "PexMex");
-//$page->addStyles("OnePage", "text/css");
-//$page->addScripts("OnePage", "js/one.js");
-//$page->_content = "<p>Hello World!</p>";
-//header("Content-type: text/html; charset=utf-8");
-//header("X-Powered-By: Bubu");
-//print $page;
+/** @var PageCore $page*/
+$page = mfe::init()->page;
+
+$page->setLayout('test');
+$page->_author = 'DeVinterX';
+$page->_keywords = 'key,word';
+$page->_description = 'Description';
+$page->_icon = 'favicon.ico';
+$page->addMeta("Dex", "PexMex");
+$page->addStyles("OnePage", "text/css");
+$page->addScripts("OnePage", "js/one.js");
+$page->_content = "<p>Hello World!</p>";
+header("Content-type: text/html; charset=utf-8");
+header("X-Powered-By: Bubu");
+print $page;
