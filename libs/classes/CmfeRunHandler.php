@@ -21,7 +21,17 @@ class CmfeRunHandler {
 
     static public function fatalErrorHandler() {
         $error = error_get_last();
-        return CmfeDebug::errorHandler([$error['type'], $error['message'], $error['file'], $error['line']]);
+        switch ($error['type']) {
+            case E_ERROR:
+            case E_CORE_ERROR:
+            case E_COMPILE_ERROR:
+            case E_USER_ERROR:
+            case E_RECOVERABLE_ERROR:
+            case E_CORE_WARNING:
+            case E_COMPILE_WARNING:
+            case E_PARSE:
+            CmfeDebug::errorHandler([$error['type'], $error['message'], $error['file'], $error['line']]);
+        }
     }
 
     static public function DebugHandler() {

@@ -81,11 +81,14 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         } catch (CmfeException $e) {
             mfe::stop(0x00000E1);
         }
+
+        mfe::dependence('CmfeDisplay');
+
         return false;
     }
 
     final static public function stopEngine() {
-        if (!is_null(error_get_last()) && error_get_last()['type'] === 1 && self::$_STATUS !== 0x00000E0)
+        if (!is_null(error_get_last()) && self::$_STATUS !== 0x00000E0)
             CmfeRunHandler::FatalErrorHandler();
         if (isset(self::$instance) || is_null(self::$instance)) return CmfeRunHandler::DebugHandler();
         self::trigger('engine.stop');
@@ -114,4 +117,4 @@ $page->addScripts("OnePage", "js/one.js");
 $page->_content = "<p>Hello World!</p>";
 header("Content-type: text/html; charset=utf-8");
 header("X-Powered-By: Bubu");
-print $page;
+mfe::display($page);

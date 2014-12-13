@@ -4,13 +4,14 @@ class CmfeDebug {
     static public $ENABLED = true;
 
     static protected $errors;
+    static protected $trace;
 
     static public $_CODE = [
-        0x00000E0 => null,
+        0x00000E0 => 'Catch error',
         0x00000E1 => 'Engine start events error (engine.start event return false?).',
         0x00000E2 => 'Event return false.',
         0x00000E3 => 'Layout experiences trouble with loading of files.',
-        0x00000E4 => 'Exception?!'
+        0x00000E4 => 'Catch exception'
     ];
 
     static public function criticalStopEngine($code) {
@@ -87,27 +88,39 @@ class CmfeDebug {
         $data[] = $error[1];
         $data[] = $error[2];
         $data[] = $error[3];
-        if (function_exists('debug_backtrace')) {
-            $backtraceArray = $backtrace = [];
-            $array = debug_backtrace();
-            foreach ($array as $value) {
-                if (isset($value['class'])) $backtrace['class'] = $value['class']; else $backtrace['class'] = null;
-                if (isset($value['type'])) $backtrace['type'] = $value['type']; else $backtrace['type'] = null;
-                $backtrace['function'] = $value['function'];
-                if (isset($value['file'])) $backtrace['file'] = $value['file']; else $backtrace['file'] = null;
-                if (isset($value['line'])) $backtrace['line'] = $value['line']; else $backtrace['line'] = null;
-                $backtraceArray[] = $backtrace;
+
+        if(is_null(self::$trace)) {
+            if (function_exists('debug_backtrace')) {
+                $backtraceArray = $backtrace = [];
+                $array = debug_backtrace();
+                foreach ($array as $value) {
+                    if (isset($value['class'])) $backtrace['class'] = $value['class']; else $backtrace['class'] = null;
+                    if (isset($value['type'])) $backtrace['type'] = $value['type']; else $backtrace['type'] = null;
+                    $backtrace['function'] = $value['function'];
+                    if (isset($value['file'])) $backtrace['file'] = $value['file']; else $backtrace['file'] = null;
+                    if (isset($value['line'])) $backtrace['line'] = $value['line']; else $backtrace['line'] = null;
+                    $backtraceArray[] = $backtrace;
+                }
+                $data[] = array_reverse($backtraceArray);
             }
-            $data[] = array_reverse($backtraceArray);
+        } else {
+            $data[] = self::$trace;
         }
+
         self::$errors[] = $data;
 
-        return ($error[0] === E_FATAL) ? mfe::stop(0x00000E0) : null;
+        if($error[0] === E_EXCEPTION ) mfe::stop(0x00000E4);
+
+        return (
+            $error[0] === E_FATAL ||
+            $error[0] === E_ERROR ||
+            $error[0] === E_COMPILE_ERROR
+        ) ? mfe::stop(0x00000E0) : null;
     }
 
     static public function exceptionHandler(\Exception $e) {
-        if (!self::$ENABLED) return self::logAndSplashScreen(0x00000E4);
-        CmfeDebug::display('errorExtendedLayout', self::$_CODE[0x00000E4], $e);
+        self::$trace = $e->getTrace();
+        self::errorHandler([5040, 'Exception: '.$e->getMessage(), $e->getFile(), $e->getLine()]);
         return mfe::stopEngine();
     }
 

@@ -67,6 +67,15 @@ trait TmfeStandardEngineMethods {
         return (isset(mfe::$options[$option])) ? mfe::$options[$option] : null;
     }
 
+    static public function dependence($dependence) {
+        if(is_string($dependence)){
+            if(!class_exists($dependence)) throw new CmfeException('Not found dependence class: ' . $dependence);
+        }
+        foreach($dependence as $value){
+            if(!class_exists($value)) throw new CmfeException('Not found dependence class: ' . $value);
+        }
+    }
+
     public function __toString() {
         return (__TRAIT__) ? __TRAIT__ : __CLASS__;
     }
