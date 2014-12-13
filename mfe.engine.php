@@ -43,14 +43,16 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
     private function __construct() {
         @ini_set('display_errors', false);
 
-        //set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
-        //set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
+        set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
+        set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
     }
 
     public function __destruct() {
         $time = round(microtime(true) - MFE_TIME, 3);
-        file_put_contents('php://stdout', PHP_EOL . 'Done: ' . (($time >= 0.001) ? $time : '0.001') . ' ms' . PHP_EOL);
+        file_put_contents('php://stdout', PHP_EOL .
+            ((!self::$_STATUS) ? 'Done: ' : 'Error: ' . CmfeDebug::$_CODE[self::$_STATUS] . ', at ') .
+            (($time >= 0.001) ? $time : '0.001') . ' ms' . PHP_EOL);
     }
 
     // Here the engine is registered and prepares for work all components
@@ -77,15 +79,15 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         try {
             return self::trigger('engine.start');
         } catch (CmfeException $e) {
-            CmfeDebug::criticalStopEngine(0x00000E1);
+            mfe::stop(0x00000E1);
         }
         return false;
     }
 
     final static public function stopEngine() {
-        if (!is_null(error_get_last()) && error_get_last()['type'] == 1)
+        if (!is_null(error_get_last()) && error_get_last()['type'] === 1 && self::$_STATUS !== 0x00000E0)
             CmfeRunHandler::FatalErrorHandler();
-        if (isset(self::$instance) && is_null(self::$instance)) return true;
+        if (isset(self::$instance) || is_null(self::$instance)) return CmfeRunHandler::DebugHandler();
         self::trigger('engine.stop');
         self::$instance = null;
         return true;
