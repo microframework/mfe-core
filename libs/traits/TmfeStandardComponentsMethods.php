@@ -42,6 +42,8 @@ trait TmfeStandardComponentsMethods {
         if (isset($this->$key) && !isset($this->components->components[$key])) {
             return (object)$this->$key;
         } elseif (!isset($this->$key) && isset($this->components->components[$key])) {
+            if(is_callable($this->components->components[$key]))
+                return call_user_func_array($this->components->components[$key], []);
             return (object)$this->components->components[$key];
         }
         throw new CmfeException('Call unregistered component: ' . $key);
@@ -60,7 +62,7 @@ trait TmfeStandardComponentsMethods {
             return call_user_func_array([get_class($class::init()->componentManager), 'callComponent'], [$method, $arguments]);
         }
         if (isset($this->components->components[$method])) {
-            return call_user_func_array([get_class($this->components->components[$method]), '__invoke'], $arguments);
+            return call_user_func_array($this->components->components[$method], $arguments);
         }
         throw new CmfeException("Call undefined method: {$method}");
     }
@@ -74,7 +76,7 @@ trait TmfeStandardComponentsMethods {
             return call_user_func_array([get_class($class::init()->componentManager), 'callCoreComponent'], [$method, $arguments]);
         }
         if ($class::init()->hasCoreComponent($method)) {
-            return call_user_func_array([get_class($class::init()->getCoreComponent($method)), '__invoke'], $arguments);
+            return call_user_func_array($class::init()->getCoreComponent($method), $arguments);
         }
         throw new CmfeException("Call undefined core method: {$method}");
     }
@@ -121,30 +123,25 @@ trait TmfeStandardComponentsMethods {
         } elseif (isset($class::init()->components->coreComponents[$name]) && !$override) {
             return false;
         }
-        if (!$core) {
-            if (is_array($callback) && count($callback) == 2) {
-                if (class_exists($callback[0]) && method_exists($callback[0], $callback[1]))
-                    return mfe::init()->components->components[$name] = call_user_func_array($callback, []);
-            } elseif (is_string($callback) || (is_array($callback) && count($callback) == 1)) {
-                if (is_string($callback)) $callback = [$callback];
-                if (is_subclass_of($callback[0], 'mfe\ImfeComponent')) {
-                    return mfe::init()->components->components[$name]
-                        = call_user_func_array([$callback[0], 'registerComponent'], []);
-                }
+        return self::runRegisterComponent($callback, $name, $core);
+    }
+
+    static protected function runRegisterComponent($callback, $name, $core = false){
+        if (is_array($callback) && count($callback) == 2) {
+            if (class_exists($callback[0]) && method_exists($callback[0], $callback[1])){
+                self::componentStackRegister($callback, $name, $core);
             }
-        } else {
-            if (is_array($callback) && count($callback) == 2) {
-                if (class_exists($callback[0]) && method_exists($callback[0], $callback[1]))
-                    return mfe::init()->components->coreComponents[$name] = call_user_func_array($callback, []);
-            } elseif (is_string($callback) || (is_array($callback) && count($callback) == 1)) {
-                if (is_string($callback)) $callback = [$callback];
-                if (is_subclass_of($callback[0], 'mfe\ImfeCoreComponent')) {
-                    return mfe::init()->components->coreComponents[$name]
-                        = call_user_func_array([$callback[0], 'registerCoreComponent'], []);
-                }
+        } elseif (is_string($callback) || (is_array($callback) && count($callback) == 1)) {
+            if (is_string($callback)) {
+                self::componentStackRegister($callback, $name, $core);
             }
         }
         return false;
+    }
+
+    static protected function componentStackRegister($callback, $name, $core = false){
+        if($core) return mfe::init()->components->coreComponents[$name] = $callback;
+        return mfe::init()->components->components[$name] = $callback;
     }
 
     static public function registerCoreComponent($name, $callback) {
