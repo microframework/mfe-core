@@ -4,7 +4,7 @@
  * Class Page
  * @package mfe
  */
-class Page extends CCore {
+class Page extends CCore implements IComponent {
     static protected $instance;
     public $uid = null;
 
@@ -152,7 +152,7 @@ class Page extends CCore {
     }
 
     static public function getInstance($layout = null, $data = [], $uid = null) {
-        if(is_null(self::$instance)){
+        if (is_null(self::$instance)) {
             $class = get_called_class();
             self::$instance = new $class($layout, $data, $uid);
         }
@@ -160,12 +160,15 @@ class Page extends CCore {
     }
 
     public function setLayout($layout) {
-        if(!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
+        if (!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
             throw new CException('Not found layout file: ' . $layout . $this->layout_extension . ' in directories: '
-                . PHP_EOL . implode('; ' . PHP_EOL,  mfe::getInstance()->loader->getRealPaths('@engine.@layout.', true)));
+                . PHP_EOL . implode('; ' . PHP_EOL, mfe::getInstance()->loader->getRealPaths('@engine.@layout.', true)));
         }
         return $this;
     }
-}
 
-mfe::registerComponent('page', ['mfe\Page', 'getInstance']);
+    static public function registerComponent() {
+        mfe::registerComponent('page', [get_called_class(), 'getInstance']);
+        return true;
+    }
+}

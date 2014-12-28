@@ -24,6 +24,9 @@ trait TStandardLoader {
     /** @var CObjectsStack */
     protected $filesMap = null;
 
+    /** @var array */
+    protected $declareInit = [];
+
     /**
      * Behavior trait constructor
      */
@@ -73,14 +76,14 @@ trait TStandardLoader {
     /**
      * @return array
      */
-    public function getFilesMap(){
+    public function getFilesMap() {
         return (array)$this->filesMap;
     }
 
     /**
      * @return array
      */
-    public function getAliases(){
+    public function getAliases() {
         return (array)$this->aliases;
     }
 
@@ -108,9 +111,9 @@ trait TStandardLoader {
      * @param $alias
      * @return array|bool
      */
-    public function aliasDirectoryExist($alias){
-        if(isset($this->aliases[strtolower($alias)]) && count($this->aliases[strtolower($alias)]) >= 1)
-            return (array) $this->aliases[strtolower($alias)];
+    public function aliasDirectoryExist($alias) {
+        if (isset($this->aliases[strtolower($alias)]) && count($this->aliases[strtolower($alias)]) >= 1)
+            return (array)$this->aliases[strtolower($alias)];
         return false;
     }
 
@@ -153,7 +156,7 @@ trait TStandardLoader {
 
         if (isset($extension) && !$without_extension) {
             $temp = [];
-            foreach($result as $path){
+            foreach ($result as $path) {
                 $temp[] = $path . '.' . $extension;
                 $temp[] = $path . '/' . $extension;
             }
@@ -180,7 +183,7 @@ trait TStandardLoader {
                 mfe::trigger('file.load', [$file . $EXT]);
                 /** @noinspection PhpIncludeInspection */
                 return ($EXT == $FileHelper::$PHP || $EXT == $FileHelper::$Phar) ?
-                    include_once $file . $EXT : file_get_contents($file . $EXT);
+                    require_once $file . $EXT : file_get_contents($file . $EXT);
             }
         }
         return false;
@@ -246,8 +249,16 @@ trait TStandardLoader {
         $class = get_called_class();
 
         $class::trigger('file.loadCore', [$name]);
+        if ($core = $this->_loadFile('@engine.@core.' . $name . '.core')) {
+            $classes = get_declared_classes();
+            $init = end($classes);
 
-        return $this->_loadFile('@engine.@core.' . $name . '.core');
+            if (!isset($this->declareInit[$init]) && in_array('mfe\IComponent', class_implements($init))) {
+                $this->declareInit[$init] = call_user_func_array([$init, 'registerComponent'], []);
+            }
+            return $core;
+        }
+        return false;
     }
 
     /**

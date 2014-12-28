@@ -6,7 +6,7 @@
 
 mfe::dependence('request');
 
-class Router implements IComponent {
+class Router extends CCore implements IComponent {
     const CORE_COMPONENT_NAME = 'Router';
     const CORE_COMPONENT_VERSION = '1.0.0';
 
@@ -16,6 +16,7 @@ class Router implements IComponent {
     static public $mainRoute = '';
 
     static public function registerComponent() {
+        mfe::registerCoreComponent('router', [get_called_class(), 'routerInit']);
         return true;
     }
 
@@ -23,5 +24,3 @@ class Router implements IComponent {
         $this->route = '';
     }
 }
-
-mfe::registerCoreComponent('router', [get_called_class(), 'routerInit']);

@@ -1,10 +1,11 @@
 <?php namespace mfe\Loader;
 
 use mfe\CCore;
+use mfe\IComponent;
 use mfe\mfe as engine;
 use mfe\TStandardLoader;
 
-class Loader extends CCore {
+class Loader extends CCore implements IComponent {
     use TStandardLoader;
 
     const CORE_COMPONENT_NAME = 'Loader';
@@ -46,6 +47,9 @@ class Loader extends CCore {
 
         return $components;
     }
-}
 
-engine::registerComponent('loader', ['mfe\Loader\Loader', 'getInstance']);
+    static public function registerComponent() {
+        engine::registerComponent('loader', [get_called_class(), 'getInstance']);
+        return true;
+    }
+}

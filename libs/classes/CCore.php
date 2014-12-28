@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CCore {
+class CCore implements IComponent {
     /** @var CCore */
     static private $instance = null;
 
@@ -14,5 +14,9 @@ class CCore {
 
     static protected function option($option) {
         return mfe::option($option);
+    }
+
+    static public function registerComponent() {
+        return true;
     }
 }

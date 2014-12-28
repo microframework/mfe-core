@@ -4,7 +4,7 @@
  * @package mfe
  */
 
-class Request implements IComponent {
+class Request extends CCore implements IComponent {
     const CORE_COMPONENT_NAME = 'Request';
     const CORE_COMPONENT_VERSION = '1.0.0';
 
@@ -31,7 +31,7 @@ class Request implements IComponent {
     }
 
     static public function registerComponent() {
+        mfe::registerComponent('request', [get_called_class(), 'initRequest']);
+        return true;
     }
 }
-
-mfe::registerComponent('request', [get_called_class(), 'initRequest']);

@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CDisplay extends CCore {
+class CDisplay extends CCore implements IComponent {
     static private $instance;
 
     /**
@@ -18,6 +18,12 @@ class CDisplay extends CCore {
     static public function display($data){
         print $data;
     }
+
+    static public function registerComponent(){
+        mfe::registerCoreComponent('display', [get_called_class(), 'display']);
+        return true;
+    }
 }
 
-mfe::registerCoreComponent('display', ['mfe\CDisplay', 'display']);
+//TODO:: normal autoload for libs, with auto registration
+CDisplay::registerComponent();
