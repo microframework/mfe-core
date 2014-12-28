@@ -7,12 +7,12 @@
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.4
+ * @version 1.0.5
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
 //!if mod this, mod & doc before commit!
-(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.4');
+(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.5');
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
 (defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
 
@@ -20,44 +20,62 @@ include_once __DIR__ . '/libs/autoload.php';
 
 /**
  * Class mfe
- * @eng_desc This base class of logic MicroFramework, this class is Engine! This is MFE!
- * @rus_desc Это базовый класс реализующий двигатель MicroFramework. Это и есть MFE!
+ *
+ * This base class of logic MicroFramework, this class is Engine! This is MFE!
+ * Это базовый класс реализующий двигатель MicroFramework. Это и есть MFE!
  *
  * @standards MFS-4.1, MFS-5
  * @package mfe
  */
-final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
+final class mfe implements IEventsManager {
+    const ENGINE_NAME = 'MicroFramework Engine';
+    const ENGINE_VERSION = MFE_VERSION;
+
     static public $DEBUG = false;
 
     /** @var mfe $instance */
-    static public $instance = null;
+    static public $instance;
     static public $options = [];
     static public $register = [];
 
-    use TmfeStandardEngineMethods;
-    use TmfeStandardEventsMethods;
-    use TmfeStandardLoaderMethods;
-    use TmfeStandardComponentsMethods;
-    use TmfeStandardApplicationMethods;
+    use TStandardEngine;
+    use TStandardEvents;
+    use TStandardComponents;
+    use TStandardLoader;
+    use TStandardApplication;
 
-    private function __construct() {
+
+    /**
+     * Constructor
+     */
+    protected function __construct() {
         @ini_set('display_errors', false);
 
-        set_error_handler(['mfe\CmfeRunHandler', 'errorHandler'], E_ALL);
-        set_exception_handler(['mfe\CmfeRunHandler', 'exceptionHandler']);
+        set_error_handler(['mfe\CRunHandler', 'errorHandler'], E_ALL);
+        set_exception_handler(['mfe\CRunHandler', 'exceptionHandler']);
         register_shutdown_function(['mfe\mfe', 'stopEngine']);
     }
 
+    /**
+     * Destructor
+     */
     public function __destruct() {
         $time = round(microtime(true) - MFE_TIME, 3);
         file_put_contents('php://stdout', PHP_EOL .
-            ((!self::$_STATUS) ? 'Done: ' : 'Error: ' . CmfeDebug::$_CODE[self::$_STATUS] . ', at ') .
+            ((!self::$_STATUS) ? 'Done: ' : 'Error: ' . CDebug::$_CODE[self::$_STATUS] . ', at ') .
             (($time >= 0.001) ? $time : '0.001') . ' ms' . PHP_EOL);
     }
 
-    // Here the engine is registered and prepares for work all components
+    /**
+     * Start engine
+     *
+     * Here the engine is registered and prepares for work all components
+     *
+     * @return bool
+     * @throws CException
+     */
     final public function startEngine() {
-        mfe::dependence('mfe\CmfeDisplay');
+        mfe::dependence('mfe\CDisplay');
 
         //TODO:: Where from phar archive register specific paths
         if (self::option('MFE_PHAR_INIT')) {
@@ -79,17 +97,22 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
         try {
             return self::trigger('engine.start');
-        } catch (CmfeException $e) {
+        } catch (CException $e) {
             mfe::stop(0x00000E1);
         }
 
         return false;
     }
 
+    /**
+     * Stop engine
+     *
+     * @return bool|null
+     */
     final static public function stopEngine() {
         if (!is_null(error_get_last()) && self::$_STATUS !== 0x00000E0)
-            CmfeRunHandler::FatalErrorHandler();
-        if (isset(self::$instance) || is_null(self::$instance)) return CmfeRunHandler::DebugHandler();
+            CRunHandler::FatalErrorHandler();
+        if (isset(self::$instance) || is_null(self::$instance)) return CRunHandler::DebugHandler();
         self::trigger('engine.stop');
         self::$instance = null;
         return true;
@@ -100,19 +123,4 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
  * Auto register self in system
  * @standards MFS-5.5
  */
-(mfe::option('MFE_AUTOLOAD')) ? (mfe::init()) : false;
-
-/** @var PageCore $page*/
-$page = mfe::init()->page;
-
-$page->setLayout('test');
-$page->_author = 'DeVinterX';
-$page->_keywords = 'key,word';
-$page->_description = 'Description';
-$page->_icon = 'favicon.ico';
-$page->addMeta("Dex", "PexMex");
-$page->addStyles("OnePage", "text/css");
-$page->addScripts("OnePage", "js/one.js");
-$page->_content = "<p>Hello World!</p>";
-
-mfe::display($page);
+(!mfe::option('MFE_AUTOLOAD')) ?: mfe::app();

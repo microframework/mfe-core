@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CmfeRunHandler {
+class CRunHandler {
     static protected $handlers = [
         'server' => [],
         'engine' => [],
@@ -16,7 +16,7 @@ class CmfeRunHandler {
     }
 
     static public function errorHandler($error_number, $error_string, $error_file, $error_line) {
-        return CmfeDebug::errorHandler([$error_number, $error_string, $error_file, $error_line]);
+        return CDebug::errorHandler([$error_number, $error_string, $error_file, $error_line]);
     }
 
     static public function fatalErrorHandler() {
@@ -30,15 +30,15 @@ class CmfeRunHandler {
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
             case E_PARSE:
-            CmfeDebug::errorHandler([$error['type'], $error['message'], $error['file'], $error['line']]);
+            CDebug::errorHandler([$error['type'], $error['message'], $error['file'], $error['line']]);
         }
     }
 
     static public function DebugHandler() {
-        return CmfeDebug::displayErrors(self::$currentHandler);
+        return CDebug::displayErrors(self::$currentHandler);
     }
 
     static public function exceptionHandler(\Exception $e) {
-        return CmfeDebug::exceptionHandler($e);
+        return CDebug::exceptionHandler($e);
     }
 }

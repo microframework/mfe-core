@@ -4,7 +4,7 @@
  * Class Page
  * @package mfe
  */
-class PageCore {
+class Page extends CCore {
     static protected $instance;
     public $uid = null;
 
@@ -56,8 +56,9 @@ class PageCore {
     }
 
     public function __construct($layout = null, $data = [], $uid = null) {
-        if (!mfe::init()->loader->aliasDirectoryExist('@layout'))
-            mfe::init()->loader->registerAliasDirectory('@layout', 'assets/layouts');
+        if (!mfe::app()->loader->aliasDirectoryExist('@layout')) {
+            mfe::app()->loader->registerAliasDirectory('@layout', 'assets/layouts');
+        }
 
         if (!is_null($layout)) {
             $this->setLayout($layout);
@@ -150,7 +151,7 @@ class PageCore {
         return $html;
     }
 
-    static public function init($layout = null, $data = [], $uid = null) {
+    static public function getInstance($layout = null, $data = [], $uid = null) {
         if(is_null(self::$instance)){
             $class = get_called_class();
             self::$instance = new $class($layout, $data, $uid);
@@ -160,11 +161,11 @@ class PageCore {
 
     public function setLayout($layout) {
         if(!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
-            throw new CmfeException('Not found layout file: ' . $layout . $this->layout_extension . ' in directories: '
-                . PHP_EOL . implode('; ' . PHP_EOL,  mfe::init()->loader->getRealPaths('@engine.@layout.', true)));
+            throw new CException('Not found layout file: ' . $layout . $this->layout_extension . ' in directories: '
+                . PHP_EOL . implode('; ' . PHP_EOL,  mfe::getInstance()->loader->getRealPaths('@engine.@layout.', true)));
         }
         return $this;
     }
 }
 
-mfe::registerComponent('page', ['mfe\PageCore', 'init']);
+mfe::registerComponent('page', ['mfe\Page', 'getInstance']);

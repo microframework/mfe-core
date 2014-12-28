@@ -1,8 +1,8 @@
 <?php namespace mfe;
 /**
- * Interface ImfeCoreComponent
+ * Interface ICoreComponent
  * @package mfe
  */
-interface ImfeCoreComponent {
+interface ICoreComponent {
     static function registerCoreComponent();
 }

@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CmfeDebug {
+class CDebug {
     static public $ENABLED = true;
 
     static protected $errors;
@@ -125,8 +125,8 @@ class CmfeDebug {
     }
 
     static protected function logAndSplashScreen($code) {
-        CmfeLog::error(self::$_CODE[$code]);
-        CmfeDebug::display('errorLayout', self::$_CODE[$code]);
+        CLog::error(self::$_CODE[$code]);
+        CDebug::display('errorLayout', self::$_CODE[$code]);
         return mfe::stopEngine();
     }
 
@@ -139,7 +139,7 @@ class CmfeDebug {
                 if (!self::$ENABLED) {
                     self::logAndSplashScreen(500);
                 } else {
-                    CmfeDebug::display('errorExtendedLayout', 500, new \ArrayObject(self::$errors));
+                    CDebug::display('errorExtendedLayout', 500, new \ArrayObject(self::$errors));
                 }
             }
         }
@@ -173,10 +173,10 @@ class CmfeDebug {
         header('Content-type: text/html; charset=utf-8');
         (!isset($_SERVER['SERVER_PROTOCOL'])) ?: header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 
-        print new CmfeLayout($layout, [
+        print new CLayout($layout, [
             'title' => $code,
             'time' => (($time >= 0.001) ? $time : '0.001') . ' ms',
-            'info' => 'MicroFramework Engine (' . MFE_VERSION . ')',
+            'info' => mfe::ENGINE_NAME . ' (' . mfe::ENGINE_VERSION . ')',
             'errors' => $errors
         ]);
     }

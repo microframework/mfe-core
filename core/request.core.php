@@ -4,8 +4,8 @@
  * @package mfe
  */
 
-class RequestCore implements ImfeComponent {
-    const CORE_COMPONENT_NAME = 'RequestCore';
+class Request implements IComponent {
+    const CORE_COMPONENT_NAME = 'Request';
     const CORE_COMPONENT_VERSION = '1.0.0';
 
     public $is_ajax = false;

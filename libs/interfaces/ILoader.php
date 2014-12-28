@@ -1,13 +1,14 @@
 <?php namespace mfe;
 /**
- * Interface ImfeLoader
- * @eng_desc This Interface dictates coding rules for loader of MFE
- * @rus_desc Этот интерфейс диктует правила написания Загружчика для MFE
+ * Interface ILoader
+ *
+ * This Interface dictates coding rules for loader of MFE
+ * Этот интерфейс диктует правила написания Загружчика для MFE
  *
  * @standards MFS-1, MFS-2, MFS-4, MFS-5.3, MFS-6
  * @package mfe
  */
-interface ImfeLoader {
+interface ILoader {
     function load($file, $EXT = '.php');
 
     function registerAliasDirectory($alias, $dir);

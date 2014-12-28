@@ -1,7 +1,7 @@
 <?php namespace mfe;
 
-class CmfeLog {
-    /** @var CmfeLog $instance */
+class CLog {
+    /** @var CLog $instance */
     static private $instance = null;
 
     public function __construct() {
@@ -12,9 +12,9 @@ class CmfeLog {
 
     }
 
-    static protected function init() {
+    static protected function getInstance() {
         $class = get_called_class();
-        /** @var CmfeLog $class */
+        /** @var CLog $class */
         if (is_null($class::$instance)) {
             $class::$instance = new $class();
             mfe::trigger('system.log.init');
@@ -23,7 +23,7 @@ class CmfeLog {
     }
 
     static public function error($message, $backtrace = false) {
-        if (is_null(self::$instance)) self::init();
+        if (is_null(self::$instance)) self::getInstance();
         self::$instance->addToLog('error', $message, $backtrace);
     }
 }

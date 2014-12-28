@@ -2,8 +2,8 @@
 /**
  * Simple File Helper
  */
-if (!class_exists('mfe\CmfeSimpleFileHelper')) {
-    class CmfeSimpleFileHelper {
+if (!class_exists('mfe\CSimpleFileHelper')) {
+    class CSimpleFileHelper {
         static public $SEPARATOR = '/';
         static public $PHP = '.php';
         static public $Phar = '.phar';

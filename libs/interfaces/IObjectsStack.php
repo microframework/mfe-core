@@ -1,9 +1,9 @@
 <?php namespace mfe;
 /**
- * Interface ImfeObjectsStack
+ * Interface IObjectsStack
  * @package mfe
  */
-interface ImfeObjectsStack {
+interface IObjectsStack {
     public function __set($key, $value);
 
     public function __get($key);

@@ -6,8 +6,8 @@
 
 mfe::dependence('request');
 
-class RouterCore implements ImfeComponent {
-    const CORE_COMPONENT_NAME = 'RouterCore';
+class Router implements IComponent {
+    const CORE_COMPONENT_NAME = 'Router';
     const CORE_COMPONENT_VERSION = '1.0.0';
 
     public $route = '';

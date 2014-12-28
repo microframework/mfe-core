@@ -1,13 +1,14 @@
 <?php namespace mfe;
 /**
- * Interface ImfeEvents
- * rr * @eng_desc This Interface dictates coding rules for events manager of MFE
- * @rus_desc Этот интерфейс диктует правила написания менеджера событий для MFE
+ * Interface IEvents
+ *
+ * This Interface dictates coding rules for events manager of MFE
+ * Этот интерфейс диктует правила написания менеджера событий для MFE
  *
  * @standards MFS-5.6
  * @package mfe
  */
-interface ImfeEventsManager {
+interface IEventsManager {
     function registerEvent($event_node);
 
     function addEvent($event_node, $callback);

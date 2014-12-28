@@ -1,14 +1,14 @@
 <?php namespace mfe;
 
-class CmfeDisplay {
+class CDisplay extends CCore {
     static private $instance;
 
     /**
-     * @return CmfeDisplay
+     * @return CDisplay
      */
-    static public function init(){
+    static public function getInstance(){
         $class = get_called_class();
-        /** @var CmfeDisplay $class */
+        /** @var CDisplay $class */
         if (is_null($class::$instance)) {
             $class::$instance = new $class();
         }
@@ -20,4 +20,4 @@ class CmfeDisplay {
     }
 }
 
-mfe::registerCoreComponent('display', ['mfe\CmfeDisplay', 'display']);
+mfe::registerCoreComponent('display', ['mfe\CDisplay', 'display']);

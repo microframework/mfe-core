@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CmfeLayout {
+class CLayout {
     protected $layout;
     protected $layout_extension = '.php';
 
@@ -9,8 +9,8 @@ class CmfeLayout {
     protected $result;
 
     public function __construct($layout = false, $data = []) {
-        if (!mfe::init()->loader->aliasDirectoryExist('@layout'))
-            mfe::init()->loader->registerAliasDirectory('@layout', 'assets/layouts');
+        if (!mfe::getInstance()->loader->aliasDirectoryExist('@layout'))
+            mfe::getInstance()->loader->registerAliasDirectory('@layout', 'assets/layouts');
 
         if (!is_null($layout)) {
             $this->setLayout($layout);
@@ -67,7 +67,7 @@ class CmfeLayout {
 
     public function render() {
         if(!($this->layout)){
-            CmfeLog::error('[' . __CLASS__ . '] Layout file not selected!');
+            CLog::error('[' . __CLASS__ . '] Layout file not selected!');
             mfe::stop(0x00000E3);
         }
 
@@ -80,7 +80,7 @@ class CmfeLayout {
         });
 
         if(!$this->loadLayout()) {
-            CmfeLog::error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
+            CLog::error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
                 . PHP_EOL . implode('; ' . PHP_EOL,  mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
             mfe::stop(0x00000E3);
         }

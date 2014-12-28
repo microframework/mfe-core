@@ -1,1 +1,2 @@
-<?tpl hello {_content} tpl?>
+<?tpl
+hello {_content}

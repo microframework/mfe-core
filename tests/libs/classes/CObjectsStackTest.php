@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CmfeObjectsStackTest extends \PHPUnit_Framework_TestCase {
+class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
 
     /** @var CmfeObjectsStack $stack */
     private $stack;
@@ -8,10 +8,10 @@ class CmfeObjectsStackTest extends \PHPUnit_Framework_TestCase {
     private $enablePrintDebugTables = false;
 
     public function setUp() {
-        $this->stack = new CmfeObjectsStack([0, 1, 2, 3, 4]);
+        $this->stack = new CObjectsStack([0, 1, 2, 3, 4]);
     }
 
-    protected function printStackTable(CmfeObjectsStack $stack) {
+    protected function printStackTable(CObjectsStack $stack) {
         $result = '|';
         for ($j = 0; $j < count($stack); $j++) {
             $result .= $j . '|';
@@ -23,7 +23,7 @@ class CmfeObjectsStackTest extends \PHPUnit_Framework_TestCase {
         print $result . PHP_EOL;
     }
 
-    protected function debugTable($message, CmfeObjectsStack $stack) {
+    protected function debugTable($message, CObjectsStack $stack) {
         if ($this->enablePrintDebugTables) {
             print PHP_EOL . $message . ':' . PHP_EOL;
             $this->printStackTable($stack);
@@ -31,12 +31,12 @@ class CmfeObjectsStackTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testInterfaceInstance() {
-        $this->assertInstanceOf('\mfe\ImfeObjectsStack', $this->stack,
+        $this->assertInstanceOf('\mfe\IObjectsStack', $this->stack,
             '');
     }
 
     public function testCreate() {
-        $this->stack = new CmfeObjectsStack([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $this->stack = new CObjectsStack([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
         $temp_array = [];
         foreach ($this->stack as $key => $value) {
@@ -89,7 +89,7 @@ class CmfeObjectsStackTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testUp() {
-        $this->stack = new CmfeObjectsStack([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $this->stack = new CObjectsStack([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
         $this->stack->up(2, 6);
 
@@ -103,7 +103,7 @@ class CmfeObjectsStackTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testDown() {
-        $this->stack = new CmfeObjectsStack([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        $this->stack = new CObjectsStack([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
         $this->stack->down(3, 4);
 

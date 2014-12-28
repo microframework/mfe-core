@@ -1,6 +1,6 @@
 <?php namespace mfe;
 
-class CmfeObjectsStack extends \ArrayObject implements ImfeObjectsStack {
+class CObjectsStack extends \ArrayObject implements IObjectsStack {
     private $sid = null;
     private $objectStack = [];
     private $index = 0;
