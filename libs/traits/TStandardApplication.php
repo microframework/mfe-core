@@ -16,7 +16,6 @@ trait TStandardApplication {
         mfe::$register[] = 'applications';
     }
 
-
     /**
      * TODO:: Application stack
      *

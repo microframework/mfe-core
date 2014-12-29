@@ -1,5 +1,10 @@
 <?php namespace mfe;
 
+/**
+ * Class CRunHandler
+ *
+ * @package mfe
+ */
 class CRunHandler {
     static protected $handlers = [
         'server' => [],
@@ -26,9 +31,6 @@ class CRunHandler {
             case E_CORE_ERROR:
             case E_COMPILE_ERROR:
             case E_USER_ERROR:
-            case E_RECOVERABLE_ERROR:
-            case E_CORE_WARNING:
-            case E_COMPILE_WARNING:
             case E_PARSE:
             CDebug::errorHandler([$error['type'], $error['message'], $error['file'], $error['line']]);
         }

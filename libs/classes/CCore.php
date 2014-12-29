@@ -1,22 +1,37 @@
 <?php namespace mfe;
 
-class CCore implements IComponent {
-    /** @var CCore */
-    static private $instance = null;
-
-    static public function getInstance() {
-        if (is_null(self::$instance)) {
-            $class = get_called_class();
-            self::$instance = new $class;
-        }
-        return self::$instance;
-    }
-
+class CCore extends CComponent implements IComponent {
+    /**
+     * @param $option
+     * @return bool|null
+     */
     static protected function option($option) {
         return mfe::option($option);
     }
 
+    /**
+     * @return bool
+     */
     static public function registerComponent() {
         return true;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     * @return mixed
+     * @throws CException
+     */
+    public function __set($key, $value){
+        return parent::__set($key, $value);
+    }
+
+    /**
+     * @param $key
+     * @return mixed
+     * @throws CException
+     */
+    public function __get($key){
+        return parent::__get($key);
     }
 }

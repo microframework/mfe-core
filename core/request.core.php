@@ -5,8 +5,8 @@
  */
 
 class Request extends CCore implements IComponent {
-    const CORE_COMPONENT_NAME = 'Request';
-    const CORE_COMPONENT_VERSION = '1.0.0';
+    const COMPONENT_NAME = 'Request';
+    const COMPONENT_VERSION = '1.0.0';
 
     public $is_ajax = false;
 

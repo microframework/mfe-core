@@ -1,5 +1,9 @@
 <?php namespace mfe;
 
+/**
+ * Class CLog
+ * @package mfe
+ */
 class CLog {
     /** @var CLog $instance */
     static private $instance = null;
@@ -12,6 +16,9 @@ class CLog {
 
     }
 
+    /**
+     * @return object
+     */
     static protected function getInstance() {
         $class = get_called_class();
         /** @var CLog $class */
@@ -22,6 +29,10 @@ class CLog {
         return (object)$class::$instance;
     }
 
+    /**
+     * @param $message
+     * @param bool $backtrace
+     */
     static public function error($message, $backtrace = false) {
         if (is_null(self::$instance)) self::getInstance();
         self::$instance->addToLog('error', $message, $backtrace);

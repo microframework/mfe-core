@@ -1,11 +1,9 @@
 <?php namespace mfe;
 //TODO:: Полная документация
 
-
 /**
  * Trait TStandardComponents
  *
- * @static mfe getInstance()
  * @property mixed di
  * @property mixed componentManager
  *
@@ -122,7 +120,7 @@ trait TStandardComponents {
      *
      * @param $key , Name of system component or system public property
      * @return callable|mixed|null
-     * @throws CException, 'Call unregistered component'
+     * @throws CException, 'Try to get not public property', 'Try to get unregistered component'
      */
     public function __get($key) {
         /** @var mfe $class */
@@ -141,7 +139,7 @@ trait TStandardComponents {
                     return $this->$getter();
                 }
             } else {
-                throw new CException('Call not public property: ' . $key);
+                throw new CException('Try to get not public property: ' . $key);
             }
         } elseif ($this->_hasComponent($key)) {
             if (is_callable($this->components->components[$key])) {
@@ -157,7 +155,7 @@ trait TStandardComponents {
             return $this->_getClosingComponent($key);
         }
 
-        throw new CException('Call unregistered component: ' . $key);
+        throw new CException('Try to get unregistered component: ' . $key);
     }
 
     /**
@@ -398,10 +396,6 @@ trait TStandardComponents {
      * @return bool|callable
      */
     public function _registerComponent($name, $callback) {
-        /** @var mfe $class */
-        $class = get_called_class();
-        $class::trigger('component.register', [$name, $callback]);
-
         return (is_callable($callback)) ? $this->components->components[$name] = $callback : false;
     }
 
@@ -414,10 +408,6 @@ trait TStandardComponents {
      * @return bool|callable
      */
     public function _registerCoreComponent($name, $callback) {
-        /** @var mfe $class */
-        $class = get_called_class();
-        $class::trigger('component.registerCore', [$name, $callback]);
-
         return (is_callable($callback)) ? $this->components->coreComponents[$name] = $callback : false;
     }
 
@@ -429,10 +419,6 @@ trait TStandardComponents {
      * @return bool|callable
      */
     public function _registerClosingComponent($name, $callback) {
-        /** @var mfe $class */
-        $class = get_called_class();
-        $class::trigger('component.registerClosing', [$name, $callback]);
-
         return (is_string($callback) || is_object($callback)) ? $this->closingComponents[$name] = $callback : false;
     }
 
@@ -443,11 +429,6 @@ trait TStandardComponents {
      * @return null
      */
     public function _unRegisterComponent($name) {
-        /** @var mfe $class */
-        $class = get_called_class();
-
-        $class::trigger('component.unRegister', [$name]);
-
         return ($this->_hasComponent($name)) ? $this->components->components[$name] = null : null;
     }
 
@@ -458,11 +439,6 @@ trait TStandardComponents {
      * @return null
      */
     public function _unRegisterCoreComponent($name) {
-        /** @var mfe $class */
-        $class = get_called_class();
-
-        $class::trigger('component.unRegisterCore', [$name]);
-
         return ($this->_hasCoreComponent($name)) ? $this->components->coreComponents[$name] = null : null;
     }
 
@@ -474,11 +450,6 @@ trait TStandardComponents {
      * @return null
      */
     public function _unRegisterClosingComponent($name) {
-        /** @var mfe $class */
-        $class = get_called_class();
-
-        $class::trigger('component.unRegisterClosing', [$name]);
-
         return ($this->_hasClosingComponent($name)) ? $this->closingComponents[$name] = null : null;
     }
 }

@@ -1,5 +1,10 @@
 <?php namespace mfe;
 
+/**
+ * Class CObjectsStack
+ *
+ * @package mfe
+ */
 class CObjectsStack extends \ArrayObject implements IObjectsStack {
     private $sid = null;
     private $objectStack = [];

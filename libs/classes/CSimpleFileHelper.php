@@ -3,11 +3,21 @@
  * Simple File Helper
  */
 if (!class_exists('mfe\CSimpleFileHelper')) {
+    /**
+     * Class CSimpleFileHelper
+     *
+     * @package mfe
+     */
     class CSimpleFileHelper {
         static public $SEPARATOR = '/';
         static public $PHP = '.php';
         static public $Phar = '.phar';
 
+        /**
+         * @param $dir
+         * @param null $trim
+         * @return array
+         */
         final static public function scandir_recursive($dir, $trim = null) {
             $result = [];
             if (is_null($trim)) $trim = strlen($dir);

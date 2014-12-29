@@ -1,5 +1,15 @@
 <?php namespace mfe;
 
+if (!defined('E_FATAL')) define('E_FATAL', 1);
+if (!defined('E_STRICT')) define('E_STRICT', 2048);
+if (!defined('E_RECOVERABLE_ERROR')) define('E_RECOVERABLE_ERROR', 4096);
+if (!defined('E_EXCEPTION')) define('E_EXCEPTION', 5040);
+
+/**
+ * Class CDebug
+ *
+ * @package mfe
+ */
 class CDebug {
     static public $ENABLED = true;
 
@@ -14,86 +24,52 @@ class CDebug {
         0x00000E4 => 'Catch exception'
     ];
 
+    static public $_ERROR_CODES = [
+        E_FATAL => 'Fatal Error',
+        E_ERROR => 'Error',
+        E_WARNING => 'Warning',
+        E_PARSE => 'Parse',
+        E_NOTICE => 'Notice',
+        E_DEPRECATED => 'Deprecated',
+        E_CORE_ERROR => 'Core Error',
+        E_CORE_WARNING => 'Core Warning',
+        E_COMPILE_ERROR => 'Compile Error',
+        E_COMPILE_WARNING => 'Compile Warning',
+        E_USER_ERROR => 'User Error',
+        E_USER_WARNING => 'User Warning',
+        E_USER_DEPRECATED => 'User Deprecated',
+        E_USER_NOTICE => 'User Notice',
+        E_STRICT => 'Strict Notice',
+        E_RECOVERABLE_ERROR => 'Recoverable Error',
+        E_EXCEPTION => 'Exception'
+    ];
+
+    /**
+     * @param $code
+     * @return bool|null
+     */
     static public function criticalStopEngine($code) {
         if ($code == 0x00000E3) {
             (!isset($_SERVER['SERVER_PROTOCOL'])) ?:
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-            exit;
+            call_user_func('die');
         }
         return mfe::stopEngine();
     }
 
+    /**
+     * @param $error
+     * @return bool|null
+     */
     static public function errorHandler($error) {
-        $error[0] = $error[0] & error_reporting();
+        $error[0] = $error[0] & call_user_func('error_reporting');
         if (!$error[0]) return false;
-        if (!defined('E_FATAL')) define('E_FATAL', 1);
-        if (!defined('E_STRICT')) define('E_STRICT', 2048);
-        if (!defined('E_RECOVERABLE_ERROR')) define('E_RECOVERABLE_ERROR', 4096);
-        if (!defined('E_EXCEPTION')) define('E_EXCEPTION', 5040);
-        switch ($error[0]) {
-            case E_FATAL:
-                $data[] = 'Fatal Error';
-                break;
-            case E_ERROR:
-                $data[] = 'Error';
-                break;
-            case E_WARNING:
-                $data[] = 'Warning';
-                break;
-            case E_PARSE:
-                $data[] = 'Parse';
-                break;
-            case E_NOTICE:
-                $data[] = 'Notice';
-                break;
-            case E_DEPRECATED:
-                $data[] = 'Deprecated';
-                break;
-            case E_CORE_ERROR:
-                $data[] = 'Core Error';
-                break;
-            case E_CORE_WARNING:
-                $data[] = 'Core Warning';
-                break;
-            case E_COMPILE_ERROR:
-                $data[] = 'Compile Error';
-                break;
-            case E_COMPILE_WARNING:
-                $data[] = 'Compile Warning';
-                break;
-            case E_USER_ERROR:
-                $data[] = 'User Error';
-                break;
-            case E_USER_WARNING:
-                $data[] = 'User Warning';
-                break;
-            case E_USER_DEPRECATED:
-                $data[] = 'User Deprecated';
-                break;
-            case E_USER_NOTICE:
-                $data[] = 'User Notice';
-                break;
-            case E_STRICT:
-                $data[] = 'Strict Notice';
-                break;
-            case E_RECOVERABLE_ERROR:
-                $data[] = 'Recoverable Error';
-                break;
-            case E_EXCEPTION:
-                $data[] = 'Exception';
-                break;
-            default:
-                $data[] = 'Unknown Error';
-        }
-        $data[] = $error[1];
-        $data[] = $error[2];
-        $data[] = $error[3];
+        $error[0] = isset(self::$_ERROR_CODES[$error[0]]) ? self::$_ERROR_CODES[$error[0]] : 'Unknown Error';
 
-        if(is_null(self::$trace)) {
+        if (is_null(self::$trace)) {
             if (function_exists('debug_backtrace')) {
                 $backtraceArray = $backtrace = [];
-                $array = debug_backtrace();
-                foreach ($array as $value) {
+                foreach (call_user_func('debug_backtrace') as $value) {
                     if (isset($value['class'])) $backtrace['class'] = $value['class']; else $backtrace['class'] = null;
                     if (isset($value['type'])) $backtrace['type'] = $value['type']; else $backtrace['type'] = null;
                     $backtrace['function'] = $value['function'];
@@ -101,15 +77,15 @@ class CDebug {
                     if (isset($value['line'])) $backtrace['line'] = $value['line']; else $backtrace['line'] = null;
                     $backtraceArray[] = $backtrace;
                 }
-                $data[] = array_reverse($backtraceArray);
+                $error[] = array_reverse($backtraceArray);
             }
         } else {
-            $data[] = self::$trace;
+            $error[] = self::$trace;
         }
 
-        self::$errors[] = $data;
+        self::$errors[] = $error;
 
-        if($error[0] === E_EXCEPTION ) mfe::stop(0x00000E4);
+        if ($error[0] === E_EXCEPTION) mfe::stop(0x00000E4);
 
         return (
             $error[0] === E_FATAL ||
@@ -118,18 +94,30 @@ class CDebug {
         ) ? mfe::stop(0x00000E0) : null;
     }
 
-    static public function exceptionHandler(\Exception $e) {
+    /**
+     * @param CException $e
+     * @return bool|null
+     */
+    static public function exceptionHandler(CException $e) {
         self::$trace = $e->getTrace();
-        self::errorHandler([5040, 'Exception: '.$e->getMessage(), $e->getFile(), $e->getLine()]);
+        self::errorHandler([5040, 'Exception: ' . $e->getMessage(), $e->getFile(), $e->getLine()]);
         return mfe::stopEngine();
     }
 
+    /**
+     * @param $code
+     * @return bool|null
+     */
     static protected function logAndSplashScreen($code) {
         CLog::error(self::$_CODE[$code]);
         CDebug::display('errorLayout', self::$_CODE[$code]);
         return mfe::stopEngine();
     }
 
+    /**
+     * @param $instance
+     * @return null
+     */
     static public function displayErrors($instance) {
         if (!empty(self::$errors)) {
             //TODO:: fix this to only instance
@@ -167,11 +155,16 @@ class CDebug {
         print $data;
     }
 
+    /**
+     * @param $layout
+     * @param $code
+     * @param null $errors
+     */
     static protected function display($layout, $code, $errors = null) {
         $time = round(microtime(true) - MFE_TIME, 3);
 
         header('Content-type: text/html; charset=utf-8');
-        (!isset($_SERVER['SERVER_PROTOCOL'])) ?: header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+        (!isset($_SERVER['SERVER_PROTOCOL'])) or header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 
         print new CLayout($layout, [
             'title' => $code,

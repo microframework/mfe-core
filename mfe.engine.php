@@ -11,8 +11,6 @@
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
-//!if mod this, mod & doc before commit!
-(defined('MFE_VERSION')) or define('MFE_VERSION', '1.0.5');
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
 (defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
 
@@ -29,21 +27,20 @@ include_once __DIR__ . '/libs/autoload.php';
  */
 final class mfe implements IEventsManager {
     const ENGINE_NAME = 'MicroFramework Engine';
-    const ENGINE_VERSION = MFE_VERSION;
+    const ENGINE_VERSION = '1.0.5'; // !if mod this, mod & doc before commit!
 
     static public $DEBUG = false;
 
     /** @var mfe $instance */
-    static public $instance;
+    static protected $instance;
     static public $options = [];
     static public $register = [];
 
     use TStandardEngine;
-    use TStandardEvents;
     use TStandardComponents;
+    use TStandardEvents;
     use TStandardLoader;
     use TStandardApplication;
-
 
     /**
      * Constructor
@@ -110,8 +107,7 @@ final class mfe implements IEventsManager {
      * @return bool|null
      */
     final static public function stopEngine() {
-        if (!is_null(error_get_last()) && self::$_STATUS !== 0x00000E0)
-            CRunHandler::FatalErrorHandler();
+        if (!is_null(error_get_last()) && self::$_STATUS !== 0x00000E0) CRunHandler::FatalErrorHandler();
         if (isset(self::$instance) || is_null(self::$instance)) return CRunHandler::DebugHandler();
         self::trigger('engine.stop');
         self::$instance = null;
@@ -123,4 +119,4 @@ final class mfe implements IEventsManager {
  * Auto register self in system
  * @standards MFS-5.5
  */
-(!mfe::option('MFE_AUTOLOAD')) ?: mfe::app();
+(!mfe::option('MFE_AUTOLOAD')) or mfe::app();

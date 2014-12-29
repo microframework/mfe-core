@@ -5,12 +5,23 @@ use mfe\IComponent;
 use mfe\mfe as engine;
 use mfe\TStandardLoader;
 
+/**
+ * Class Loader
+ *
+ * @package mfe\Loader
+ */
 class Loader extends CCore implements IComponent {
     use TStandardLoader;
 
-    const CORE_COMPONENT_NAME = 'Loader';
-    const CORE_COMPONENT_VERSION = '1.0.0';
+    const COMPONENT_NAME = 'Loader';
+    const COMPONENT_VERSION = '1.0.0';
 
+    /** @var Loader */
+    private static $instance;
+
+    /**
+     * Constructor
+     */
     public function __construct() {
         $stack = engine::option('stackObject');
 
@@ -24,8 +35,13 @@ class Loader extends CCore implements IComponent {
         }
 
         $this->registerLoader();
+        return self::$instance;
     }
 
+    /**
+     * @param bool $undo
+     * @return array
+     */
     protected function registerLoader($undo = false) {
         /** @var Loader $class */
         $class = get_called_class();
@@ -48,6 +64,9 @@ class Loader extends CCore implements IComponent {
         return $components;
     }
 
+    /**
+     * @return bool
+     */
     static public function registerComponent() {
         engine::registerComponent('loader', [get_called_class(), 'getInstance']);
         return true;

@@ -1,6 +1,11 @@
 <?php namespace mfe;
 
-class CLayout {
+/**
+ * Class CLayout
+ *
+ * @package mfe
+ */
+class CLayout extends CComponent {
     protected $layout;
     protected $layout_extension = '.php';
 
@@ -8,6 +13,10 @@ class CLayout {
 
     protected $result;
 
+    /**
+     * @param bool $layout
+     * @param array $data
+     */
     public function __construct($layout = false, $data = []) {
         if (!mfe::getInstance()->loader->aliasDirectoryExist('@layout'))
             mfe::getInstance()->loader->registerAliasDirectory('@layout', 'assets/layouts');
@@ -19,32 +28,59 @@ class CLayout {
         if(is_array($data) && !empty($data)) $this->data = $data;
     }
 
+    /**
+     * @return string
+     */
     public function __toString() {
         return (string) ($this->result) ? $this->result : $this->render();
     }
 
+    /**
+     * @param $value
+     * @return null
+     */
     public function __get($value) {
         return (isset($this->data[$value])) ? $this->data[$value] : null;
     }
 
+    /**
+     * @param $value
+     * @return bool
+     */
     public function __isset($value) {
         return (isset($this->data[$value])) ? true : false;
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @return bool
+     */
     public function __set($key, $value) {
         $this->data[$key] = $value;
         return true;
     }
 
+    /**
+     * @param $layout
+     * @return $this
+     */
     public function setLayout($layout) {
         $this->layout = $layout;
         return $this;
     }
 
+    /**
+     * @param $data
+     */
     public function setData($data) {
         if(is_array($data) && !empty($data)) $this->data = $data;
     }
 
+    /**
+     * @param $layout
+     * @return mixed
+     */
     protected function parse($layout) {
         return preg_replace_callback(
             '#\{([a-z0-9\-_\#]*?)\}#Ssi',
@@ -53,6 +89,9 @@ class CLayout {
             }, $layout);
     }
 
+    /**
+     * @return bool
+     */
     protected function loadLayout(){
         $layouts = mfe::app()->loader->getRealPaths('@engine.@layout.' . $this->layout);
 
@@ -65,6 +104,9 @@ class CLayout {
         return false;
     }
 
+    /**
+     * @return string
+     */
     public function render() {
         if(!($this->layout)){
             CLog::error('[' . __CLASS__ . '] Layout file not selected!');

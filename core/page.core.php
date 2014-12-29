@@ -2,10 +2,16 @@
 
 /**
  * Class Page
+ *
  * @package mfe
  */
 class Page extends CCore implements IComponent {
-    static protected $instance;
+    const COMPONENT_NAME = 'Page';
+    const COMPONENT_VERSION = '1.0.0';
+
+    /** @var Page */
+    static private $instance;
+
     public $uid = null;
 
     public $_language = 'en_US';
@@ -39,19 +45,38 @@ class Page extends CCore implements IComponent {
         return (string)$this->layout();
     }
 
-    public function __get($value) {
-        return ('_' == substr($value, 0, 1) && isset($this->{$value})) ?
-            ($this->{$value}) :
-            ((isset($this->data[$value])) ?
-                $this->data[$value] : null);
+    /**
+     * @param string $key
+     * @return mixed|null
+     */
+    public function __get($key) {
+        try {
+            parent::__get($key);
+        } catch (CException $e) {}
+
+        return ('_' == substr($key, 0, 1) && isset($this->{$value})) ?
+            ($this->{$key}) :
+            ((isset($this->data[$key])) ?
+                $this->data[$key] : null);
     }
 
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @return bool|mixed
+     */
     public function __set($key, $value) {
+        try {
+            parent::__set($key, $value);
+        } catch (CException $e) {}
+
         if ('_' == substr($key, 0, 1) && isset($this->{$key})) {
             $this->{$key} = $value;
             return true;
         }
+
         $this->data[$key] = $value;
+
         return true;
     }
 
