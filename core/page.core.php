@@ -191,9 +191,7 @@ class Page extends CCore implements IComponent {
         }
         return $this;
     }
-<<<<<<< HEAD
-=======
-
+	
     public function setLayoutExtension($extension) {
         if(substr($extension,0,1)==".") {
             $this->layout_extension=$extension;
@@ -214,8 +212,6 @@ class Page extends CCore implements IComponent {
     public function getData() {
         return $this->data;
     }
-}
->>>>>>> 207a78dd7f6e1320954dca5cc7abea4ee19add4e
 
     static public function registerComponent() {
         mfe::registerComponent('page', [get_called_class(), 'getInstance']);
