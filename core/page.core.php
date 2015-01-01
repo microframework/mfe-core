@@ -52,7 +52,8 @@ class Page extends CCore implements IComponent {
     public function __get($key) {
         try {
             parent::__get($key);
-        } catch (CException $e) {}
+        } catch (CException $e) {
+        }
 
         return ('_' == substr($key, 0, 1) && isset($this->{$value})) ?
             ($this->{$key}) :
@@ -68,7 +69,8 @@ class Page extends CCore implements IComponent {
     public function __set($key, $value) {
         try {
             parent::__set($key, $value);
-        } catch (CException $e) {}
+        } catch (CException $e) {
+        }
 
         if ('_' == substr($key, 0, 1) && isset($this->{$key})) {
             $this->{$key} = $value;
@@ -91,9 +93,9 @@ class Page extends CCore implements IComponent {
 
         if (!is_null($data)) $this->data = $data;
         if (!is_null($uid)) {
-            $this->guid = 'page_' . $uid;
+            $this->uid = 'page_' . $uid;
         } else {
-            $this->guid = 'page_' . md5($this);
+            $this->uid = 'page_' . md5($this);
         }
     }
 
@@ -187,20 +189,20 @@ class Page extends CCore implements IComponent {
     public function setLayout($layout) {
         if (!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
             throw new CException('Not found layout file: ' . $layout . $this->layout_extension . ' in directories: '
-                . PHP_EOL . implode('; ' . PHP_EOL, mfe::getInstance()->loader->getRealPaths('@engine.@layout.', true)));
+                . PHP_EOL . implode('; ' . PHP_EOL, mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
         }
         return $this;
     }
-	
+
     public function setLayoutExtension($extension) {
-        if(substr($extension,0,1)==".") {
-            $this->layout_extension=$extension;
+        if (substr($extension, 0, 1) == ".") {
+            $this->layout_extension = $extension;
         }
         return $this;
     }
 
     public function addData(array $data) {
-        $this->data = array_merge($this->data,$data);
+        $this->data = array_merge($this->data, $data);
         return $this;
     }
 

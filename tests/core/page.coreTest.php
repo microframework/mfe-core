@@ -1,24 +1,46 @@
 <?php
+
+use mfe\Page;
+
 /**
  * Created by PhpStorm.
  * User: eak
  * Date: 15.12.2014
  * Time: 22:03
  */
+class PageTest extends PHPUnit_Framework_TestCase {
+    /** @var array */
+    private $data;
 
-class PageCoreTest extends PHPUnit_Framework_TestCase {
-    /** @var PageCore $data */
-    private $data = [];
-    privare function addDataTest() {
+    /** @var Page */
+    private $page;
 
+    public function setUp() {
+        $this->data = [
+            'test1' => 'test1',
+            'test2' => 2,
+            'test3' => 3
+        ];
+
+        $this->page = new Page(null, [
+            'test0' => 'test0',
+            'test1' => 1
+        ]);
     }
 
-    private function setDataTest() {
+    public function testAddData() {
+        $data = [
+            'test0' => 'test0',
+            'test1' => 1
+        ];
 
+        $this->page->addData($this->data);
+        $this->assertEquals(array_merge($data, $this->data), $this->page->getData());
     }
 
-    private function getDataTest() {
-
+    public function testSetData() {
+        $this->page->setData($this->data);
+        $this->assertEquals($this->data, $this->page->getData());
     }
 }
  
