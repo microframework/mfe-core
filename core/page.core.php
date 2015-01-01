@@ -191,6 +191,31 @@ class Page extends CCore implements IComponent {
         }
         return $this;
     }
+<<<<<<< HEAD
+=======
+
+    public function setLayoutExtension($extension) {
+        if(substr($extension,0,1)==".") {
+            $this->layout_extension=$extension;
+        }
+        return $this;
+    }
+
+    public function addData(array $data) {
+        $this->data = array_merge($this->data,$data);
+        return $this;
+    }
+
+    public function setData(array $data) {
+        $this->data = $data;
+        return $this;
+    }
+
+    public function getData() {
+        return $this->data;
+    }
+}
+>>>>>>> 207a78dd7f6e1320954dca5cc7abea4ee19add4e
 
     static public function registerComponent() {
         mfe::registerComponent('page', [get_called_class(), 'getInstance']);
