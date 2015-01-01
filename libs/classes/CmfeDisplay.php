@@ -15,5 +15,9 @@ class CmfeDisplay {
         return (object)$class::$instance;
     }
 
+    static public function display($data){
+        print $data;
+    }
 }
 
+mfe::registerCoreComponent('display', ['mfe\CmfeDisplay', 'display']);

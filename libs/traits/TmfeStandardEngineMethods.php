@@ -70,9 +70,10 @@ trait TmfeStandardEngineMethods {
     static public function dependence($dependence) {
         if(is_string($dependence)){
             if(!class_exists($dependence)) throw new CmfeException('Not found dependence class: ' . $dependence);
-        }
-        foreach($dependence as $value){
-            if(!class_exists($value)) throw new CmfeException('Not found dependence class: ' . $value);
+        } elseif(is_array($dependence) && !empty($dependence)){
+            foreach($dependence as $value){
+                if(!class_exists($value)) throw new CmfeException('Not found dependence class: ' . $value);
+            }
         }
     }
 

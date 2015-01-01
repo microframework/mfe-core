@@ -4,7 +4,8 @@
  * Class Page
  * @package mfe
  */
-class PageCore implements ImfeComponent {
+class PageCore {
+    static protected $instance;
     public $uid = null;
 
     public $_language = 'en_US';
@@ -149,8 +150,12 @@ class PageCore implements ImfeComponent {
         return $html;
     }
 
-    static public function registerComponent() {
-        return new self;
+    static public function init($layout = null, $data = [], $uid = null) {
+        if(is_null(self::$instance)){
+            $class = get_called_class();
+            self::$instance = new $class($layout, $data, $uid);
+        }
+        return self::$instance;
     }
 
     public function setLayout($layout) {
@@ -183,4 +188,4 @@ class PageCore implements ImfeComponent {
     }
 }
 
-mfe::registerComponent('page', 'mfe\PageCore');
+mfe::registerComponent('page', ['mfe\PageCore', 'init']);

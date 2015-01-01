@@ -57,7 +57,8 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
 
     // Here the engine is registered and prepares for work all components
     final public function startEngine() {
-        global $_SERVER;
+        mfe::dependence('mfe\CmfeDisplay');
+
         //TODO:: Where from phar archive register specific paths
         if (self::option('MFE_PHAR_INIT')) {
 
@@ -81,8 +82,6 @@ final class mfe implements ImfeEngine, ImfeEventsManager, ImfeLoader {
         } catch (CmfeException $e) {
             mfe::stop(0x00000E1);
         }
-
-        mfe::dependence('CmfeDisplay');
 
         return false;
     }
@@ -115,6 +114,5 @@ $page->addMeta("Dex", "PexMex");
 $page->addStyles("OnePage", "text/css");
 $page->addScripts("OnePage", "js/one.js");
 $page->_content = "<p>Hello World!</p>";
-header("Content-type: text/html; charset=utf-8");
-header("X-Powered-By: Bubu");
+
 mfe::display($page);
