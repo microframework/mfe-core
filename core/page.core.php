@@ -160,6 +160,27 @@ class PageCore implements ImfeComponent {
         }
         return $this;
     }
+
+    public function setLayoutExtension($extension) {
+        if(substr($extension,0,1)==".") {
+            $this->layout_extension=$extension;
+        }
+        return $this;
+    }
+
+    public function addData(array $data) {
+        $this->data = array_merge($this->data,$data);
+        return $this;
+    }
+
+    public function setData(array $data) {
+        $this->data = $data;
+        return $this;
+    }
+
+    public function getData() {
+        return $this->data;
+    }
 }
 
 mfe::registerComponent('page', 'mfe\PageCore');
