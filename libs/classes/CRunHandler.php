@@ -21,6 +21,7 @@ class CRunHandler {
     }
 
     static public function errorHandler($error_number, $error_string, $error_file, $error_line) {
+        CLog::getInstance()->_error($error_string .' in ' . $error_file . ' on line ' . $error_line);
         return CDebug::errorHandler([$error_number, $error_string, $error_file, $error_line]);
     }
 
@@ -32,7 +33,7 @@ class CRunHandler {
             case E_COMPILE_ERROR:
             case E_USER_ERROR:
             case E_PARSE:
-            CDebug::errorHandler([$error['type'], $error['message'], $error['file'], $error['line']]);
+            self::errorHandler($error['type'], $error['message'], $error['file'], $error['line']);
         }
     }
 

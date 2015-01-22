@@ -65,7 +65,6 @@ class CDebug {
         $error[0] = $error[0] & call_user_func('error_reporting');
         if (!$error[0]) return false;
         $error[0] = isset(self::$_ERROR_CODES[$error[0]]) ? self::$_ERROR_CODES[$error[0]] : 'Unknown Error';
-
         if (is_null(self::$trace)) {
             if (function_exists('debug_backtrace')) {
                 $backtraceArray = $backtrace = [];
@@ -109,7 +108,6 @@ class CDebug {
      * @return bool|null
      */
     static protected function logAndSplashScreen($code) {
-        CLog::error(self::$_CODE[$code]);
         CDebug::display('errorLayout', self::$_CODE[$code]);
         return mfe::stopEngine();
     }
