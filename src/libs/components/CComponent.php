@@ -20,7 +20,6 @@ class CComponent
         if (is_null(self::$instance)) {
             /** @var CComponent $class */
             $class = get_called_class();
-            var_dump(get_called_class());
             if($class == 'mfe\core\core\Loader'){
                 ;
             }

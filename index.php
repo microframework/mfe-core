@@ -19,3 +19,4 @@ if (class_exists('Lua')) {
     $lua = new \Lua();
     $lua->eval("print('Hello World!');");
 }
+1/0;

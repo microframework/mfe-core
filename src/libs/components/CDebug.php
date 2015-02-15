@@ -173,11 +173,11 @@ class CDebug
         header('Content-type: text/html; charset=utf-8');
         (!isset($_SERVER['SERVER_PROTOCOL'])) or header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 
-        print new CLayout($layout, [
+        print (new CLayout($layout, [
             'title' => $code,
             'time' => (($time >= 0.001) ? $time : '0.001') . ' ms',
             'info' => mfe::ENGINE_NAME . ' (' . mfe::ENGINE_VERSION . ')',
             'errors' => $errors
-        ]);
+        ]))->render();
     }
 }

@@ -67,11 +67,11 @@ final class mfe implements IEventsManager
      */
     protected function __construct()
     {
-        @ini_set('display_errors', false);
+        //@ini_set('display_errors', false);
 
-        set_error_handler(['mfe\core\libs\components\CRunHandler', 'errorHandler'], E_ALL);
-        set_exception_handler(['mfe\core\libs\components\CRunHandler', 'exceptionHandler']);
-        register_shutdown_function(['mfe\core\mfe', 'stopEngine']);
+        //set_error_handler(['mfe\core\libs\components\CRunHandler', 'errorHandler'], E_ALL);
+        //set_exception_handler(['mfe\core\libs\components\CRunHandler', 'exceptionHandler']);
+        //register_shutdown_function(['mfe\core\mfe', 'stopEngine']);
     }
 
     /**
