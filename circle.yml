@@ -5,3 +5,9 @@ machine:
     version: 5.5.0
   hosts:
     app.test: 127.0.0.1
+
+dependencies:
+  override:
+    - mkdir -p build/logs
+  pre:
+    - sed -i 's/^;//' ~/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini	
