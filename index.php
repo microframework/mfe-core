@@ -1,16 +1,21 @@
-<?php
+<?php (@include_once('vendor/autoload.php')) or die('Please execute: php composer.phar update' . PHP_EOL);
 /**
  * This file only for micro test, delete it when build
  */
 
-require_once 'mfe.engine.php';
+use mfe\core\core\Page;
+use mfe\core\mfe as engine;
 
-use mfe\mfe;
-
-/** @var \mfe\Page $page*/
-$page = mfe::app()->page;
+/** @var Page $page */
+$page = engine::app()->page;
 
 $page->setLayout('test');
 $page->_content = "<p>Hello World!</p>";
+$page->render();
 
-mfe::display($page);
+engine::display($page);
+
+if (class_exists('Lua')) {
+    $lua = new \Lua();
+    $lua->eval("print('Hello World!');");
+}
