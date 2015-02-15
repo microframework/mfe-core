@@ -6,7 +6,7 @@
  * Этот интерфейс диктует правила написания двигателей для MicroFramework
  *
  * @standards MFS-4.1, MFS-5.[1,2]
- * @package mfe
+ * @package mfe\core\libs\interfaces
  */
 interface IEngine
 {

@@ -21,7 +21,7 @@ use mfe\core\mfe;
  * @method static mixed map
  * @method static bool loadMap
  *
- * @package mfe
+ * @package mfe\core\libs\traits
  */
 trait TStandardLoader
 {
@@ -194,6 +194,7 @@ trait TStandardLoader
         $paths = $this->getRealPaths($file);
 
         foreach ($paths as $file) {
+            $file = str_replace('//', '/', $file);
             #print $file . $EXT . PHP_EOL;
             if (file_exists($file . $EXT)) {
                 mfe::trigger('file.load', [$file . $EXT]);

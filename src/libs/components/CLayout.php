@@ -4,8 +4,7 @@ use mfe\core\mfe;
 
 /**
  * Class CLayout
- *
- * @package mfe
+ * @package mfe\core\libs\components
  */
 class CLayout extends CComponent
 {

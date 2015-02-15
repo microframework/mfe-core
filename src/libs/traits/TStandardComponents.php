@@ -3,6 +3,7 @@
 use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\mfe;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 //TODO:: Полная документация
 
@@ -28,12 +29,12 @@ use mfe\core\mfe;
  * @method static null unRegisterCoreComponent
  * @method static null unRegisterClosingComponent
  *
- * @package mfe
+ * @package mfe\core\libs\traits
  */
 trait TStandardComponents
 {
     /** @var CObjectsStack */
-    protected $components;
+    public $components;
 
     /** @var CObjectsStack */
     protected $closingComponents;

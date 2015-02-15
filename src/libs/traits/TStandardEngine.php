@@ -6,7 +6,7 @@ use mfe\core\mfe;
 /**
  * Class TStandardEngine
  *
- * @package mfe
+ * @package mfe\core\libs\traits
  */
 trait TStandardEngine
 {

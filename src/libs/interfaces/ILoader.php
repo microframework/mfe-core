@@ -6,7 +6,7 @@
  * Этот интерфейс диктует правила написания Загружчика для MFE
  *
  * @standards MFS-1, MFS-2, MFS-4, MFS-5.3, MFS-6
- * @package mfe
+ * @package mfe\core\libs\interfaces
  */
 interface ILoader
 {

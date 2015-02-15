@@ -4,8 +4,7 @@ use mfe\core\libs\interfaces\IObjectsStack;
 
 /**
  * Class CObjectsStack
- *
- * @package mfe
+ * @package mfe\core\libs\components
  */
 class CObjectsStack extends \ArrayObject implements IObjectsStack
 {

@@ -8,8 +8,7 @@ use mfe\core\mfe;
 
 /**
  * Class Page
- *
- * @package mfe
+ * @package mfe\core\core
  */
 class Page extends CCore implements IComponent
 {

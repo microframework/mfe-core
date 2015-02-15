@@ -1,5 +1,9 @@
 <?php namespace mfe\core\libs\components;
 
+/**
+ * Class CComponent
+ * @package mfe\core\libs\components
+ */
 class CComponent
 {
     const COMPONENT_NAME = 'Default component';
@@ -16,6 +20,10 @@ class CComponent
         if (is_null(self::$instance)) {
             /** @var CComponent $class */
             $class = get_called_class();
+            var_dump(get_called_class());
+            if($class == 'mfe\core\core\Loader'){
+                ;
+            }
             self::$instance = new $class();
         }
         return self::$instance;

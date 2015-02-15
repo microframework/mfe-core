@@ -15,7 +15,7 @@ use mfe\core\mfe;
  * @method static bool on
  * @method static bool off
  *
- * @package mfe
+ * @package mfe\core\libs\traits
  */
 trait TStandardEvents
 {

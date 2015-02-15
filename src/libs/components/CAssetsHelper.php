@@ -2,8 +2,7 @@
 
 /**
  * Class CAssetsHelper
- *
- * @package mfe
+ * @package mfe\core\libs\components
  */
 class CAssetsHelper
 {

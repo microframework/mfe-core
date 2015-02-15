@@ -1,47 +1,90 @@
 <?php namespace mfe\core\libs\components;
 
-use mfe\core\mfe;
-
 /**
  * Class CLog
- * @package mfe
+ *
+ * @method static CLog getInstance()
+ *
+ * @package mfe\core\libs\components
  */
-class CLog
+class CLog extends CComponent
 {
-    /** @var CLog $instance */
-    static private $instance = null;
+    /** @var CLog */
+    static private $instance;
+
+    /**
+     * @const
+     */
+    const EMERGENCY = 'Emergency';
+    const ALERT = 'Alert';
+    const CRITICAL = 'Critical';
+    const ERROR = 'Error';
+    const WARNING = 'Warning';
+    const NOTICE = 'Notice';
+    const INFO = 'Info';
+    const DEBUG = 'Debug';
 
     public function __construct()
     {
-
+        return self::$instance;
     }
 
-    public function addToLog($type, $message, $backtrace)
+    protected function addToLog($type, $message, $backtrace)
     {
-
-    }
-
-    /**
-     * @return object
-     */
-    static protected function getInstance()
-    {
-        $class = get_called_class();
-        /** @var CLog $class */
-        if (is_null($class::$instance)) {
-            $class::$instance = new $class();
-            mfe::trigger('system.log.init');
+        $log_file = fopen('mfe.log', 'a'); //TODO:: refactor this!
+        fwrite($log_file, '[' . $type . ']: ' . $message . '.' . PHP_EOL . '    Trace start:' . PHP_EOL);
+        $numb = 0;
+        foreach (($backtrace == false ? array_reverse(call_user_func('debug_backtrace')) : array_reverse($backtrace)) as $value) {
+            if (!isset($value['class'])) $value['class'] = null;
+            if (!isset($value['type'])) $value['type'] = null;
+            fwrite($log_file, '    ' . $numb++ . '. in function ' . $value['class'] . $value['type'] . $value['function'] .
+                ' in ' . $value['file'] . ' on line ' . $value['line'] . PHP_EOL);
         }
-        return (object)$class::$instance;
+        fclose($log_file);
     }
 
     /**
      * @param $message
      * @param bool $backtrace
      */
-    static public function error($message, $backtrace = false)
+    public function _emergency($message, $backtrace = false)
     {
-        if (is_null(self::$instance)) self::getInstance();
-        self::$instance->addToLog('error', $message, $backtrace);
+        $this->addToLog(self::EMERGENCY, $message, $backtrace);
     }
+
+    public function _alert($message, $backtrace = false)
+    {
+        $this->addToLog(self::ALERT, $message, $backtrace);
+    }
+
+    public function _critical($message, $backtrace = false)
+    {
+        $this->addToLog(self::CRITICAL, $message, $backtrace);
+    }
+
+    public function _error($message, $backtrace = false)
+    {
+        $this->addToLog(self::ERROR, $message, $backtrace);
+    }
+
+    public function _warning($message, $backtrace = false)
+    {
+        $this->addToLog(self::WARNING, $message, $backtrace);
+    }
+
+    public function _notice($message, $backtrace = false)
+    {
+        $this->addToLog(self::NOTICE, $message, $backtrace);
+    }
+
+    public function _info($message, $backtrace = false)
+    {
+        $this->addToLog(self::INFO, $message, $backtrace);
+    }
+
+    public function _debug($message, $backtrace = false)
+    {
+        $this->addToLog(self::DEBUG, $message, $backtrace);
+    }
+
 }

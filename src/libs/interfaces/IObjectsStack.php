@@ -1,7 +1,7 @@
 <?php namespace mfe\core\libs\interfaces;
 /**
  * Interface IObjectsStack
- * @package mfe
+ * @package mfe\core\libs\interfaces
  */
 interface IObjectsStack
 {

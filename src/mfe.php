@@ -42,7 +42,7 @@ $loader->addNamespace(__NAMESPACE__, __DIR__);
  * Это базовый класс реализующий двигатель MicroFramework. Это и есть MFE!
  *
  * @standards MFS-4.1, MFS-5
- * @package mfe
+ * @package mfe\core
  */
 final class mfe implements IEventsManager
 {

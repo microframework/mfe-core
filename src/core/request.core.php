@@ -7,7 +7,7 @@ use mfe\core\mfe;
 
 /**
  * Class Request
- * @package mfe
+ * @package mfe\core\core
  */
 class Request extends CCore implements IComponent
 {

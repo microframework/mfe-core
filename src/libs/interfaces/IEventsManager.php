@@ -6,7 +6,7 @@
  * Этот интерфейс диктует правила написания менеджера событий для MFE
  *
  * @standards MFS-5.6
- * @package mfe
+ * @package mfe\core\libs\interfaces
  */
 interface IEventsManager
 {

@@ -5,12 +5,11 @@ use mfe\core\libs\traits\TStandardLoader;
 
 use mfe\core\libs\components\CCore;
 
-use mfe\core\mfe as engine;
+use mfe\core\mfe;
 
 /**
  * Class Loader
- *
- * @package mfe\Loader
+ * @package mfe\core\core
  */
 class Loader extends CCore implements IComponent
 {
@@ -20,19 +19,19 @@ class Loader extends CCore implements IComponent
     const COMPONENT_VERSION = '1.0.0';
 
     /** @var Loader */
-    private static $instance;
+    static private $instance;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $stack = engine::option('stackObject');
+        $stack = mfe::option('stackObject');
 
         $this->aliases = new $stack();
-        $this->filesMap = new $stack(engine::app()->getFilesMap());
+        $this->filesMap = new $stack(mfe::app()->getFilesMap());
 
-        foreach (engine::app()->getAliases() as $alias => $array) {
+        foreach (mfe::app()->getAliases() as $alias => $array) {
             foreach ($array as $value) {
                 $this->registerAliasDirectory($alias, $value);
             }
@@ -48,22 +47,19 @@ class Loader extends CCore implements IComponent
      */
     protected function registerLoader($undo = false)
     {
-        /** @var Loader $class */
-        $class = get_called_class();
-
         $components = [
-            'registerAlias' => [$class, '_registerAlias'],
-            'loadFile' => [$class, '_loadFile'],
-            'loadPhar' => [$class, '_loadPhar'],
-            'loadCore' => [$class, '_loadCore'],
-            'loadMapFile' => [$class, '_loadMapFile'],
-            'map' => [$class, '_map'],
-            'loadMap' => [$class, '_loadMap'],
+            'registerAlias' => [__CLASS__, '_registerAlias'],
+            'loadFile' => [__CLASS__, '_loadFile'],
+            'loadPhar' => [__CLASS__, '_loadPhar'],
+            'loadCore' => [__CLASS__, '_loadCore'],
+            'loadMapFile' => [__CLASS__, '_loadMapFile'],
+            'map' => [__CLASS__, '_map'],
+            'loadMap' => [__CLASS__, '_loadMap'],
         ];
 
         foreach ($components as $key => $callback) {
-            (!$undo) ? engine::app()->registerCoreComponent($key, $callback)
-                : engine::app()->unRegisterCoreComponent($key);
+            (!$undo) ? mfe::app()->registerCoreComponent($key, $callback)
+                : mfe::app()->unRegisterCoreComponent($key);
         }
 
         return $components;
@@ -74,7 +70,7 @@ class Loader extends CCore implements IComponent
      */
     static public function registerComponent()
     {
-        engine::registerComponent('loader', [get_called_class(), 'getInstance']);
+        mfe::registerComponent('loader', [get_called_class(), 'getInstance']);
         return true;
     }
 }

@@ -9,7 +9,7 @@ use mfe\core\mfe;
 /**
  * Class TStandardApplication
  *
- * @package mfe
+ * @package mfe\core\libs\traits
  */
 trait TStandardApplication
 {

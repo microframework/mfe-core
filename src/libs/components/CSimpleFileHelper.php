@@ -2,8 +2,7 @@
 
 /**
  * Class CSimpleFileHelper
- *
- * @package mfe
+ * @package mfe\core\libs\components
  */
 class CSimpleFileHelper
 {

@@ -5,13 +5,12 @@ use mfe\core\libs\interfaces\IComponent;
 use mfe\core\libs\components\CCore;
 use mfe\core\mfe;
 
-/**
- * Class RouterCore
- * @package mfe
- */
-
 mfe::dependence('request');
 
+/**
+ * Class Router
+ * @package mfe\core\core
+ */
 class Router extends CCore implements IComponent
 {
     const COMPONENT_NAME = 'Router';

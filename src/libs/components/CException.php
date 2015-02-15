@@ -2,8 +2,7 @@
 
 /**
  * Class CException
- *
- * @package mfe
+ * @package mfe\core\libs\components
  */
 class CException extends \Exception
 {
