@@ -121,7 +121,7 @@ class CLayout extends CComponent
     public function render()
     {
         if (!($this->layout)) {
-            CLog::error('[' . __CLASS__ . '] Layout file not selected!');
+            CLog::getInstance()->_error('[' . __CLASS__ . '] Layout file not selected!');
             mfe::stop(0x00000E3);
         }
 
@@ -134,7 +134,7 @@ class CLayout extends CComponent
         });
 
         if (!$this->loadLayout()) {
-            CLog::error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
+            CLog::getInstance()->_error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
                 . PHP_EOL . implode('; ' . PHP_EOL, mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
             mfe::stop(0x00000E3);
         }
