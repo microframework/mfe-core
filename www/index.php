@@ -1,4 +1,4 @@
-<?php (@include_once('vendor/autoload.php')) or die('Please execute: php composer.phar update' . PHP_EOL);
+<?php (@include_once('../vendor/autoload.php')) or die('Please execute: php composer.phar update' . PHP_EOL);
 /**
  * This file only for micro test, delete it when build
  */
