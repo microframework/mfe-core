@@ -1,7 +1,5 @@
 /.idea
-/ocp.php
 /composer.phar
-/composer.lock
 /phpunit.phar
 /vendor
 
