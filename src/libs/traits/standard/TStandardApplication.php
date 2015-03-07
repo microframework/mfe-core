@@ -1,5 +1,6 @@
-<?php namespace mfe\core\libs\traits;
+<?php namespace mfe\core\libs\traits\standard;
 
+use mfe\core\libs\components\CApplication;
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\components\CException;
@@ -9,13 +10,16 @@ use mfe\core\mfe;
 /**
  * Class TStandardApplication
  *
- * @package mfe\core\libs\traits
+ * @package mfe\core\libs\traits\standard
  */
 trait TStandardApplication
 {
+    public $currentApplication;
+
     /** @var CObjectsStack */
-    protected $applications = null;
+    protected $applications;
     static public $_STATUS = 0x0000000;
+
 
     /**
      * Behavior trait constructor
@@ -28,12 +32,25 @@ trait TStandardApplication
     /**
      * TODO:: Application stack
      *
-     * @param mixed|null $id
      * @return mfe
      */
-    static public function app($id = null)
+    static public function app()
     {
-        return mfe::getInstance();
+        if (!count(mfe::getInstance()->applications)) return mfe::getInstance();
+        return mfe::getInstance()->applications->{mfe::getInstance()->currentApplication};
+    }
+
+    /**
+     * @param CApplication $application
+     * @param bool $setAsCurrentApplication
+     * @return bool
+     * @throws \Exception
+     */
+    public function registerApplication(CApplication $application, $setAsCurrentApplication = true)
+    {
+        if ($setAsCurrentApplication) $this->currentApplication = get_class($application);
+        mfe::getInstance()->applications->add(get_class($application), $application);
+        return true;
     }
 
     /**
@@ -49,7 +66,8 @@ trait TStandardApplication
     /**
      * @param $data
      */
-    static public function display($data) {
+    static public function display($data)
+    {
         CDisplay::display($data);
     }
 

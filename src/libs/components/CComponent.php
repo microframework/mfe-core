@@ -4,7 +4,7 @@
  * Class CComponent
  * @package mfe\core\libs\components
  */
-class CComponent
+abstract class CComponent
 {
     const COMPONENT_NAME = 'Default component';
     const COMPONENT_VERSION = '1.0.0';
@@ -20,9 +20,6 @@ class CComponent
         if (is_null(self::$instance)) {
             /** @var CComponent $class */
             $class = get_called_class();
-            if($class == 'mfe\core\core\Loader'){
-                ;
-            }
             self::$instance = new $class();
         }
         return self::$instance;

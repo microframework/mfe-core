@@ -1,5 +1,6 @@
-<?php namespace mfe\core\libs\traits;
+<?php namespace mfe\core\libs\traits\standard;
 
+use mfe\core\libs\traits\application\TApplicationEvents;
 use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\mfe;
@@ -15,12 +16,14 @@ use mfe\core\mfe;
  * @method static bool on
  * @method static bool off
  *
- * @package mfe\core\libs\traits
+ * @package mfe\core\libs\traits\standard
  */
 trait TStandardEvents
 {
     /** @var CObjectsStack */
-    protected $eventsMap = null;
+    protected $eventsMap;
+
+    use TApplicationEvents;
 
     /**
      * Behavior trait constructor
@@ -156,36 +159,5 @@ trait TStandardEvents
         $this->eventsMap[$event_node] = [];
 
         return false;
-    }
-
-    /**
-     * @param $event
-     * @param array $params
-     * @return bool
-     * @throws CException
-     */
-    public function _trigger($event, $params = [])
-    {
-        return $this->fireEvent($event, $params);
-    }
-
-    /**
-     * @param $event
-     * @param $callback
-     * @return bool
-     */
-    public function _on($event, $callback)
-    {
-        return $this->addEvent($event, $callback);
-    }
-
-    /**
-     * @param $event
-     * @param null $callback
-     * @return bool
-     */
-    public function _off($event, $callback = null)
-    {
-        return (is_null($callback)) ? $this->clearEvent($event) : $this->removeEvent($event, $callback);
     }
 }

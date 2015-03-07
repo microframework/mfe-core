@@ -1,8 +1,8 @@
-<?php namespace mfe\core\libs\components;
+<?php namespace mfe\core\libs\helpers;
 
 /**
  * Class CSimpleFileHelper
- * @package mfe\core\libs\components
+ * @package mfe\core\libs\helpers
  */
 class CSimpleFileHelper
 {
@@ -34,5 +34,11 @@ class CSimpleFileHelper
             }
         }
         return $result;
+    }
+
+    static public function convert_size($size)
+    {
+        $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
+        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[intval($i)];
     }
 }

@@ -7,7 +7,7 @@ use mfe\core\mfe;
  * Class CCore
  * @package mfe\core\libs\components
  */
-class CCore extends CComponent implements IComponent
+abstract class CCore extends CComponent implements IComponent
 {
     static private $instance;
 

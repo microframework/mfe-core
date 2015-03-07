@@ -37,6 +37,8 @@ class CLog extends CComponent
         foreach (($backtrace == false ? array_reverse(call_user_func('debug_backtrace')) : array_reverse($backtrace)) as $value) {
             if (!isset($value['class'])) $value['class'] = null;
             if (!isset($value['type'])) $value['type'] = null;
+            if (!isset($value['file'])) $value['file'] = null;
+            if (!isset($value['line'])) $value['line'] = null;
             fwrite($log_file, '    ' . $numb++ . '. in function ' . $value['class'] . $value['type'] . $value['function'] .
                 ' in ' . $value['file'] . ' on line ' . $value['line'] . PHP_EOL);
         }

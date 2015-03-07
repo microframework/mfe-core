@@ -1,9 +1,10 @@
-<?php namespace mfe\core\libs\components;
-use mfe\core\mfe;
+<?php namespace mfe\core\libs\handlers;
+use mfe\core\libs\components\CDebug;
+use mfe\core\libs\components\CLog;
 
 /**
  * Class CRunHandler
- * @package mfe\core\libs\components
+ * @package mfe\core\libs\handlers
  */
 class CRunHandler {
     static protected $handlers = [

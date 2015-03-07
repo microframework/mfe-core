@@ -1,24 +1,27 @@
 <?php namespace mfe\core;
 
-require_once __DIR__ . '/libs/autoload.php';
-
 use mfe\core\libs\PSR4Autoload;
 
 use mfe\core\libs\interfaces\IEventsManager;
 
-use mfe\core\libs\traits\TStandardApplication;
-use mfe\core\libs\traits\TStandardComponents;
-use mfe\core\libs\traits\TStandardEngine;
-use mfe\core\libs\traits\TStandardEvents;
-use mfe\core\libs\traits\TStandardLoader;
+use mfe\core\libs\traits\application\TApplicationEngine;
 
-use mfe\core\libs\components\CDebug;
+use mfe\core\libs\traits\standard\TStandardApplication;
+use mfe\core\libs\traits\standard\TStandardComponents;
+use mfe\core\libs\traits\standard\TStandardEngine;
+use mfe\core\libs\traits\standard\TStandardEvents;
+use mfe\core\libs\traits\standard\TStandardLoader;
+
 use mfe\core\libs\components\CException;
-use mfe\core\libs\components\CRunHandler;
+use mfe\core\libs\handlers\CRunHandler;
 
-$loader = new PSR4Autoload;
-$loader->register();
-$loader->addNamespace(__NAMESPACE__, __DIR__);
+if (!class_exists('\Composer\Autoload\ClassLoader')) {
+    require_once __DIR__ . '/libs/autoload.php';
+
+    $loader = new PSR4Autoload;
+    $loader->register();
+    $loader->addNamespace(__NAMESPACE__, __DIR__);
+}
 
 /**
  * MicroFramework Engine
@@ -28,7 +31,7 @@ $loader->addNamespace(__NAMESPACE__, __DIR__);
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.6
+ * @version 1.0.7a
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
@@ -44,17 +47,18 @@ $loader->addNamespace(__NAMESPACE__, __DIR__);
  * @standards MFS-4.1, MFS-5
  * @package mfe\core
  */
-final class mfe implements IEventsManager
+class mfe implements IEventsManager
 {
     const ENGINE_NAME = 'MicroFramework Engine';
-    const ENGINE_VERSION = '1.0.6'; // !if mod this, mod & doc before commit!
+    const ENGINE_VERSION = '1.0.7a'; // !if mod this, mod & doc before commit!
 
     static public $DEBUG = false;
 
     /** @var mfe $instance */
     static public $instance;
-    static public $options = [];
     static public $register = [];
+
+    use TApplicationEngine;
 
     use TStandardEngine;
     use TStandardComponents;
@@ -69,8 +73,8 @@ final class mfe implements IEventsManager
     {
         @ini_set('display_errors', false);
 
-        set_error_handler(['mfe\core\libs\components\CRunHandler', 'errorHandler'], E_ALL);
-        set_exception_handler(['mfe\core\libs\components\CRunHandler', 'exceptionHandler']);
+        set_error_handler(['mfe\core\libs\handlers\CRunHandler', 'errorHandler'], E_ALL);
+        set_exception_handler(['mfe\core\libs\handlers\CRunHandler', 'exceptionHandler']);
         register_shutdown_function(['mfe\core\mfe', 'stopEngine']);
     }
 
@@ -79,10 +83,7 @@ final class mfe implements IEventsManager
      */
     public function __destruct()
     {
-        $time = round(microtime(true) - MFE_TIME, 3);
-        file_put_contents('php://stdout', PHP_EOL .
-            ((!self::$_STATUS) ? 'Done: ' : 'Error: ' . CDebug::$_CODE[self::$_STATUS] . ', at ') .
-            (($time >= 0.001) ? $time : '0.001') . ' ms' . PHP_EOL);
+        self::end();
     }
 
     /**
@@ -95,8 +96,6 @@ final class mfe implements IEventsManager
      */
     final public function startEngine()
     {
-        //mfe::dependence('CDisplay');
-
         //TODO:: Where from phar archive register specific paths
         if (self::option('MFE_PHAR_INIT')) {
 
@@ -111,9 +110,8 @@ final class mfe implements IEventsManager
         self::registerAlias('@libs', 'libs');
         self::registerAlias('@core', 'core');
 
-        //Load main libs & core files by map file!
-        //if (self::loadMapFile('@libs.libs')) self::loadMap('libs'); //TODO:: Это устарело, удалить
-        if (self::loadMapFile('@core.core')) self::loadMap('core');
+        // Load main core files by map file!
+        !(self::loadMapFile('@core.core')) or self::loadMap('core');
 
         try {
             return self::trigger('engine.start');
@@ -134,8 +132,7 @@ final class mfe implements IEventsManager
         if (!is_null(error_get_last()) && self::$_STATUS !== 0x00000E0) CRunHandler::FatalErrorHandler();
         if (isset(self::$instance) || is_null(self::$instance)) return CRunHandler::DebugHandler();
         self::trigger('engine.stop');
-        self::$instance = null;
-        return true;
+        return !(bool) (self::$instance = null);
     }
 }
 

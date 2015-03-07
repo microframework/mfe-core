@@ -1,7 +1,7 @@
 <?php namespace mfe\core\core;
 
 use mfe\core\libs\interfaces\IComponent;
-use mfe\core\libs\traits\TStandardLoader;
+use mfe\core\libs\traits\standard\TStandardLoader;
 
 use mfe\core\libs\components\CCore;
 

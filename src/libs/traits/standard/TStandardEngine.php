@@ -1,16 +1,17 @@
-<?php namespace mfe\core\libs\traits;
+<?php namespace mfe\core\libs\traits\standard;
 
+use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CException;
+use mfe\core\libs\helpers\CSimpleFileHelper;
 use mfe\core\mfe;
 
 /**
  * Class TStandardEngine
  *
- * @package mfe\core\libs\traits
+ * @package mfe\core\libs\traits\standard
  */
 trait TStandardEngine
 {
-
     /**
      * Behavior trait constructor
      */
@@ -21,7 +22,7 @@ trait TStandardEngine
             'MFE_AUTOLOAD' => false,
 
             'stackObject' => 'mfe\core\libs\components\CObjectsStack',
-            'FileHelper' => 'mfe\core\libs\components\CSimpleFileHelper',
+            'FileHelper' => 'mfe\core\libs\helpers\CSimpleFileHelper',
         ];
     }
 
@@ -37,10 +38,9 @@ trait TStandardEngine
     }
 
     /**
-     * @param callable $callback
      * @return mfe
      */
-    static public function getInstance(\Closure $callback = null)
+    static public function getInstance()
     {
         $class = get_called_class();
         /** @var mfe $class */
@@ -51,8 +51,6 @@ trait TStandardEngine
             $class::$instance->on('mfe.init', function () {
                 call_user_func_array([mfe::$instance, 'startEngine'], []);
             });
-            if (is_callable($callback))
-                $callback();
             $class::$instance->trigger('mfe.init');
         }
         return (object)$class::$instance;
@@ -87,30 +85,23 @@ trait TStandardEngine
     }
 
     /**
-     * @param $option
-     * @return bool|null
+     * Print end time
      */
-    static public function option($option)
+    static protected function end()
     {
-        if (defined($option) && constant($option) == true) {
-            return mfe::$options[$option] = true;
-        }
-        return (isset(mfe::$options[$option])) ? mfe::$options[$option] : null;
-    }
+        /** @var mfe $class */
+        $class = get_called_class();
+        /** @var CSimpleFileHelper $FileHelper */
+        $FileHelper = $class::option('FileHelper');
+        $time = round(microtime(true) - MFE_TIME, 3);
 
-    /**
-     * @param $dependence
-     * @throws CException
-     */
-    static public function dependence($dependence)
-    {
-        if (is_string($dependence)) {
-            if (!class_exists($dependence, false)) throw new CException('Not found dependence class: ' . $dependence);
-        } elseif (is_array($dependence) && !empty($dependence)) {
-            foreach ($dependence as $value) {
-                if (!class_exists($value, false)) throw new CException('Not found dependence class: ' . $value);
-            }
-        }
+        $s = (($time >= 0.001) ? $time : '0.001') . 's';
+        $ms = ' (' . (($time >= 0.001) ? $time * 1000 : '1') . 'ms)';
+        $memory = ', ' .$FileHelper::convert_size(memory_get_usage(true));
+
+        file_put_contents('php://stdout', PHP_EOL .
+            ((!$class::$_STATUS) ? 'Done: ' : 'Error: ' . CDebug::$_CODE[$class::$_STATUS] . ', at ') .
+            ($s . $ms . $memory . PHP_EOL));
     }
 
     /**
