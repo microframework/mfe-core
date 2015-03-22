@@ -47,7 +47,7 @@ trait TStandardComponents
      */
     static protected function TStandardComponents()
     {
-        mfe::$register[] = 'components';
+        mfe::$register['TR'][] = 'components';
     }
 
     /**
@@ -56,7 +56,7 @@ trait TStandardComponents
     protected function __TStandardComponents()
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $stackObject = mfe::option('stackObject');
         /** @var CObjectsStack $components */
@@ -75,7 +75,7 @@ trait TStandardComponents
     protected function registerStandardComponents($undo = false)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $components = [
             'hasComponent' => [$class, '_hasComponent'],
@@ -113,7 +113,7 @@ trait TStandardComponents
     public function __set($key, $value)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         if ($this->_hasComponent('di')) {
             return call_user_func_array([get_class($class::getInstance()->di), '_setComponent'], [$key, $value]);
@@ -139,7 +139,7 @@ trait TStandardComponents
     public function __get($key)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         if ($this->_hasComponent('di')) {
             return call_user_func_array([get_class($class::getInstance()->di), '_getComponent'], [$key]);
@@ -183,7 +183,7 @@ trait TStandardComponents
     public function __unset($key)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         if ($this->_hasComponent('di')) {
             return call_user_func_array([get_class($class::getInstance()->di), '_unsetComponent'], [$key]);
@@ -220,7 +220,7 @@ trait TStandardComponents
     public function __call($method, $arguments = [])
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         if ($this->_hasComponent('di')) {
             return call_user_func_array([get_class($class::getInstance()->di), '_callComponent'], [$method, $arguments]);
@@ -260,7 +260,7 @@ trait TStandardComponents
     static public function __callStatic($method, $arguments = [])
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         if ($class::getInstance()->_hasComponent('di')) {
             return $class::getInstance()->di->_callCoreComponent($method, $arguments);

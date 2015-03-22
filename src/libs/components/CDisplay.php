@@ -10,7 +10,7 @@ use mfe\core\mfe;
 class CDisplay extends CComponent
 {
     /** @var CDisplay */
-    static private $instance;
+    static public $instance;
 
     /**
      * @param $data

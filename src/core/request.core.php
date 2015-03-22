@@ -43,7 +43,7 @@ class Request extends CCore implements IComponent
 
     static public function registerComponent()
     {
-        mfe::registerComponent('request', [get_called_class(), 'initRequest']);
+        mfe::registerComponent('request', [static::class, 'initRequest']);
         return true;
     }
 }

@@ -10,7 +10,7 @@
 class CLog extends CComponent
 {
     /** @var CLog */
-    static private $instance;
+    static public $instance;
 
     /**
      * @const

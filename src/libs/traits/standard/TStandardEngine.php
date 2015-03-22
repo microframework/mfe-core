@@ -1,7 +1,6 @@
 <?php namespace mfe\core\libs\traits\standard;
 
 use mfe\core\libs\components\CDebug;
-use mfe\core\libs\components\CException;
 use mfe\core\libs\helpers\CSimpleFileHelper;
 use mfe\core\mfe;
 
@@ -31,8 +30,8 @@ trait TStandardEngine
      */
     protected function __TStandardEngine()
     {
-        $stackObject = self::option('stackObject');
-        foreach (mfe::$register as $stack) {
+        $stackObject = mfe::option('stackObject');
+        foreach (mfe::$register['TR'] as $stack) {
             $this->$stack = new $stackObject;
         }
     }
@@ -42,7 +41,7 @@ trait TStandardEngine
      */
     static public function getInstance()
     {
-        $class = get_called_class();
+        $class = static::class;
         /** @var mfe $class */
         if (is_null($class::$instance)) {
             self::initTraitsBefore();
@@ -90,7 +89,7 @@ trait TStandardEngine
     static protected function end()
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
         /** @var CSimpleFileHelper $FileHelper */
         $FileHelper = $class::option('FileHelper');
         $time = round(microtime(true) - MFE_TIME, 3);

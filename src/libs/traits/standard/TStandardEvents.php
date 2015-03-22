@@ -30,7 +30,7 @@ trait TStandardEvents
      */
     static public function TStandardEvents()
     {
-        mfe::$register[] = 'eventsMap';
+        mfe::$register['TR'][] = 'eventsMap';
     }
 
     /**
@@ -39,7 +39,7 @@ trait TStandardEvents
     protected function __TStandardEvents()
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $this->registerStandardEvents();
 
@@ -50,7 +50,7 @@ trait TStandardEvents
     protected function registerStandardEvents($undo = false)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $components = [
             'trigger' => [$class, '_trigger'],
@@ -77,7 +77,7 @@ trait TStandardEvents
 
         if (!isset($this->eventsMap[$event_node])) {
             /** @var mfe $class */
-            $class = get_called_class();
+            $class = static::class;
             $stack = $class::option('stackObject');
 
             $this->eventsMap[$event_node] = new $stack();

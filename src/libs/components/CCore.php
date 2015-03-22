@@ -9,16 +9,16 @@ use mfe\core\mfe;
  */
 abstract class CCore extends CComponent implements IComponent
 {
-    static private $instance;
+    static public $instance;
 
     static public function getInstance()
     {
-        if (is_null(self::$instance)) {
+        if (is_null(static::$instance)) {
             /** @var CCore $class */
-            $class = get_called_class();
-            self::$instance = new $class();
+            $class = static::class;
+            static::$instance = new $class();
         }
-        return self::$instance;
+        return static::$instance;
     }
 
     /**

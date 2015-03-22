@@ -42,8 +42,8 @@ trait TStandardLoader
      */
     static public function TStandardLoader()
     {
-        mfe::$register[] = 'aliases';
-        mfe::$register[] = 'filesMap';
+        mfe::$register['TR'][] = 'aliases';
+        mfe::$register['TR'][] = 'filesMap';
     }
 
     /**
@@ -52,11 +52,11 @@ trait TStandardLoader
     public function __TStandardLoader()
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
         $this->registerStandardLoader();
 
         // Register self as closing component
-        $class::registerClosingComponent('loader', get_called_class());
+        $class::registerClosingComponent('loader', static::class);
     }
 
     /**
@@ -66,7 +66,7 @@ trait TStandardLoader
     protected function registerStandardLoader($undo = false)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $components = [
             'registerAlias' => [$class, '_registerAlias'],
@@ -141,7 +141,7 @@ trait TStandardLoader
      */
     public function getRealPaths($path, $without_extension = false)
     {
-        $class = get_called_class();
+        $class = static::class;
         /** @var mfe $class */
         $FileHelper = $class::option('FileHelper');
         $result = [];
@@ -190,7 +190,7 @@ trait TStandardLoader
      */
     public function load($file, $EXT = false)
     {
-        $class = get_called_class();
+        $class = static::class;
         /** @var mfe $class */
         $FileHelper = $class::option('FileHelper');
         $EXT = (!$EXT) ? $FileHelper::$PHP : $EXT;

@@ -14,7 +14,7 @@ trait TApplicationLoader
     public function _registerAlias($aliases, $dir)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $class::trigger('alias.register', [$aliases, $dir]);
 
@@ -38,7 +38,7 @@ trait TApplicationLoader
     public function _loadPhar($file)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $class::trigger('phar.load', [$file]);
 
@@ -52,7 +52,7 @@ trait TApplicationLoader
     public function _loadCore($name)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $class::trigger('file.loadCore', [$name]);
         if ($core = $this->_loadFile('@engine.@core.' . $name . '.core')) {
@@ -78,7 +78,7 @@ trait TApplicationLoader
     public function _loadMapFile($file)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $class::trigger('file.loadMap', [$file]);
 
@@ -104,7 +104,7 @@ trait TApplicationLoader
     public function _loadMap($map, $autoload = false)
     {
         /** @var mfe $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $class::trigger('map.load', [$map, $autoload]);
 

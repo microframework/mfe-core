@@ -16,7 +16,7 @@ class Page extends CCore implements IComponent
     const COMPONENT_VERSION = '1.0.0';
 
     /** @var Page */
-    static private $instance;
+    static public $instance;
 
     public $uid = null;
 
@@ -201,7 +201,7 @@ class Page extends CCore implements IComponent
     static public function getInstance($layout = null, $data = [], $uid = null)
     {
         if (is_null(self::$instance)) {
-            $class = get_called_class();
+            $class = static::class;
             self::$instance = new $class($layout, $data, $uid);
         }
         return self::$instance;
@@ -243,7 +243,7 @@ class Page extends CCore implements IComponent
 
     static public function registerComponent()
     {
-        mfe::registerComponent('page', [get_called_class(), 'getInstance']);
+        mfe::registerComponent('page', [static::class, 'getInstance']);
         return true;
     }
 }

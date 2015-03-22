@@ -31,7 +31,7 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.7a
+ * @version 1.0.7b
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
@@ -50,13 +50,16 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
 class mfe implements IEventsManager
 {
     const ENGINE_NAME = 'MicroFramework Engine';
-    const ENGINE_VERSION = '1.0.7a'; // !if mod this, mod & doc before commit!
+    const ENGINE_VERSION = '1.0.7b'; // !if mod this, mod & doc before commit!
 
     static public $DEBUG = false;
 
     /** @var mfe $instance */
     static public $instance;
-    static public $register = [];
+    static public $register = [
+        'TR' => [],
+        'IoC' => []
+    ];
 
     use TApplicationEngine;
 

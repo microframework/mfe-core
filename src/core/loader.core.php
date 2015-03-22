@@ -19,7 +19,7 @@ class Loader extends CCore implements IComponent
     const COMPONENT_VERSION = '1.0.0';
 
     /** @var Loader */
-    static private $instance;
+    static public $instance;
 
     /**
      * Constructor
@@ -70,7 +70,7 @@ class Loader extends CCore implements IComponent
      */
     static public function registerComponent()
     {
-        mfe::registerComponent('loader', [get_called_class(), 'getInstance']);
+        mfe::registerComponent('loader', [static::class, 'getInstance']);
         return true;
     }
 }

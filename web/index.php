@@ -1,5 +1,4 @@
 <?php
-use mfe\core\mfe;
 use mfe\core\applications\WebApplication;
 
 (@include_once('../vendor/autoload.php')) or die('Please execute: php composer.phar update' . PHP_EOL);

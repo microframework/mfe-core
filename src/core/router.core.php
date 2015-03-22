@@ -28,7 +28,7 @@ class Router extends CCore implements IComponent
 
     static public function registerComponent()
     {
-        mfe::registerCoreComponent('router', [get_called_class(), 'routerInit']);
+        mfe::registerCoreComponent('router', [static::class, 'routerInit']);
         return true;
     }
 }

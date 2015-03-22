@@ -26,7 +26,7 @@ trait TStandardApplication
      */
     static public function TStandardApplication()
     {
-        mfe::$register[] = 'applications';
+        mfe::$register['TR'][] = 'applications';
     }
 
     /**

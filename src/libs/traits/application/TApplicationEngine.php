@@ -12,9 +12,9 @@ trait TApplicationEngine
 {
     static public $options = [];
 
-    public function getRegister($registerName)
+    public function getRegister($catalog, $registerName)
     {
-        if (array_search($registerName, mfe::$register) !== false) {
+        if (array_search($registerName, mfe::$register[$catalog]) !== false) {
             return $this->$registerName;
         }
         return null;
@@ -27,7 +27,7 @@ trait TApplicationEngine
     public function getOption($option)
     {
         /** @var mfe|CApplication $class */
-        $class = get_called_class();
+        $class = static::class;
 
         $options = $class::$options;
         if (isset($options[$option])) {
