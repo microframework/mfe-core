@@ -1,4 +1,5 @@
 <?php namespace mfe\core\libs\helpers;
+use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
  * Class CSimpleFileHelper
@@ -6,6 +7,8 @@
  */
 class CSimpleFileHelper
 {
+    use TSystemComponent;
+
     static public $SEPARATOR = '/';
     static public $PHP = '.php';
     static public $Phar = '.phar';

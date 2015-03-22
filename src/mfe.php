@@ -1,6 +1,6 @@
 <?php namespace mfe\core;
 
-use mfe\core\libs\PSR4Autoload;
+use mfe\core\libs\system\PSR4Autoload;
 
 use mfe\core\libs\interfaces\IEventsManager;
 
@@ -16,7 +16,7 @@ use mfe\core\libs\components\CException;
 use mfe\core\libs\handlers\CRunHandler;
 
 if (!class_exists('\Composer\Autoload\ClassLoader')) {
-    require_once __DIR__ . '/libs/autoload.php';
+    require_once __DIR__ . '/libs/system/PSR4Autoload.php';
 
     $loader = new PSR4Autoload;
     $loader->register();

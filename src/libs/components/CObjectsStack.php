@@ -1,6 +1,7 @@
 <?php namespace mfe\core\libs\components;
 
 use mfe\core\libs\interfaces\IObjectsStack;
+use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
  * Class CObjectsStack
@@ -8,6 +9,8 @@ use mfe\core\libs\interfaces\IObjectsStack;
  */
 class CObjectsStack extends \ArrayObject implements IObjectsStack
 {
+    use TSystemComponent;
+
     private $sid = null;
     private $objectStack = [];
     private $index = 0;

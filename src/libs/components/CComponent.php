@@ -1,5 +1,7 @@
 <?php namespace mfe\core\libs\components;
+
 use mfe\core\libs\system\IoC;
+use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
  * Class CComponent
@@ -9,6 +11,8 @@ abstract class CComponent extends IoC
 {
     const COMPONENT_NAME = 'Default component';
     const COMPONENT_VERSION = '1.0.0';
+
+    use TSystemComponent;
 
     /** @var CComponent */
     static public $instance;
@@ -24,14 +28,6 @@ abstract class CComponent extends IoC
             static::$instance = new $class();
         }
         return static::$instance;
-    }
-
-    /**
-     * @return string
-     */
-    static public function className()
-    {
-        return (string)static::class;
     }
 
     /**
@@ -75,7 +71,7 @@ abstract class CComponent extends IoC
      */
     public function __get($key)
     {
-        if(parent::has($key)) return parent::get($key); //IoC
+        if (parent::has($key)) return parent::get($key); //IoC
 
         if (method_exists($this, 'get' . ucfirst($key)) &&
             (

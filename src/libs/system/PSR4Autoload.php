@@ -1,9 +1,8 @@
-<?php
-namespace mfe\core\libs;
+<?php namespace mfe\core\libs\system;
 
 /**
  * Class PSR4Autoload
- * @package mfe\core\libs
+ * @package mfe\core\libs\system
  */
 class PSR4Autoload
 {
