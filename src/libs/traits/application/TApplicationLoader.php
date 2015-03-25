@@ -1,4 +1,5 @@
 <?php namespace mfe\core\libs\traits\application;
+
 use mfe\core\mfe;
 
 /**

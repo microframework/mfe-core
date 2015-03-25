@@ -1,4 +1,4 @@
-<?php namespace mfe\core\libs\components;
+<?php namespace mfe\core\libs\base;
 
 /*
 TODO:: Ядра, как они инициализируются внутри системы?
@@ -6,12 +6,13 @@ TODO:: Если объекты трейтов реализуются клони�
 TODO:: Регистрация компонентов? она же ведь должна проходить исключительно в приложении?
 */
 
+use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\traits\application\TApplicationEngine;
 use mfe\core\mfe;
 
 /**
  * Class CApplication
- * @package mfe\core\libs\components
+ * @package mfe\core\libs\base
  */
 abstract class CApplication extends CComponent
 {

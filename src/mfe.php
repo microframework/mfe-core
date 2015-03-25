@@ -2,15 +2,15 @@
 
 use mfe\core\libs\system\PSR4Autoload;
 
-use mfe\core\libs\interfaces\IEventsManager;
+//use mfe\core\libs\interfaces\IEventsManager;
 
 use mfe\core\libs\traits\application\TApplicationEngine;
 
 use mfe\core\libs\traits\standard\TStandardApplication;
-use mfe\core\libs\traits\standard\TStandardComponents;
+//use mfe\core\libs\traits\standard\TStandardComponents;
 use mfe\core\libs\traits\standard\TStandardEngine;
-use mfe\core\libs\traits\standard\TStandardEvents;
-use mfe\core\libs\traits\standard\TStandardLoader;
+//use mfe\core\libs\traits\standard\TStandardEvents;
+//use mfe\core\libs\traits\standard\TStandardLoader;
 
 use mfe\core\libs\components\CException;
 use mfe\core\libs\handlers\CRunHandler;
@@ -31,7 +31,7 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.7b
+ * @version 1.0.7c
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
@@ -47,10 +47,10 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
  * @standards MFS-4.1, MFS-5
  * @package mfe\core
  */
-class mfe implements IEventsManager
+class mfe
 {
     const ENGINE_NAME = 'MicroFramework Engine';
-    const ENGINE_VERSION = '1.0.7b'; // !if mod this, mod & doc before commit!
+    const ENGINE_VERSION = '1.0.7c'; // !if mod this, mod & doc before commit!
 
     static public $DEBUG = false;
 
@@ -61,19 +61,21 @@ class mfe implements IEventsManager
         'IoC' => []
     ];
 
-    use TApplicationEngine;
+    use TApplicationEngine; // TODO:: Универсальный трейт, с интерфейсами как для двигателя так и для апликации.
+    use TStandardEngine; // TODO:: Трейт инициализатор интерфейсов двигателя.
+    use TStandardApplication; //TODO:: Трейт инициализатор интерфеса апликации, нужен ли? Или должен быть поглощен?!
 
-    use TStandardEngine;
-    use TStandardComponents;
-    use TStandardEvents;
-    use TStandardLoader;
-    use TStandardApplication;
+    // TODO:: Избавиться от последующих трех трейтов, первые два трейта должны их поглотить.
+    //use TStandardComponents;
+    //use TStandardEvents;
+    //use TStandardLoader;
 
     /**
      * Constructor
      */
     protected function __construct()
     {
+        // TODO:: перенести это куда нибудь вглубь
         @ini_set('display_errors', false);
 
         set_error_handler(['mfe\core\libs\handlers\CRunHandler', 'errorHandler'], E_ALL);
@@ -104,9 +106,10 @@ class mfe implements IEventsManager
 
         }
 
-        $RUN = array_reverse(explode('/', $_SERVER['SCRIPT_NAME']))[0];
-        $REAL_PATH = dirname(realpath($RUN));
+        //$RUN = array_reverse(explode('/', $_SERVER['SCRIPT_NAME']))[0];
+        //$REAL_PATH = dirname(realpath($RUN));
 
+        /*
         self::registerAlias('@engine', __DIR__);
         if (__DIR__ !== $REAL_PATH && file_exists($REAL_PATH . '/') && is_dir($REAL_PATH . '/'))
             self::registerAlias('@engine', $REAL_PATH . '/');
@@ -116,13 +119,15 @@ class mfe implements IEventsManager
         // Load main core files by map file!
         !(self::loadMapFile('@core.core')) or self::loadMap('core');
 
+
         try {
             return self::trigger('engine.start');
         } catch (CException $e) {
             mfe::stop(0x00000E1);
         }
-
-        return false;
+        */
+        return true;
+        //return false;
     }
 
     /**
@@ -134,8 +139,8 @@ class mfe implements IEventsManager
     {
         if (!is_null(error_get_last()) && self::$_STATUS !== 0x00000E0) CRunHandler::FatalErrorHandler();
         if (isset(self::$instance) || is_null(self::$instance)) return CRunHandler::DebugHandler();
-        self::trigger('engine.stop');
-        return !(bool) (self::$instance = null);
+        //self::trigger('engine.stop');
+        return !(bool)(self::$instance = null);
     }
 }
 

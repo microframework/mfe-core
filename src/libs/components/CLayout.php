@@ -1,5 +1,6 @@
 <?php namespace mfe\core\libs\components;
 
+use mfe\core\libs\base\CComponent;
 use mfe\core\mfe;
 
 /**

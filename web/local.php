@@ -9,12 +9,13 @@ use mfe\core\mfe as engine;
 /** @var Page $page */
 $page = engine::app()->page;
 
-$page->setLayout('test');
-$page->_content = "<p>Hello World!</p>";
-$page->render();
+if ($page) {
+    $page->setLayout('test');
+    $page->_content = "<p>Hello World!</p>";
+    $page->render();
 
-engine::display($page);
-
+    engine::display($page);
+}
 if (class_exists('Lua')) {
     $lua = new \Lua();
     $lua->eval("print('Hello World!');");

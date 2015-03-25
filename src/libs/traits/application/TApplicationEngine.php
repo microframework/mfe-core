@@ -1,6 +1,6 @@
 <?php namespace mfe\core\libs\traits\application;
 
-use mfe\core\libs\components\CApplication;
+use mfe\core\libs\base\CApplication;
 use mfe\core\libs\components\CException;
 use mfe\core\mfe;
 

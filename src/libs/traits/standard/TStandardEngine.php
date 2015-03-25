@@ -47,10 +47,10 @@ trait TStandardEngine
             self::initTraitsBefore();
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();
-            $class::$instance->on('mfe.init', function () {
+            //$class::$instance->on('mfe.init', function () {
                 call_user_func_array([mfe::$instance, 'startEngine'], []);
-            });
-            $class::$instance->trigger('mfe.init');
+            //});
+            //$class::$instance->trigger('mfe.init');
         }
         return (object)$class::$instance;
     }

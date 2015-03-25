@@ -1,11 +1,12 @@
-<?php namespace mfe\core\libs\components;
+<?php namespace mfe\core\libs\base;
 
+use mfe\core\libs\components\CException;
 use mfe\core\libs\system\IoC;
 use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
  * Class CComponent
- * @package mfe\core\libs\components
+ * @package mfe\core\libs\base
  */
 abstract class CComponent extends IoC
 {

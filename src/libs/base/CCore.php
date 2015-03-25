@@ -1,11 +1,12 @@
-<?php namespace mfe\core\libs\components;
+<?php namespace mfe\core\libs\base;
 
+use mfe\core\libs\components\CException;
 use mfe\core\libs\interfaces\IComponent;
 use mfe\core\mfe;
 
 /**
  * Class CCore
- * @package mfe\core\libs\components
+ * @package mfe\core\libs\base
  */
 abstract class CCore extends CComponent implements IComponent
 {

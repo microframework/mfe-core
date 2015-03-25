@@ -3,7 +3,7 @@
 use mfe\core\libs\interfaces\IComponent;
 use mfe\core\libs\traits\standard\TStandardLoader;
 
-use mfe\core\libs\components\CCore;
+use mfe\core\libs\base\CCore;
 
 use mfe\core\mfe;
 

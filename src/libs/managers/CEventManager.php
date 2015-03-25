@@ -1,12 +1,10 @@
 <?php namespace mfe\core\libs\managers;
 
-use ArrayObject;
 use Closure;
-use mfe\core\libs\components\CComponent;
+use mfe\core\libs\base\CManager;
 use mfe\core\libs\components\CEvent;
 use mfe\core\libs\components\CException;
 use mfe\core\libs\interfaces\IEvent;
-use mfe\core\mfe;
 
 /**
  * Class CEventManager
@@ -17,69 +15,28 @@ use mfe\core\mfe;
  *
  * @package mfe\core\libs\managers
  */
-class CEventManager extends CComponent
+class CEventManager extends CManager
 {
     const COMPONENT_NAME = 'EventManager';
     const COMPONENT_VERSION = '1.0.0';
-
-    /** @var ArrayObject */
-    private $localRegister;
-
-    /** @var ArrayObject */
-    private $globalRegister;
-
-    /** @var CEventManager */
-    static public $instance;
-
-    public function __construct()
-    {
-        if (class_exists('mfe\core\mfe') && $stackObject = mfe::app()->option('stackObject')) {
-            $this->localRegister = new $stackObject();
-        } else {
-            $this->localRegister = new ArrayObject();
-        }
-
-        self::$instance;
-    }
-
-    /**
-     * @return ArrayObject
-     */
-    protected function getRegister()
-    {
-        if (null !== $this->globalRegister) {
-            return $this->globalRegister;
-        }
-        return $this->localRegister;
-    }
-
-    /**
-     * @param ArrayObject $register
-     * @return $this
-     */
-    public function setRegister(ArrayObject $register)
-    {
-        $registerClass = get_class($register);
-        $this->globalRegister = new $registerClass(array_merge((array)$register, (array)$this->localRegister));
-        return $this;
-    }
 
     /**
      * @param mixed $callback
      * @return null|string
      * @throws CException
      */
-    protected function callbackHash($callback){
-        if(!is_callable($callback)){
+    protected function callbackHash($callback)
+    {
+        if (!is_callable($callback)) {
             throw new CException('Not valid callback for Event');
         }
 
         if ((is_object($callback) && ($callback instanceof Closure || $callback instanceof IEvent))) {
-            return (string) md5(spl_object_hash($callback));
+            return (string)md5(spl_object_hash($callback));
         } elseif (is_array($callback) && 2 == count($callback)) {
-            return  md5(implode(';', $callback));
+            return md5(implode(';', $callback));
         } elseif (is_string($callback)) {
-            return  md5($callback);
+            return md5($callback);
         }
 
         return null;

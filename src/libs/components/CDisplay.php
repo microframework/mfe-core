@@ -1,7 +1,6 @@
 <?php namespace mfe\core\libs\components;
 
-use mfe\core\libs\interfaces\IComponent;
-use mfe\core\mfe;
+use mfe\core\libs\base\CComponent;
 
 /**
  * Class CDisplay

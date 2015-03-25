@@ -1,5 +1,6 @@
 <?php namespace mfe\core\libs\components;
 
+use Exception;
 use mfe\core\mfe;
 
 if (!defined('E_FATAL')) define('E_FATAL', 1);
@@ -98,10 +99,10 @@ class CDebug
     }
 
     /**
-     * @param CException $e
+     * @param Exception $e
      * @return bool|null
      */
-    static public function exceptionHandler(CException $e)
+    static public function exceptionHandler(Exception $e)
     {
         self::$trace = $e->getTrace();
         self::errorHandler([5040, 'Exception: ' . $e->getMessage(), $e->getFile(), $e->getLine()]);

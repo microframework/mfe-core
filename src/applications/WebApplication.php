@@ -1,6 +1,6 @@
 <?php namespace mfe\core\applications;
 
-use mfe\core\libs\components\CApplication;
+use mfe\core\libs\base\CApplication;
 use mfe\core\libs\interfaces\IHybridApplication;
 
 /**
