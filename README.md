@@ -1,5 +1,7 @@
 MicroFramework Engine (Core)
 ===========================
+
+[![Join the chat at https://gitter.im/microframework/mfe-core](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/microframework/mfe-core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub version](https://badge.fury.io/gh/microframework%2Fmfe-core.svg)](http://badge.fury.io/gh/microframework%2Fmfe-core)
 [![Latest Unstable Version](https://poser.pugx.org/microframework/mfe-core/v/unstable.svg)](https://packagist.org/packages/microframework/mfe-core) 
 [![Circle CI](https://circleci.com/gh/microframework/mfe-core.svg?style=shield&circle-token=977c2ad4d9467778c6278df581355579c37c473f)](https://github.com/microframework/mfe-core/)
