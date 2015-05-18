@@ -1,15 +1,15 @@
-<?php namespace mfe\core\core;
+<?php namespace mfe\core\cores;
 
 use mfe\core\libs\interfaces\IComponent;
 
 use mfe\core\libs\base\CCore;
 use mfe\core\mfe;
 
-mfe::dependence('request');
+//mfe::dependence('request');
 
 /**
  * Class Router
- * @package mfe\core\core
+ * @package mfe\core\cores
  */
 class Router extends CCore implements IComponent
 {

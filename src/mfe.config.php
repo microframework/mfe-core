@@ -4,11 +4,14 @@ return [
     'name' => \mfe\core\mfe::ENGINE_NAME,
     'version' => \mfe\core\mfe::ENGINE_VERSION,
     'options' => [
-        'MFE_PHAR_INIT' => false,
-        'MFE_AUTOLOAD' => false,
-
-        'stackObject' => \mfe\core\libs\components\CObjectsStack::className(),
-        'FileHelper' => \mfe\core\libs\helpers\CSimpleFileHelper::className()
+        'autoload' => false,
+    ],
+    'registry' => [
+        'final' => [],
+        'override' => [
+            'StackObject' => \mfe\core\libs\components\CObjectsStack::className(),
+            'FileHelper' => \mfe\core\libs\helpers\CSimpleFileHelper::className()
+        ]
     ],
     'components' => [
         'application' => [
@@ -26,18 +29,18 @@ return [
             'class' => \mfe\core\libs\system\Loader::className()
         ]
     ],
-    'core' => [
+    'cores' => [
         'loader' => [
-            'class' => \mfe\core\core\Loader::className()
+            'class' => \mfe\core\cores\Loader::className()
         ],
         'page' => [
-            'class' => \mfe\core\core\Page::className()
+            'class' => \mfe\core\cores\Page::className()
         ],
         'request' => [
-            'class' => \mfe\core\core\Request::className()
+            'class' => \mfe\core\cores\Request::className()
         ],
         'router' => [
-            'class' => \mfe\core\core\Router::className()
+            'class' => \mfe\core\cores\Router::className()
         ]
     ]
 ];

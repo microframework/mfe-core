@@ -1,4 +1,4 @@
-<?php namespace mfe\core\core;
+<?php namespace mfe\core\cores;
 
 use mfe\core\libs\interfaces\IComponent;
 use mfe\core\libs\traits\standard\TStandardLoader;
@@ -9,7 +9,7 @@ use mfe\core\mfe;
 
 /**
  * Class Loader
- * @package mfe\core\core
+ * @package mfe\core\cores
  */
 class Loader extends CCore implements IComponent
 {

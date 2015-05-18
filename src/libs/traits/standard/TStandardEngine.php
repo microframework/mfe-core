@@ -48,7 +48,7 @@ trait TStandardEngine
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();
             //$class::$instance->on('mfe.init', function () {
-                call_user_func_array([mfe::$instance, 'startEngine'], []);
+            call_user_func_array([mfe::$instance, 'startEngine'], []);
             //});
             //$class::$instance->trigger('mfe.init');
         }
@@ -92,20 +92,21 @@ trait TStandardEngine
         $class = static::class;
         /** @var CSimpleFileHelper $FileHelper */
         $FileHelper = $class::option('FileHelper');
+
         $time = round(microtime(true) - MFE_TIME, 3);
 
-        $s = (($time >= 0.001) ? $time : '0.001') . 's';
-        $ms = ' (' . (($time >= 0.001) ? $time * 1000 : '1') . 'ms)';
-        $memory = ', ' .$FileHelper::convert_size(memory_get_usage(true));
+        $time = number_format($time, 3) . 's (' . number_format($time * 1000, 0) . 'ms)';
+        $memory = ', ' . $FileHelper::convert_size(memory_get_usage(true));
 
         file_put_contents('php://stdout', PHP_EOL .
-            ((!$class::$_STATUS) ? 'Done: ' : 'Error: ' . CDebug::$_CODE[$class::$_STATUS] . ', at ') .
-            ($s . $ms . $memory . PHP_EOL));
+            ((!$class::$_STATUS)
+                ? 'Done: '
+                : ('Error: ' . CDebug::$_CODE[$class::$_STATUS] . ', at ')
+            ) . $time . $memory . PHP_EOL
+        );
     }
 
-    /**
-     * TODO:: WHERE is needed?
-     *
+    /**`
      * @return string
      */
     public function __toString()

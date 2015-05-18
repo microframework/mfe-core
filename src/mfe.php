@@ -1,5 +1,6 @@
 <?php namespace mfe\core;
 
+use mfe\core\libs\system\IoC;
 use mfe\core\libs\system\PSR4Autoload;
 
 //use mfe\core\libs\interfaces\IEventsManager;
@@ -9,6 +10,7 @@ use mfe\core\libs\traits\application\TApplicationEngine;
 use mfe\core\libs\traits\standard\TStandardApplication;
 //use mfe\core\libs\traits\standard\TStandardComponents;
 use mfe\core\libs\traits\standard\TStandardEngine;
+
 //use mfe\core\libs\traits\standard\TStandardEvents;
 //use mfe\core\libs\traits\standard\TStandardLoader;
 
@@ -23,15 +25,17 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
     $loader->addNamespace(__NAMESPACE__, __DIR__);
 }
 
+require_once 'init.php';
+
 /**
  * MicroFramework Engine
  *
  * @author DeVinterX @ Dimitriy Kalugin <devinterx@gmail.com>
- * @link http://microframework.github.io/engine/
+ * @link http://microframework.github.io/
  * @copyright 2014 ZealoN Group, MicroFramework Group, Dimitriy Kalugin
  * @license http://microframework.github.io/license/
  * @package mfe
- * @version 1.0.7c
+ * @version 1.0.7d
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
@@ -47,10 +51,10 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
  * @standards MFS-4.1, MFS-5
  * @package mfe\core
  */
-class mfe
+class mfe extends IoC
 {
     const ENGINE_NAME = 'MicroFramework Engine';
-    const ENGINE_VERSION = '1.0.7c'; // !if mod this, mod & doc before commit!
+    const ENGINE_VERSION = '1.0.7d'; // !if mod this, mod & doc before commit!
 
     static public $DEBUG = false;
 
@@ -72,15 +76,18 @@ class mfe
 
     /**
      * Constructor
+     *
+     * @param Init $config
      */
-    protected function __construct()
+    protected function __construct(Init $config = null)
     {
+        //$config();
         // TODO:: перенести это куда нибудь вглубь
-        @ini_set('display_errors', false);
+        //@ini_set('display_errors', false);
 
-        set_error_handler(['mfe\core\libs\handlers\CRunHandler', 'errorHandler'], E_ALL);
-        set_exception_handler(['mfe\core\libs\handlers\CRunHandler', 'exceptionHandler']);
-        register_shutdown_function(['mfe\core\mfe', 'stopEngine']);
+        //set_error_handler(['mfe\core\libs\handlers\CRunHandler', 'errorHandler'], E_ALL);
+        //set_exception_handler(['mfe\core\libs\handlers\CRunHandler', 'exceptionHandler']);
+        //register_shutdown_function(['mfe\core\mfe', 'stopEngine']);
     }
 
     /**
@@ -148,4 +155,4 @@ class mfe
  * Auto register self in system
  * @standards MFS-5.5
  */
-(!mfe::option('MFE_AUTOLOAD')) or mfe::app();
+mfe::app(new Init());

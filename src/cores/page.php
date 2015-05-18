@@ -1,4 +1,4 @@
-<?php namespace mfe\core\core;
+<?php namespace mfe\core\cores;
 
 use mfe\core\libs\components\CException;
 use mfe\core\libs\interfaces\IComponent;
@@ -8,7 +8,7 @@ use mfe\core\mfe;
 
 /**
  * Class Page
- * @package mfe\core\core
+ * @package mfe\core\cores
  */
 class Page extends CCore implements IComponent
 {

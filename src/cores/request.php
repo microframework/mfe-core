@@ -1,4 +1,4 @@
-<?php namespace mfe\core\core;
+<?php namespace mfe\core\cores;
 
 use mfe\core\libs\interfaces\IComponent;
 
@@ -7,7 +7,7 @@ use mfe\core\mfe;
 
 /**
  * Class Request
- * @package mfe\core\core
+ * @package mfe\core\cores
  */
 class Request extends CCore implements IComponent
 {

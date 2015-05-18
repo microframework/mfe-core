@@ -5,6 +5,7 @@ use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
+use mfe\core\Init;
 use mfe\core\mfe;
 
 /**
@@ -32,9 +33,10 @@ trait TStandardApplication
     /**
      * TODO:: Application stack
      *
+     * @param Init $config
      * @return mfe
      */
-    static public function app()
+    static public function app(Init $config = null)
     {
         if (!count(mfe::getInstance()->applications)) return mfe::getInstance();
         return mfe::getInstance()->applications->{mfe::getInstance()->currentApplication};
