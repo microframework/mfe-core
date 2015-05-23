@@ -22,7 +22,7 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
     $loader->addNamespace(__NAMESPACE__, __DIR__);
 }
 
-require_once 'init.php';
+require_once __DIR__ . '/Init.php';
 
 /**
  * MicroFramework Engine
