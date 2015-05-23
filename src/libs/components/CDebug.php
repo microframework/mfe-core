@@ -56,7 +56,7 @@ class CDebug
         if ($code == 0x00000E3) {
             (!isset($_SERVER['SERVER_PROTOCOL'])) ?:
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
-            call_user_func('die');
+            //call_user_func('die'); //TODO:: Избавиться от этого
         }
         return mfe::stopEngine();
     }

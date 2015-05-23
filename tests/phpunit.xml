@@ -1,7 +1,24 @@
-<phpunit bootstrap="bootstrap.php" colors="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" stopOnFailure="false">
+<phpunit
+		bootstrap="bootstrap.php"
+		colors="true"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+		processIsolation="false"
+		stopOnError="false"
+		stopOnFailure="false"
+		stopOnIncomplete="false"
+		stopOnSkipped="false"
+		syntaxCheck="false"
+		verbose="true"
+		>
 	<testsuites>
 		<testsuite name="Test Suite">
 			<directory>tests</directory>
 		</testsuite>
 	</testsuites>
+	<logging>
+		<log type="coverage-html" target="../build/logs/report" lowUpperBound="35" highLowerBound="70"/>
+		<log type="coverage-clover" target="../build/logs/clover.xml"/>
+	</logging>
 </phpunit>

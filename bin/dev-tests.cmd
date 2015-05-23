@@ -1,3 +1,3 @@
 @title PHPUnit
-@php ../vendor/phpunit/phpunit/phpunit --bootstrap ../tests/bootstrap.php --configuration ../tests/phpunit.xml --coverage-clover ../build/logs/clover.xml ../tests
+@php ../vendor/phpunit/phpunit/phpunit --configuration ../tests/phpunit.xml ../tests
 @pause
