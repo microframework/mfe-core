@@ -30,6 +30,7 @@ while (true) {
         while ($buffer = rtrim(fgets($connect, 1024))) {
             if (strlen($headers >= 4096)) break;
             $headers .= $buffer . PHP_EOL;
+            //TODO::
         }
         //echo $headers . PHP_EOL;
         //var_dump($connects);
