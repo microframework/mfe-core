@@ -1,5 +1,7 @@
 <?php namespace mfe\core\core;
 
+use mfe\core\cores\Page;
+
 /**
  * Created by PhpStorm.
  * User: eak
@@ -41,4 +43,3 @@ class PageTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($this->data, $this->page->getData());
     }
 }
- 

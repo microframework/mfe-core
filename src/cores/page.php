@@ -93,9 +93,9 @@ class Page extends CCore implements IComponent
 
     public function __construct($layout = null, $data = [], $uid = null)
     {
-        if (!mfe::app()->loader->aliasDirectoryExist('@layout')) {
-            mfe::app()->loader->registerAliasDirectory('@layout', 'assets/layouts');
-        }
+//        if (!MfE::app()->loader->aliasDirectoryExist('@layout')) {
+//            MfE::app()->loader->registerAliasDirectory('@layout', 'assets/layouts');
+//        }
 
         if (!is_null($layout)) {
             $this->setLayout($layout);
@@ -243,7 +243,7 @@ class Page extends CCore implements IComponent
 
     static public function registerComponent()
     {
-        mfe::registerComponent('page', [static::class, 'getInstance']);
+        MfE::registerComponent('page', [static::class, 'getInstance']);
         return true;
     }
 }

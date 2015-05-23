@@ -1,20 +1,17 @@
 <?php namespace mfe\core;
 
-use mfe\core\libs\system\IoC;
 use mfe\core\libs\system\PSR4Autoload;
 
-//use mfe\core\libs\interfaces\IEventsManager;
-
-use mfe\core\libs\traits\application\TApplicationEngine;
-
-use mfe\core\libs\traits\standard\TStandardApplication;
-//use mfe\core\libs\traits\standard\TStandardComponents;
-use mfe\core\libs\traits\standard\TStandardEngine;
-
-//use mfe\core\libs\traits\standard\TStandardEvents;
-//use mfe\core\libs\traits\standard\TStandardLoader;
-
+use mfe\core\libs\system\IoC;
 use mfe\core\libs\components\CException;
+
+use mfe\core\libs\interfaces\IEngine;
+use mfe\core\libs\interfaces\applications\IStandardApplication;
+
+use mfe\core\deprecated\TApplicationEngine;
+use mfe\core\deprecated\TStandardEngine;
+use mfe\core\deprecated\TStandardApplication;
+
 use mfe\core\libs\handlers\CRunHandler;
 
 if (!class_exists('\Composer\Autoload\ClassLoader')) {
@@ -41,9 +38,10 @@ require_once 'init.php';
 
 (defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
 (defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
+(defined('MFE_ROOT')) or define('MFE_ROOT', __DIR__);
 
 /**
- * Class mfe
+ * Class MfE
  *
  * This base class of logic MicroFramework, this class is Engine! This is MFE!
  * Это базовый класс реализующий двигатель MicroFramework. Это и есть MFE!
@@ -51,14 +49,14 @@ require_once 'init.php';
  * @standards MFS-4.1, MFS-5
  * @package mfe\core
  */
-class mfe extends IoC
+class MfE extends IoC implements IEngine, IStandardApplication
 {
     const ENGINE_NAME = 'MicroFramework Engine';
     const ENGINE_VERSION = '1.0.7d'; // !if mod this, mod & doc before commit!
 
     static public $DEBUG = false;
 
-    /** @var mfe $instance */
+    /** @var MfE $instance */
     static public $instance;
     static public $register = [
         'TR' => [],
@@ -87,7 +85,7 @@ class mfe extends IoC
 
         //set_error_handler(['mfe\core\libs\handlers\CRunHandler', 'errorHandler'], E_ALL);
         //set_exception_handler(['mfe\core\libs\handlers\CRunHandler', 'exceptionHandler']);
-        //register_shutdown_function(['mfe\core\mfe', 'stopEngine']);
+        //register_shutdown_function(['mfe\core\MfE', 'stopEngine']);
     }
 
     /**
@@ -130,7 +128,7 @@ class mfe extends IoC
         try {
             return self::trigger('engine.start');
         } catch (CException $e) {
-            mfe::stop(0x00000E1);
+            MfE::stop(0x00000E1);
         }
         */
         return true;
@@ -155,4 +153,4 @@ class mfe extends IoC
  * Auto register self in system
  * @standards MFS-5.5
  */
-mfe::app(new Init());
+MfE::app(new Init(), __DIR__);

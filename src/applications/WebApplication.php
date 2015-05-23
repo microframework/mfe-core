@@ -1,7 +1,7 @@
 <?php namespace mfe\core\applications;
 
 use mfe\core\libs\base\CApplication;
-use mfe\core\libs\interfaces\IHybridApplication;
+use mfe\core\libs\interfaces\applications\IHybridApplication;
 
 /**
  * Class WebApplication

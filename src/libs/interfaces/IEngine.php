@@ -10,19 +10,5 @@
  */
 interface IEngine
 {
-    static function init();
 
-    static function app($applicationName);
-
-    static function trigger($eventName);
-
-    static function on($eventName, $callback);
-
-    static function off($eventName, $callback = null);
-
-    static function registerComponent($name, $callback, $core = false, $override = false);
-
-    static function overrideComponent($name, $callback = null, $core = false);
-
-    static function unRegisterComponent($name, $core = false);
 }

@@ -1,4 +1,4 @@
-<?php namespace mfe\core\libs\traits\standard;
+<?php namespace mfe\core\deprecated;
 
 use mfe\core\libs\base\CApplication;
 use mfe\core\libs\components\CDebug;

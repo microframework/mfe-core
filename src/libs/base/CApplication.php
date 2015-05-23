@@ -7,7 +7,7 @@ TODO:: Регистрация компонентов? она же ведь до�
 */
 
 use mfe\core\libs\components\CDisplay;
-use mfe\core\libs\traits\application\TApplicationEngine;
+use mfe\core\deprecated\TApplicationEngine;
 use mfe\core\mfe;
 
 /**
@@ -71,7 +71,7 @@ abstract class CApplication extends CComponent
      */
     public function globalOverrideApplicationInstance()
     {
-        mfe::getInstance()->registerApplication(self::$instance = $this);
+        MfE::getInstance()->registerApplication(self::$instance = $this);
     }
 
     /**
@@ -79,9 +79,9 @@ abstract class CApplication extends CComponent
      */
     protected function cloneRegister()
     {
-        foreach (mfe::$register['TR'] as $register) {
+        foreach (MfE::$register['TR'] as $register) {
             if (array_search($register, $this->ignoreRegister) === false) {
-                $this->$register = clone mfe::getInstance()->getRegister('TR', $register);
+                $this->$register = clone MfE::getInstance()->getRegister('TR', $register);
             }
         }
     }
@@ -93,7 +93,7 @@ abstract class CApplication extends CComponent
     {
         /** @var CApplication $class */
         $class = static::class;
-        $class::$options = mfe::$options;
+        $class::$options = MfE::$options;
     }
 
     /**
