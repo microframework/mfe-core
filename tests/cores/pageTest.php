@@ -1,6 +1,4 @@
-<?php namespace mfe\core\core;
-
-use mfe\core\cores\Page;
+<?php namespace mfe\core\cores;
 
 /**
  * Created by PhpStorm.

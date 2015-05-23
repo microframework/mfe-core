@@ -1,5 +1,9 @@
 <?php namespace mfe\core\libs\components;
 
+/**
+ * Class CObjectsStackTest
+ * @package mfe\core\libs\components
+ */
 class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
 
     /** @var CObjectsStack $stack */
