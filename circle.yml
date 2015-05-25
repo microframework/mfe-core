@@ -16,3 +16,6 @@ deployment:
     branch: master
     heroku:
       appname: microframework
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/ef030eb7432e8f001263
