@@ -30,11 +30,15 @@ final class Init
 
     /**
      * Start construct the Init
+     * @param $DIR
+     * @param string $type
      */
-    public function __construct()
+    public function __construct($DIR = null, $type = self::DIR_TYPE_MFE)
     {
         error_reporting(E_ALL);
         ini_set('display_errors', true);
+
+        if (null !== $DIR) self::addConfigPath($DIR, $type);
 
         $this->init();
         $this->scanFoldersForConfigs();
@@ -66,18 +70,20 @@ final class Init
     /**
      * Add path to configs
      *
-     * @param $dir
+     * @param $DIR
      * @param string $type
      * @return string
      */
-    static public function addConfigPath($dir, $type = self::DIR_TYPE_DATA)
+    static public function addConfigPath($DIR, $type = self::DIR_TYPE_DATA)
     {
-        if (file_exists($dir) && is_dir($dir) && is_readable($dir)) {
+        $DIR = str_replace('\\', '/', $DIR);
+
+        if (!file_exists($DIR) || !is_dir($DIR) || !is_readable($DIR)) {
             return false;
         }
 
-        $hash = md5((string)$dir);
-        self::$DIR_PRIORITY[$type][$hash] = $dir;
+        $hash = md5((string)$DIR);
+        self::$DIR_PRIORITY[$type][$hash] = $DIR;
 
         return $hash;
     }
@@ -91,7 +97,7 @@ final class Init
      */
     static public function removeConfigPath($hash, $type = self::DIR_TYPE_DATA)
     {
-        if (isset(self::$DIR_PRIORITY[$type][$hash])) {
+        if (array_key_exists($hash, self::$DIR_PRIORITY[$type])) {
             self::$DIR_PRIORITY[$type][$hash] = null;
             return true;
         }
@@ -108,7 +114,7 @@ final class Init
             foreach ($constants as $constant => $value) {
                 if (substr($constant, 0, 4) === 'MFE_') {
                     $key = strtolower(substr($constant, 4));
-                    if (isset($this->config['options'][$key])) {
+                    if (array_key_exists($key, $this->config['options']) && $key !== 'time') {
                         $this->config['options'][$key] = $value;
                     }
                 }

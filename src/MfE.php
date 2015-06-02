@@ -36,9 +36,8 @@ require_once __DIR__ . '/Init.php';
  */
 (version_compare(phpversion(), '5.5.0', '>=')) or die('MFE has needed PHP 5.5.0+');
 
-(defined('MFE_AUTOLOAD')) or define('MFE_AUTOLOAD', true);
+(defined('ROOT')) or define('ROOT', __DIR__);
 (defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
-(defined('MFE_ROOT')) or define('MFE_ROOT', __DIR__);
 
 /**
  * Class MfE
@@ -54,32 +53,20 @@ class MfE extends IoC implements IEngine, IStandardApplication
     const ENGINE_NAME = 'MicroFramework Engine';
     const ENGINE_VERSION = '1.0.7d'; // !if mod this, mod & doc before commit!
 
-    static public $DEBUG = false;
+    static public $DEBUG = true;
 
     /** @var MfE $instance */
     static public $instance;
-    static public $register = [
-        'TR' => [],
-        'IoC' => []
-    ];
 
     use TApplicationEngine; // TODO:: Универсальный трейт, с интерфейсами как для двигателя так и для апликации.
     use TStandardEngine; // TODO:: Трейт инициализатор интерфейсов двигателя.
     use TStandardApplication; //TODO:: Трейт инициализатор интерфеса апликации, нужен ли? Или должен быть поглощен?!
 
-    // TODO:: Избавиться от последующих трех трейтов, первые два трейта должны их поглотить.
-    //use TStandardComponents;
-    //use TStandardEvents;
-    //use TStandardLoader;
-
     /**
      * Constructor
-     *
-     * @param Init $config
      */
-    protected function __construct(Init $config = null)
+    protected function __construct()
     {
-        //$config();
         // TODO:: перенести это куда нибудь вглубь
         //@ini_set('display_errors', false);
 
@@ -93,7 +80,7 @@ class MfE extends IoC implements IEngine, IStandardApplication
      */
     public function __destruct()
     {
-        self::end();
+        self::end($this);
     }
 
     /**
@@ -107,7 +94,7 @@ class MfE extends IoC implements IEngine, IStandardApplication
     final public function startEngine()
     {
         //TODO:: Where from phar archive register specific paths
-        if (self::option('MFE_PHAR_INIT')) {
+        if ($this->getOption('PHAR_INIT')) {
 
         }
 
@@ -153,4 +140,4 @@ class MfE extends IoC implements IEngine, IStandardApplication
  * Auto register self in system
  * @standards MFS-5.5
  */
-MfE::app(new Init(), __DIR__);
+MfE::app(new Init(__DIR__));

@@ -1,6 +1,6 @@
 <?php namespace mfe\core\deprecated;
 
-use mfe\core\libs\base\CApplication;
+use mfe\core\Init;
 use mfe\core\libs\components\CException;
 use mfe\core\mfe;
 
@@ -12,41 +12,63 @@ trait TApplicationEngine
 {
     static public $options = [];
 
-    public function getRegister($catalog, $registerName)
+    static protected $traitsRegister = [];
+
+    public function getRegister($registerName)
     {
-        if (array_search($registerName, mfe::$register[$catalog]) !== false) {
+        if (array_search($registerName, self::$traitsRegister) !== false) {
+            //TODO:: REFACTOR THIS
             return $this->$registerName;
         }
         return null;
     }
 
     /**
-     * @param $option
-     * @return bool|null
+     * @param $path
+     * @return null
+     * @throws CException
      */
-    public function getOption($option)
+    static public function getConfigData($path)
     {
-        /** @var mfe|CApplication $class */
-        $class = static::class;
+        $params = explode('.', $path);
+        $result = null;
+        $return_false = false;
+        foreach ($params as $key) {
+            if ($key === 'options' || $key === 'params') $return_false = true;
 
-        $options = $class::$options;
-        if (isset($options[$option])) {
-            return $options[$option];
+            $config = (is_null($result)) ? MfE::$config : $result;
+
+            if (array_key_exists($key, $config)) {
+                $result = $config[$key];
+            } elseif ($return_false) {
+                return false;
+            } else {
+                //TODO:: более удобный вид array.array.array
+                throw new CException('Config Error, not found ' . $path);
+            }
         }
 
-        if (defined($option)) {
-            return constant($option);
-        }
-        return null;
+        return $result;
     }
 
     /**
      * @param $option
-     * @return bool|null
+     * @return null|bool|mixed
+     * @throws CException
      */
-    static public function option($option)
+    public function getOption($option)
     {
-        return mfe::app()->getOption($option);
+        return self::getConfigData('options.' . $option);
+    }
+
+    /**
+     * @param $param
+     * @return null|bool|mixed
+     * @throws CException
+     */
+    public function getParam($param)
+    {
+        return self::getConfigData('params.' . $param);
     }
 
     /**

@@ -6,8 +6,10 @@ TODO:: Если объекты трейтов реализуются клони�
 TODO:: Регистрация компонентов? она же ведь должна проходить исключительно в приложении?
 */
 
+use mfe\core\Init;
 use mfe\core\libs\components\CDisplay;
 use mfe\core\deprecated\TApplicationEngine;
+use mfe\core\libs\traits\system\TSystemComponent;
 use mfe\core\mfe;
 
 /**
@@ -20,11 +22,7 @@ abstract class CApplication extends CComponent
     const APPLICATION_TYPE = 'IHybridApplication';
     const APPLICATION_VERSION = '1.0.0';
 
-    static public $register = [
-        'TR' => [],
-        'IoC' => []
-    ];
-
+    use TSystemComponent;
     use TApplicationEngine;
 
     /** @var string */
@@ -34,16 +32,6 @@ abstract class CApplication extends CComponent
 
     /** @var CApplication $class */
     static public $instance;
-
-    protected $aliases;
-    protected $components;
-    protected $events;
-    protected $eventsMap;
-    protected $filesMap;
-
-    protected $ignoreRegister = [
-        'applications'
-    ];
 
     /**
      *
@@ -62,8 +50,28 @@ abstract class CApplication extends CComponent
      */
     public function init()
     {
-        $this->cloneOptions();
-        $this->cloneRegister();
+        //$this->cloneOptions();
+        //$this->cloneRegister();
+    }
+
+
+    /**
+     * @param $_DIR
+     * @param $className
+     * @return bool|string
+     */
+    public function addConfigPath($_DIR, $className)
+    {
+        $DIR = $_DIR . '/' . (new \ReflectionClass($className))->getShortName();
+        (defined('ROOT')) or define('ROOT', $DIR);
+
+        if (!file_exists($DIR)) {
+            if (is_writable($_DIR)) {
+                mkdir($DIR, 0666, true);
+            }
+        }
+
+        return Init::addConfigPath($DIR, Init::DIR_TYPE_APP);
     }
 
     /**
@@ -79,11 +87,7 @@ abstract class CApplication extends CComponent
      */
     protected function cloneRegister()
     {
-        foreach (MfE::$register['TR'] as $register) {
-            if (array_search($register, $this->ignoreRegister) === false) {
-                $this->$register = clone MfE::getInstance()->getRegister('TR', $register);
-            }
-        }
+
     }
 
     /**
@@ -91,9 +95,7 @@ abstract class CApplication extends CComponent
      */
     protected function cloneOptions()
     {
-        /** @var CApplication $class */
-        $class = static::class;
-        $class::$options = MfE::$options;
+
     }
 
     /**

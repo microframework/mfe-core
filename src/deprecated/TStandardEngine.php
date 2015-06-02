@@ -2,6 +2,7 @@
 
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\helpers\CSimpleFileHelper;
+use mfe\core\libs\interfaces\IEngine;
 use mfe\core\mfe;
 
 /**
@@ -16,13 +17,7 @@ trait TStandardEngine
      */
     static public function TStandardEngine()
     {
-        mfe::$options = [
-            'MFE_PHAR_INIT' => false,
-            'MFE_AUTOLOAD' => false,
 
-            'stackObject' => 'mfe\core\libs\components\CObjectsStack',
-            'FileHelper' => 'mfe\core\libs\helpers\CSimpleFileHelper',
-        ];
     }
 
     /**
@@ -30,8 +25,9 @@ trait TStandardEngine
      */
     protected function __TStandardEngine()
     {
-        $stackObject = mfe::option('stackObject');
-        foreach (mfe::$register['TR'] as $stack) {
+        $stackObject = MfE::getConfigData('utility.StackObject');
+
+        foreach (MfE::$traitsRegister as $stack) {
             $this->$stack = new $stackObject;
         }
     }
@@ -47,10 +43,7 @@ trait TStandardEngine
             self::initTraitsBefore();
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();
-            //$class::$instance->on('mfe.init', function () {
-            call_user_func_array([mfe::$instance, 'startEngine'], []);
-            //});
-            //$class::$instance->trigger('mfe.init');
+            $class::$instance->startEngine();
         }
         return (object)$class::$instance;
     }
@@ -85,13 +78,16 @@ trait TStandardEngine
 
     /**
      * Print end time
+     * @param MfE|IEngine $application
      */
-    static protected function end()
+    static protected function end(&$application)
     {
+        if(!$application::$DEBUG) return;
+
         /** @var mfe $class */
         $class = static::class;
         /** @var CSimpleFileHelper $FileHelper */
-        $FileHelper = $class::option('FileHelper');
+        $FileHelper = MfE::getConfigData('utility.FileHelper');
 
         $time = round(microtime(true) - MFE_TIME, 3);
 

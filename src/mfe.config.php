@@ -3,44 +3,43 @@
 return [
     'name' => \mfe\core\mfe::ENGINE_NAME,
     'version' => \mfe\core\mfe::ENGINE_VERSION,
+    'params' => [],
     'options' => [
         'autoload' => false,
+        'debug' => true
     ],
-    'registry' => [
-        'final' => [],
-        'override' => [
-            'StackObject' => \mfe\core\libs\components\CObjectsStack::className(),
-            'FileHelper' => \mfe\core\libs\helpers\CSimpleFileHelper::className()
-        ]
+    'utility' => [
+        'StackObject' => \mfe\core\libs\components\CObjectsStack::class,
+        'FileHelper' => \mfe\core\libs\helpers\CSimpleFileHelper::class
     ],
     'components' => [
         'application' => [
-            'class' => \mfe\core\libs\managers\CApplicationManager::className(),
-            'default' => \mfe\core\applications\WebApplication::className(),
+            'class' => \mfe\core\libs\managers\CApplicationManager::class,
+            'default' => \mfe\core\applications\WebApplication::class,
             'autoload' => true
         ],
         'di' => [
-            'class' => \mfe\core\libs\managers\CComponentManager::className()
+            'class' => \mfe\core\libs\managers\CComponentManager::class
         ],
         'events' => [
-            'class' => \mfe\core\libs\managers\CEventManager::className()
+            'class' => \mfe\core\libs\managers\CEventManager::class
         ],
         'loader' => [
-            'class' => \mfe\core\libs\system\Loader::className()
+            'class' => \mfe\core\libs\system\Loader::class
         ]
     ],
     'cores' => [
         'loader' => [
-            'class' => \mfe\core\cores\Loader::className()
+            'class' => \mfe\core\cores\Loader::class
         ],
         'page' => [
-            'class' => \mfe\core\cores\Page::className()
+            'class' => \mfe\core\cores\Page::class
         ],
         'request' => [
-            'class' => \mfe\core\cores\Request::className()
+            'class' => \mfe\core\cores\Request::class
         ],
         'router' => [
-            'class' => \mfe\core\cores\Router::className()
+            'class' => \mfe\core\cores\Router::class
         ]
     ]
 ];

@@ -1,7 +1,7 @@
 <?php namespace mfe\core\cores;
 
 use mfe\core\libs\interfaces\IComponent;
-use mfe\core\libs\traits\standard\TStandardLoader;
+use mfe\core\deprecated\TStandardLoader;
 
 use mfe\core\libs\base\CCore;
 
@@ -9,6 +9,8 @@ use mfe\core\mfe;
 
 /**
  * Class Loader
+ *
+ * @deprecated
  * @package mfe\core\cores
  */
 class Loader extends CCore implements IComponent
@@ -26,12 +28,12 @@ class Loader extends CCore implements IComponent
      */
     public function __construct()
     {
-        $stack = mfe::option('stackObject');
+        $stack = MfE::getConfigData('utility.StackObject');
 
         $this->aliases = new $stack();
-        $this->filesMap = new $stack(mfe::app()->getFilesMap());
+        $this->filesMap = new $stack(MfE::app()->getFilesMap());
 
-        foreach (mfe::app()->getAliases() as $alias => $array) {
+        foreach (MfE::app()->getAliases() as $alias => $array) {
             foreach ($array as $value) {
                 $this->registerAliasDirectory($alias, $value);
             }
@@ -58,8 +60,8 @@ class Loader extends CCore implements IComponent
         ];
 
         foreach ($components as $key => $callback) {
-            (!$undo) ? mfe::app()->registerCoreComponent($key, $callback)
-                : mfe::app()->unRegisterCoreComponent($key);
+            (!$undo) ? MfE::app()->registerCoreComponent($key, $callback)
+                : MfE::app()->unRegisterCoreComponent($key);
         }
 
         return $components;
@@ -70,7 +72,7 @@ class Loader extends CCore implements IComponent
      */
     static public function registerComponent()
     {
-        mfe::registerComponent('loader', [static::class, 'getInstance']);
+        MfE::registerComponent('loader', [static::class, 'getInstance']);
         return true;
     }
 }

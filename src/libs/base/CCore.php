@@ -28,7 +28,8 @@ abstract class CCore extends CComponent implements IComponent
      */
     static protected function option($option)
     {
-        return mfe::option($option);
+        //TODO:: Refactor this
+        return MfE::getConfigData('options'. $option);
     }
 
     /**

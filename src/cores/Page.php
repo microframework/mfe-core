@@ -8,6 +8,8 @@ use mfe\core\mfe;
 
 /**
  * Class Page
+ *
+ * @deprecated
  * @package mfe\core\cores
  */
 class Page extends CCore implements IComponent
@@ -209,9 +211,9 @@ class Page extends CCore implements IComponent
 
     public function setLayout($layout)
     {
-        if (!($this->layout = mfe::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
+        if (!($this->layout = MfE::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
             throw new CException('Not found layout file: ' . $layout . $this->layout_extension . ' in directories: '
-                . PHP_EOL . implode('; ' . PHP_EOL, mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
+                . PHP_EOL . implode('; ' . PHP_EOL, MfE::app()->loader->getRealPaths('@engine.@layout.', true)));
         }
         return $this;
     }

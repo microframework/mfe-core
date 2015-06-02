@@ -16,6 +16,7 @@ use mfe\core\mfe;
 trait TStandardApplication
 {
     public $currentApplication;
+    static protected $config = [];
 
     /** @var CObjectsStack */
     protected $applications;
@@ -27,7 +28,7 @@ trait TStandardApplication
      */
     static public function TStandardApplication()
     {
-        mfe::$register['TR'][] = 'applications';
+        MfE::$traitsRegister[] = 'applications';
     }
 
     /**
@@ -38,8 +39,15 @@ trait TStandardApplication
      */
     static public function app(Init $config = null)
     {
-        if (!count(mfe::getInstance()->applications)) return mfe::getInstance();
-        return mfe::getInstance()->applications->{mfe::getInstance()->currentApplication};
+        if (!is_null($config) && is_callable($config)) static::$config = $config();
+
+        if (!count(MfE::getInstance()->applications)) {
+            $application = MfE::getInstance();
+        } else {
+            $application = MfE::getInstance()->applications->{MfE::getInstance()->currentApplication};
+        }
+
+        return $application;
     }
 
     /**
@@ -50,8 +58,10 @@ trait TStandardApplication
      */
     public function registerApplication(CApplication $application, $setAsCurrentApplication = true)
     {
-        if ($setAsCurrentApplication) $this->currentApplication = get_class($application);
-        mfe::getInstance()->applications->add(get_class($application), $application);
+        if ($setAsCurrentApplication) {
+            $this->currentApplication = get_class($application);
+        }
+        MfE::getInstance()->applications->add(get_class($application), $application);
         return true;
     }
 
