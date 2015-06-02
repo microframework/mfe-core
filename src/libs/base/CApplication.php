@@ -22,6 +22,8 @@ abstract class CApplication extends CComponent
     const APPLICATION_TYPE = 'IHybridApplication';
     const APPLICATION_VERSION = '1.0.0';
 
+    const APPLICATION_DIR = null;
+
     use TSystemComponent;
     use TApplicationEngine;
 
@@ -40,7 +42,7 @@ abstract class CApplication extends CComponent
     {
         $this->init();
 
-        if (is_null(self::$instance)) {
+        if (null === self::$instance) {
             $this->globalOverrideApplicationInstance();
         }
     }
@@ -50,6 +52,10 @@ abstract class CApplication extends CComponent
      */
     public function init()
     {
+        if(null !== static::APPLICATION_DIR) {
+            self::addConfigPath(static::APPLICATION_DIR, static::class);
+        }
+
         //$this->cloneOptions();
         //$this->cloneRegister();
     }
@@ -103,7 +109,7 @@ abstract class CApplication extends CComponent
      */
     static public function getInstance()
     {
-        if (is_null(self::$instance)) {
+        if (null === self::$instance) {
             /** @var CApplication $class */
             $class = static::class;
             new $class();

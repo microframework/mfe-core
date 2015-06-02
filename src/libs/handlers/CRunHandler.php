@@ -21,7 +21,7 @@ class CRunHandler
 
     static public function run($handler = null)
     {
-        if (!is_null($handler)) self::$currentHandler = $handler;
+        if (null !== $handler) self::$currentHandler = $handler;
         return true;
     }
 

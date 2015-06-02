@@ -22,7 +22,7 @@ class CSimpleFileHelper
     final static public function scandir_recursive($dir, $trim = null)
     {
         $result = [];
-        if (is_null($trim)) $trim = strlen($dir);
+        if (null === $trim) $trim = strlen($dir);
         if (file_exists($dir) && is_dir($dir)) {
             $path = scandir($dir);
             foreach ($path as $fileInfo) {
@@ -43,6 +43,6 @@ class CSimpleFileHelper
     static public function convert_size($size)
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
-        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[intval($i)];
+        return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[intval($i)];
     }
 }

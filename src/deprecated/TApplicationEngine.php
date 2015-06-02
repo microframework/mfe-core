@@ -36,7 +36,7 @@ trait TApplicationEngine
         foreach ($params as $key) {
             if ($key === 'options' || $key === 'params') $return_false = true;
 
-            $config = (is_null($result)) ? MfE::$config : $result;
+            $config = (null === $result) ? MfE::$config : $result;
 
             if (array_key_exists($key, $config)) {
                 $result = $config[$key];

@@ -13,11 +13,8 @@ class WebApplication extends CApplication implements IHybridApplication
     const APPLICATION_TYPE = 'WebApplication';
     const APPLICATION_VERSION = '1.0.0';
 
-    public $result = "Hello World";
+    /** @constant string, Please not modify! */
+    const APPLICATION_DIR = __DIR__;
 
-    public function init()
-    {
-        parent::addConfigPath(__DIR__, static::class);
-        parent::init();
-    }
+    public $result = "Hello World";
 }

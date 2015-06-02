@@ -5,6 +5,8 @@ use mfe\core\mfe;
 
 /**
  * Class CLayout
+ *
+ * @deprecated
  * @package mfe\core\libs\components
  */
 class CLayout extends CComponent

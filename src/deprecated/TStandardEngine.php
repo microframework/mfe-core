@@ -39,7 +39,7 @@ trait TStandardEngine
     {
         $class = static::class;
         /** @var mfe $class */
-        if (is_null($class::$instance)) {
+        if (null === $class::$instance) {
             self::initTraitsBefore();
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();

@@ -14,7 +14,7 @@ abstract class CCore extends CComponent implements IComponent
 
     static public function getInstance()
     {
-        if (is_null(static::$instance)) {
+        if (null === static::$instance) {
             /** @var CCore $class */
             $class = static::class;
             static::$instance = new $class();

@@ -89,5 +89,4 @@ class CLog extends CComponent
     {
         $this->addToLog(self::DEBUG, $message, $backtrace);
     }
-
 }

@@ -58,7 +58,7 @@ class CDebug
                 header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
             //call_user_func('die'); //TODO:: Избавиться от этого
         }
-        return mfe::stopEngine();
+        return MfE::stopEngine();
     }
 
     /**
@@ -89,13 +89,13 @@ class CDebug
 
         self::$errors[] = $error;
 
-        if ($error[0] === E_EXCEPTION) mfe::stop(0x00000E4);
+        if ($error[0] === E_EXCEPTION) MfE::stop(0x00000E4);
 
         return (
             $error[0] === E_FATAL ||
             $error[0] === E_ERROR ||
             $error[0] === E_COMPILE_ERROR
-        ) ? mfe::stop(0x00000E0) : null;
+        ) ? MfE::stop(0x00000E0) : null;
     }
 
     /**
@@ -106,7 +106,7 @@ class CDebug
     {
         self::$trace = $e->getTrace();
         self::errorHandler([5040, 'Exception: ' . $e->getMessage(), $e->getFile(), $e->getLine()]);
-        return mfe::stopEngine();
+        return MfE::stopEngine();
     }
 
     /**
@@ -116,7 +116,7 @@ class CDebug
     static protected function logAndSplashScreen($code)
     {
         CDebug::display('errorLayout', self::$_CODE[$code]);
-        return mfe::stopEngine();
+        return MfE::stopEngine();
     }
 
     /**
@@ -177,7 +177,7 @@ class CDebug
         print (new CLayout($layout, [
             'title' => $code,
             'time' => (($time >= 0.001) ? $time : '0.001') . ' ms',
-            'info' => mfe::ENGINE_NAME . ' (' . mfe::ENGINE_VERSION . ')',
+            'info' => MfE::ENGINE_NAME . ' (' . MfE::ENGINE_VERSION . ')',
             'errors' => $errors
         ]))->render();
     }

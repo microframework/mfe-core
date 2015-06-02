@@ -39,7 +39,7 @@ trait TStandardApplication
      */
     static public function app(Init $config = null)
     {
-        if (!is_null($config) && is_callable($config)) static::$config = $config();
+        if (null !== $config && is_callable($config)) static::$config = $config();
 
         if (!count(MfE::getInstance()->applications)) {
             $application = MfE::getInstance();

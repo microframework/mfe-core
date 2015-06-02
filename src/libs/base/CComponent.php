@@ -23,7 +23,7 @@ abstract class CComponent extends IoC
      */
     static public function getInstance()
     {
-        if (is_null(static::$instance)) {
+        if (null === static::$instance) {
             /** @var CComponent $class */
             $class = static::class;
             static::$instance = new $class();
