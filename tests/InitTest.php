@@ -1,8 +1,6 @@
 <?php namespace mfe\core;
 
-use PHPUnit_Framework_TestCase;
-
-class InitTest extends PHPUnit_Framework_TestCase
+class InitTest extends \PHPUnit_Framework_TestCase
 {
     private $config;
 

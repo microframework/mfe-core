@@ -6,4 +6,5 @@ use mfe\core\MfE;
 
 MfE::$DEBUG = false;
 $application = MfE::app();
+ini_set('display_errors', true);
 
