@@ -8,7 +8,8 @@ TODO:: Регистрация компонентов? она же ведь до�
 
 use mfe\core\Init;
 use mfe\core\libs\components\CDisplay;
-use mfe\core\deprecated\TApplicationEngine;
+use mfe\core\libs\traits\application\TApplicationEngine;
+use mfe\core\libs\traits\standard\TStandardApplication;
 use mfe\core\libs\traits\system\TSystemComponent;
 use mfe\core\mfe;
 
@@ -26,11 +27,10 @@ abstract class CApplication extends CComponent
 
     use TSystemComponent;
     use TApplicationEngine;
+    use TStandardApplication;
 
     /** @var string */
     public $result;
-
-    static public $_STATUS = 0x0000000;
 
     /** @var CApplication $class */
     static public $instance;
@@ -137,7 +137,7 @@ abstract class CApplication extends CComponent
      */
     public function run()
     {
-        CDisplay::display($this->result);
+        self::display($this->result, CDisplay::TYPE_PAGE);
     }
 
     /**

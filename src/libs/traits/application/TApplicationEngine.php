@@ -1,6 +1,5 @@
-<?php namespace mfe\core\deprecated;
+<?php namespace mfe\core\libs\traits\application;
 
-use mfe\core\Init;
 use mfe\core\libs\components\CException;
 use mfe\core\mfe;
 
@@ -11,17 +10,6 @@ use mfe\core\mfe;
 trait TApplicationEngine
 {
     static public $options = [];
-
-    static protected $traitsRegister = [];
-
-    public function getRegister($registerName)
-    {
-        if (array_search($registerName, self::$traitsRegister) !== false) {
-            //TODO:: REFACTOR THIS
-            return $this->$registerName;
-        }
-        return null;
-    }
 
     /**
      * @param $path

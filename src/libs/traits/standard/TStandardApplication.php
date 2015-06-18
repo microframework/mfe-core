@@ -1,9 +1,8 @@
-<?php namespace mfe\core\deprecated;
+<?php namespace mfe\core\libs\traits\standard;
 
 use mfe\core\libs\base\CApplication;
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
-use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\Init;
 use mfe\core\mfe;
@@ -77,45 +76,41 @@ trait TStandardApplication
 
     /**
      * @param $data
+     * @param $type
      */
-    static public function display($data)
+    static public function display($data, $type)
     {
-        CDisplay::display($data);
-    }
-
-    /**
-     * TODO:: This is for applicationManager()
-     *
-     * @param $arguments
-     */
-    public function __invoke($arguments)
-    {
-
+        CDisplay::display($data, $type);
     }
 
 
     /** Заглушки */
+    /*
+        public function __invoke($arguments)
+        {
 
-//    final public function __debugInfo() {
-//        return [MFE_VERSION];
-//    }
+        }
+        final public function __debugInfo() {
+            return [MFE_VERSION];
+        }
 
-//    final static public function __set_state($array) {
-//        //return [MFE_VERSION];
-//    }
+        final static public function __set_state($array) {
+            //return [MFE_VERSION];
+        }
 
-    final public function __clone()
-    {
-        throw new CException('mfe can\'t be cloned');
-    }
+        final public function __clone()
+        {
+            throw new CException('mfe can\'t be cloned');
+        }
 
-    final public function __sleep()
-    {
-        throw new CException('mfe can\'t be serialized');
-    }
+        final public function __sleep()
+        {
+            throw new CException('mfe can\'t be serialized');
+        }
 
-    final public function __wakeup()
-    {
-        throw new CException('mfe can\'t be serialized');
-    }
+        final public function __wakeup()
+        {
+            throw new CException('mfe can\'t be serialized');
+        }
+    */
 }

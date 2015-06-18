@@ -1,4 +1,4 @@
-<?php namespace mfe\core\deprecated;
+<?php namespace mfe\core\libs\traits\standard;
 
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\helpers\CSimpleFileHelper;
@@ -12,6 +12,8 @@ use mfe\core\mfe;
  */
 trait TStandardEngine
 {
+    static protected $traitsRegister = [];
+
     /**
      * Behavior trait constructor
      */
@@ -76,13 +78,20 @@ trait TStandardEngine
         }
     }
 
+    static protected function begin()
+    {
+        set_error_handler([CDebug::class, 'errorHandler'], E_ALL);
+        set_exception_handler([CDebug::class, 'exceptionHandler']);
+        register_shutdown_function([MfE::class, 'stopEngine']);
+    }
+
     /**
      * Print end time
      * @param MfE|IEngine $application
      */
     static protected function end(&$application)
     {
-        if(!$application::$DEBUG) return;
+        if (!$application::$DEBUG) return;
 
         /** @var mfe $class */
         $class = static::class;

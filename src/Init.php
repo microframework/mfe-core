@@ -40,9 +40,7 @@ final class Init
 
         if (null !== $DIR) self::addConfigPath($DIR, $type);
 
-        $this->init();
-        $this->scanFoldersForConfigs();
-        $this->overrideConfigWithConstant();
+        $this->scanAndOverwrite();
     }
 
     /**
@@ -53,6 +51,14 @@ final class Init
     public function __invoke()
     {
         return $this->config;
+    }
+
+    /**
+     * Reset config data
+     */
+    public function reset()
+    {
+        $this->scanAndOverwrite();
     }
 
     /**
@@ -68,40 +74,13 @@ final class Init
     }
 
     /**
-     * Add path to configs
-     *
-     * @param $DIR
-     * @param string $type
-     * @return string
+     * Scan directories and overwrite config
      */
-    static public function addConfigPath($DIR, $type = self::DIR_TYPE_DATA)
+    private function scanAndOverwrite()
     {
-        $DIR = str_replace('\\', '/', $DIR);
-
-        if (!file_exists($DIR) || !is_dir($DIR) || !is_readable($DIR)) {
-            return false;
-        }
-
-        $hash = md5((string)$DIR);
-        self::$DIR_PRIORITY[$type][$hash] = $DIR;
-
-        return $hash;
-    }
-
-    /**
-     * Remove path to configs
-     *
-     * @param $hash
-     * @param string $type
-     * @return bool
-     */
-    static public function removeConfigPath($hash, $type = self::DIR_TYPE_DATA)
-    {
-        if (array_key_exists($hash, self::$DIR_PRIORITY[$type])) {
-            self::$DIR_PRIORITY[$type][$hash] = null;
-            return true;
-        }
-        return false;
+        $this->init();
+        $this->scanFoldersForConfigs();
+        $this->overrideConfigWithConstant();
     }
 
     /**
@@ -147,5 +126,42 @@ final class Init
         /** @noinspection PhpIncludeInspection */
         $config = include($file);
         $this->config = array_merge_recursive($this->config, $config);
+    }
+
+    /**
+     * Add path to configs
+     *
+     * @param $DIR
+     * @param string $type
+     * @return string
+     */
+    static public function addConfigPath($DIR, $type = self::DIR_TYPE_DATA)
+    {
+        $DIR = str_replace('\\', '/', $DIR);
+
+        if (!file_exists($DIR) || !is_dir($DIR) || !is_readable($DIR)) {
+            return false;
+        }
+
+        $hash = md5((string)$DIR);
+        self::$DIR_PRIORITY[$type][$hash] = $DIR;
+
+        return $hash;
+    }
+
+    /**
+     * Remove path to configs
+     *
+     * @param $hash
+     * @param string $type
+     * @return bool
+     */
+    static public function removeConfigPath($hash, $type = self::DIR_TYPE_DATA)
+    {
+        if (array_key_exists($hash, self::$DIR_PRIORITY[$type])) {
+            self::$DIR_PRIORITY[$type][$hash] = null;
+            return true;
+        }
+        return false;
     }
 }

@@ -24,9 +24,6 @@ class CLayout extends CComponent
      */
     public function __construct($layout = false, $data = [])
     {
-        if (!mfe::getInstance()->loader->aliasDirectoryExist('@layout'))
-            mfe::getInstance()->loader->registerAliasDirectory('@layout', 'assets/layouts');
-
         if (!is_null($layout)) {
             $this->setLayout($layout);
         }
@@ -103,17 +100,16 @@ class CLayout extends CComponent
     }
 
     /**
+     * TODO:: загрузка через @loader
      * @return bool
      */
     protected function loadLayout()
     {
-        $layouts = mfe::app()->loader->getRealPaths('@engine.@layout.' . $this->layout);
+        $layout = MfE::ENGINE_DIR . '/' . str_replace('.', '/', $this->layout);
 
-        foreach ($layouts as $layout) {
-            /** @noinspection PhpIncludeInspection */
-            if ($result = @include($layout . $this->layout_extension)) {
-                return true;
-            }
+        /** @noinspection PhpIncludeInspection */
+        if ($result = @include($layout . $this->layout_extension)) {
+            return true;
         }
         return false;
     }
@@ -124,7 +120,7 @@ class CLayout extends CComponent
     public function render()
     {
         if (!($this->layout)) {
-            CLog::getInstance()->_error('[' . __CLASS__ . '] Layout file not selected!');
+            //CLog::getInstance()->_error('[' . __CLASS__ . '] Layout file not selected!');
             mfe::stop(0x00000E3);
         }
 
@@ -137,8 +133,8 @@ class CLayout extends CComponent
         });
 
         if (!$this->loadLayout()) {
-            CLog::getInstance()->_error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
-                . PHP_EOL . implode('; ' . PHP_EOL, mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
+            //CLog::getInstance()->_error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
+            //    . PHP_EOL . implode('; ' . PHP_EOL, mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
             mfe::stop(0x00000E3);
         }
         $this->result = ob_get_contents();
