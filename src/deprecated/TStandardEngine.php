@@ -12,20 +12,6 @@ use mfe\core\mfe;
 trait TStandardEngine
 {
     /**
-     * Behavior trait constructor
-     */
-    static public function TStandardEngine()
-    {
-        mfe::$options = [
-            'MFE_PHAR_INIT' => false,
-            'MFE_AUTOLOAD' => false,
-
-            'stackObject' => 'mfe\core\libs\components\CObjectsStack',
-            'FileHelper' => 'mfe\core\libs\helpers\CSimpleFileHelper',
-        ];
-    }
-
-    /**
      * Trait constructor
      */
     protected function __TStandardEngine()
