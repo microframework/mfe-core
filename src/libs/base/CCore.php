@@ -10,21 +10,10 @@ use mfe\core\mfe;
  */
 abstract class CCore extends CComponent implements IComponent
 {
-    static public $instance;
-
-    static public function getInstance()
-    {
-        if (null === static::$instance) {
-            /** @var CCore $class */
-            $class = static::class;
-            static::$instance = new $class();
-        }
-        return static::$instance;
-    }
-
     /**
      * @param $option
      * @return bool|null
+     * @throws CException
      */
     static protected function option($option)
     {

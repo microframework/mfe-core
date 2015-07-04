@@ -12,7 +12,7 @@ use mfe\core\mfe;
  * @deprecated
  * @package mfe\core\cores
  */
-class Page extends CCore implements IComponent
+class Page extends CCore
 {
     const COMPONENT_NAME = 'Page';
     const COMPONENT_VERSION = '1.0.0';
@@ -20,7 +20,7 @@ class Page extends CCore implements IComponent
     /** @var Page */
     static public $instance;
 
-    public $uid = null;
+    public $uid;
 
     public $_language = 'en_US';
     public $_dir = 'ltr';
@@ -28,14 +28,14 @@ class Page extends CCore implements IComponent
     public $_type = 'text\html';
 
     public $_title = 'Default Page';
-    public $_icon = null;
+    public $_icon;
     public $_viewport = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
 
-    public $_author = null;
-    public $_keywords = null;
-    public $_description = null;
+    public $_author;
+    public $_keywords;
+    public $_description;
 
-    public $_content = null;
+    public $_content;
 
     protected $_auto_refresh = [false, 0];
     protected $_auto_redirect = [false, '/', 0];
@@ -46,7 +46,7 @@ class Page extends CCore implements IComponent
 
     public $data = [];
 
-    protected $layout = null;
+    protected $layout;
     protected $layout_extension = '.tpl';
 
     public function __toString()
@@ -65,10 +65,9 @@ class Page extends CCore implements IComponent
         } catch (CException $e) {
         }
 
-        return ('_' == substr($key, 0, 1) && isset($this->{$value})) ?
+        return ('_' === substr($key, 0, 1) && isset($this->{$value})) ?
             ($this->{$key}) :
-            ((isset($this->data[$key])) ?
-                $this->data[$key] : null);
+            ((array_key_exists($key, $this->data)) ? $this->data[$key] : null);
     }
 
     /**
@@ -83,7 +82,7 @@ class Page extends CCore implements IComponent
         } catch (CException $e) {
         }
 
-        if ('_' == substr($key, 0, 1) && isset($this->{$key})) {
+        if (isset($this->{$key}) && '_' === substr($key, 0, 1)) {
             $this->{$key} = $value;
             return true;
         }
@@ -93,25 +92,27 @@ class Page extends CCore implements IComponent
         return true;
     }
 
-    public function __construct($layout = null, $data = [], $uid = null)
+    public function __construct($layout = null, array $data = [], $uid = null)
     {
 //        if (!MfE::app()->loader->aliasDirectoryExist('@layout')) {
 //            MfE::app()->loader->registerAliasDirectory('@layout', 'assets/layouts');
 //        }
 
-        if (!is_null($layout)) {
+        if (null !== $layout) {
             $this->setLayout($layout);
         }
 
-        if (!is_null($data)) $this->data = $data;
-        if (!is_null($uid)) {
+        if (null !== $data) {
+            $this->data = $data;
+        }
+        if (null !== $uid) {
             $this->uid = 'page_' . $uid;
         } else {
             $this->uid = 'page_' . md5($this);
         }
     }
 
-    public function render($data = [])
+    public function render(array $data = [])
     {
         array_merge($this->data, $data);
         if (method_exists('\mfe\Display', 'display')) {
@@ -123,7 +124,7 @@ class Page extends CCore implements IComponent
     protected function parse($layout)
     {
         return preg_replace_callback(
-            '#\{([a-z0-9\-_\#]*?)\}#Ssi',
+            '#\{([a-z0-9\-_\#]*?)\}#Si',
             function ($match) {
                 return $this->{substr($match[0], 1, -1)};
             }, $layout);
@@ -131,7 +132,7 @@ class Page extends CCore implements IComponent
 
     protected function layout()
     {
-        return (!is_null($this->layout)) ?
+        return (null !== $this->layout) ?
             $this->parse($this->layout) : $this->parse($this->get_default_layout());
     }
 
@@ -141,14 +142,14 @@ class Page extends CCore implements IComponent
     <head>
         <meta charset='{_charset}'>
         <meta name='viewport' content='{_viewport}'>\r\n" .
-        ((!is_null($this->_icon)) ? ("\r\n        <link rel='shortcut icon' href='{_icon}' type='image/x-icon'>") : '') .
+        ((null !== $this->_icon) ? ("\r\n        <link rel='shortcut icon' href='{_icon}' type='image/x-icon'>") : '') .
         "\r\n        <title>{_title}</title>" .
-        ((!is_null($this->_author)) ? ("\r\n        <meta name='author' content='{_author}'>") : '') .
-        ((!is_null($this->_keywords)) ? ("\r\n        <meta name='keywords' content='{_keywords}'>") : '') .
-        ((!is_null($this->_description)) ? ("\r\n        <meta name='description' content='{_description}'>") : '') .
-        (!empty($this->meta) ? $this->generateMetaTags() . "\r\n" : '') .
-        (!empty($this->styles) ? $this->generateStyles() . "\r\n" : '') .
-        (!empty($this->scripts) ? $this->generateScripts() : '') .
+        ((null !== $this->_author) ? ("\r\n        <meta name='author' content='{_author}'>") : '') .
+        ((null !== $this->_keywords) ? ("\r\n        <meta name='keywords' content='{_keywords}'>") : '') .
+        ((null !== $this->_description) ? ("\r\n        <meta name='description' content='{_description}'>") : '') .
+        (([] !== $this->meta) ? $this->generateMetaTags() . "\r\n" : '') .
+        (([] !== $this->styles) ? $this->generateStyles() . "\r\n" : '') .
+        (([] !== $this->scripts) ? $this->generateScripts() : '') .
         "\r\n    </head>
     <body>
         {_content}
@@ -200,15 +201,6 @@ class Page extends CCore implements IComponent
         return $html;
     }
 
-    static public function getInstance($layout = null, $data = [], $uid = null)
-    {
-        if (is_null(self::$instance)) {
-            $class = static::class;
-            self::$instance = new $class($layout, $data, $uid);
-        }
-        return self::$instance;
-    }
-
     public function setLayout($layout)
     {
         if (!($this->layout = MfE::loadFile('@engine.@layout.' . $layout, $this->layout_extension))) {
@@ -220,7 +212,7 @@ class Page extends CCore implements IComponent
 
     public function setLayoutExtension($extension)
     {
-        if (substr($extension, 0, 1) == ".") {
+        if ('.' === substr($extension, 0, 1)) {
             $this->layout_extension = $extension;
         }
         return $this;
@@ -241,11 +233,5 @@ class Page extends CCore implements IComponent
     public function getData()
     {
         return $this->data;
-    }
-
-    static public function registerComponent()
-    {
-        MfE::registerComponent('page', [static::class, 'getInstance']);
-        return true;
     }
 }

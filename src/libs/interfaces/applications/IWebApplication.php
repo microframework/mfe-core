@@ -6,5 +6,5 @@
  */
 interface IWebApplication extends IStandardApplication
 {
-
+    public function run();
 }

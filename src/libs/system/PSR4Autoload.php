@@ -35,7 +35,7 @@ class PSR4Autoload
         if ($prepend) {
             array_unshift($this->prefixes[$prefix], $base_dir);
         } else {
-            array_push($this->prefixes[$prefix], $base_dir);
+            $this->prefixes[$prefix][] = $base_dir;
         }
     }
 

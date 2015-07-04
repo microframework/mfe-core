@@ -39,10 +39,10 @@ class CEvent implements IEvent
         $result = null;
 
         if (
-            ((is_array($this->callback) && 2 == count($this->callback) && is_callable($this->callback))
+            is_callable($this->callback) &&
+            ((is_array($this->callback) && 2 === count($this->callback) && is_callable($this->callback))
                 || (is_string($this->callback) && is_callable($this->callback))
                 || (is_object($this->callback) && ($this->callback instanceof Closure)))
-            && is_callable($this->callback)
         ) {
             $result = call_user_func_array($this->callback, $arguments);
         }

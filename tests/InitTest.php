@@ -16,7 +16,7 @@ class InitTest extends \PHPUnit_Framework_TestCase
 
         $config = $initObject();
 
-        $this->assertEquals(
+        static::assertEquals(
             $config['params']['environment'], $this->config['params']['environment']
         );
     }
@@ -24,7 +24,7 @@ class InitTest extends \PHPUnit_Framework_TestCase
     public function testAddFailConfigDir()
     {
         $result = Init::addConfigPath(__DIR__ . '/mfe.config.php', Init::DIR_TYPE_DATA);
-        $this->assertFalse($result);
+        static::assertFalse($result);
     }
 
     public function testDeleteAndResetConfigDir()
@@ -34,9 +34,9 @@ class InitTest extends \PHPUnit_Framework_TestCase
 
         $config1 = $initObject();
 
-        $result = $initObject::removeConfigPath(md5(rand()), Init::DIR_TYPE_DATA);
+        $result = $initObject::removeConfigPath(md5(mt_rand()), Init::DIR_TYPE_DATA);
 
-        $this->assertFalse($result);
+        static::assertFalse($result);
 
         $initObject::removeConfigPath($hash, Init::DIR_TYPE_DATA);
 
@@ -44,6 +44,6 @@ class InitTest extends \PHPUnit_Framework_TestCase
 
         $config2 = $initObject();
 
-        $this->assertNotEquals($config1, $config2);
+        static::assertNotEquals($config1, $config2);
     }
 }

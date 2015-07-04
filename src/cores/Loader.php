@@ -1,6 +1,6 @@
 <?php namespace mfe\core\cores;
 
-use mfe\core\libs\interfaces\IComponent;
+use mfe\core\libs\components\CException;
 use mfe\core\deprecated\TStandardLoader;
 
 use mfe\core\libs\base\CCore;
@@ -13,7 +13,7 @@ use mfe\core\mfe;
  * @deprecated
  * @package mfe\core\cores
  */
-class Loader extends CCore implements IComponent
+class Loader extends CCore
 {
     use TStandardLoader;
 
@@ -25,6 +25,8 @@ class Loader extends CCore implements IComponent
 
     /**
      * Constructor
+     *
+     * @throws CException
      */
     public function __construct()
     {
@@ -40,7 +42,6 @@ class Loader extends CCore implements IComponent
         }
 
         $this->registerLoader();
-        return self::$instance;
     }
 
     /**
@@ -65,14 +66,5 @@ class Loader extends CCore implements IComponent
         }
 
         return $components;
-    }
-
-    /**
-     * @return bool
-     */
-    static public function registerComponent()
-    {
-        MfE::registerComponent('loader', [static::class, 'getInstance']);
-        return true;
     }
 }

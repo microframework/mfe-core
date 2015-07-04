@@ -1,35 +1,19 @@
 <?php namespace mfe\core\libs\base;
 
 use mfe\core\libs\components\CException;
-use mfe\core\libs\system\IoC;
+use mfe\core\libs\system\Object;
 use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
  * Class CComponent
  * @package mfe\core\libs\base
  */
-abstract class CComponent extends IoC
+abstract class CComponent extends Object
 {
     const COMPONENT_NAME = 'Default component';
     const COMPONENT_VERSION = '1.0.0';
 
     use TSystemComponent;
-
-    /** @var CComponent */
-    static public $instance;
-
-    /**
-     * @return CComponent
-     */
-    static public function getInstance()
-    {
-        if (null === static::$instance) {
-            /** @var CComponent $class */
-            $class = static::class;
-            static::$instance = new $class();
-        }
-        return static::$instance;
-    }
 
     /**
      * @return string
@@ -72,7 +56,9 @@ abstract class CComponent extends IoC
      */
     public function __get($key)
     {
-        if (parent::has($key)) return parent::get($key); //IoC
+        if (parent::has($key)) {
+            return parent::get($key); // Object
+        }
 
         if (method_exists($this, 'get' . ucfirst($key)) &&
             (
@@ -92,7 +78,7 @@ abstract class CComponent extends IoC
      * @return mixed
      * @throws CException
      */
-    public function __call($method, $arguments = [])
+    public function __call($method, array $arguments = [])
     {
         if (method_exists($this, 'call' . ucfirst($method)) &&
             (new \ReflectionObject($this))->getMethod('call' . ucfirst($method))->isProtected()
@@ -101,22 +87,5 @@ abstract class CComponent extends IoC
         }
 
         throw new CException('Try to get unknown method: ' . $method);
-    }
-
-    /**
-     * @param $method
-     * @param array $arguments
-     * @return mixed
-     * @throws CException
-     */
-    static public function __callStatic($method, $arguments = [])
-    {
-        if (method_exists(self::getInstance(), 'call' . ucfirst($method)) &&
-            (new \ReflectionObject(self::getInstance()))->getMethod('call' . ucfirst($method))->isProtected()
-        ) {
-            return call_user_func_array([self::getInstance(), 'call' . ucfirst($method)], $arguments);
-        }
-
-        throw new CException('Try to get unknown static method: ' . $method);
     }
 }

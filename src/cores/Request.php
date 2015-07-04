@@ -1,9 +1,6 @@
 <?php namespace mfe\core\cores;
 
-use mfe\core\libs\interfaces\IComponent;
-
 use mfe\core\libs\base\CCore;
-use mfe\core\mfe;
 
 /**
  * Class Request
@@ -11,7 +8,7 @@ use mfe\core\mfe;
  * @deprecated
  * @package mfe\core\cores
  */
-class Request extends CCore implements IComponent
+class Request extends CCore
 {
     const COMPONENT_NAME = 'Request';
     const COMPONENT_VERSION = '1.0.0';
@@ -41,11 +38,5 @@ class Request extends CCore implements IComponent
     public function initProtocol_AJAX()
     {
 
-    }
-
-    static public function registerComponent()
-    {
-        MfE::registerComponent('request', [static::class, 'initRequest']);
-        return true;
     }
 }

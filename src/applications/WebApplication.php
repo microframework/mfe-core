@@ -16,5 +16,9 @@ class WebApplication extends CApplication implements IHybridApplication
     /** @constant string, Please not modify! */
     const APPLICATION_DIR = __DIR__;
 
-    public $result = "Hello World";
+    public function run()
+    {
+        $this->result = 'Hello World';
+        parent::run();
+    }
 }

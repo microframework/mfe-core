@@ -18,7 +18,7 @@ class CDisplay extends CComponent
      * @param $data
      * @param $type
      */
-    static public function display($data, $type)
+    static public function display($data, $type = self::TYPE_PAGE)
     {
         print $data;
     }

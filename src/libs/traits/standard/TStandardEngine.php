@@ -15,7 +15,9 @@ trait TStandardEngine
     static protected $traitsRegister = [];
 
     /**
-    /**     * Trait constructor
+     * Trait constructor
+     *
+     * @throws \mfe\core\libs\components\CException
      */
     protected function __TStandardEngine()
     {
@@ -27,12 +29,12 @@ trait TStandardEngine
     }
 
     /**
-     * @return mfe
+     * @return MfE
      */
-    static public function getInstance()
+    static public function createEngine()
     {
         $class = static::class;
-        /** @var mfe $class */
+        /** @var MfE $class */
         if (null === $class::$instance) {
             self::initTraitsBefore();
             $class::$instance = new $class();
@@ -49,10 +51,12 @@ trait TStandardEngine
     {
         foreach (class_uses(__CLASS__) as $trait) {
             /** @var TStandardEngine $trait */
-            $method = (substr($trait, 0, strlen(__NAMESPACE__)) == __NAMESPACE__)
+            $method = (__NAMESPACE__ === substr($trait, 0, strlen(__NAMESPACE__)))
                 ? substr($trait, strlen(__NAMESPACE__) + 1)
                 : $trait;
-            if (method_exists($trait, $method)) call_user_func_array([__CLASS__, $method], []);
+            if (method_exists($trait, $method)) {
+                call_user_func_array([__CLASS__, $method], []);
+            }
         }
     }
 
@@ -63,10 +67,12 @@ trait TStandardEngine
     {
         foreach (class_uses(__CLASS__) as $trait) {
             /** @var TStandardEngine $trait */
-            $method = (substr($trait, 0, strlen(__NAMESPACE__)) == __NAMESPACE__)
+            $method = (__NAMESPACE__ === substr($trait, 0, strlen(__NAMESPACE__)))
                 ? '__' . substr($trait, strlen(__NAMESPACE__) + 1)
                 : '__' . $trait;
-            if (method_exists($trait, $method)) call_user_func_array([__CLASS__, $method], []);
+            if (method_exists($trait, $method)) {
+                call_user_func_array([__CLASS__, $method], []);
+            }
         }
     }
 
@@ -79,11 +85,15 @@ trait TStandardEngine
 
     /**
      * Print end time
+     *
      * @param MfE|IEngine $application
+     * @throws \mfe\core\libs\components\CException
      */
     static protected function end(&$application)
     {
-        if (!$application::$DEBUG) return;
+        if (!$application::$DEBUG) {
+            return;
+        }
 
         /** @var mfe $class */
         $class = static::class;
@@ -108,6 +118,6 @@ trait TStandardEngine
      */
     public function __toString()
     {
-        return (__TRAIT__) ? __TRAIT__ : __CLASS__;
+        return (__TRAIT__) ?: __CLASS__;
     }
 }

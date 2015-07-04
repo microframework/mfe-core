@@ -38,7 +38,9 @@ final class Init
         error_reporting(E_ALL);
         ini_set('display_errors', true);
 
-        if (null !== $DIR) self::addConfigPath($DIR, $type);
+        if (null !== $DIR){
+            self::addConfigPath($DIR, $type);
+        }
 
         $this->scanAndOverwrite();
     }
@@ -93,7 +95,7 @@ final class Init
             foreach ($constants as $constant => $value) {
                 if (substr($constant, 0, 4) === 'MFE_') {
                     $key = strtolower(substr($constant, 4));
-                    if (array_key_exists($key, $this->config['options']) && $key !== 'time') {
+                    if ('time' !== $key && array_key_exists($key, $this->config['options'])) {
                         $this->config['options'][$key] = $value;
                     }
                 }

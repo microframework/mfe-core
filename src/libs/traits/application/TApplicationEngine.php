@@ -22,7 +22,9 @@ trait TApplicationEngine
         $result = null;
         $return_false = false;
         foreach ($params as $key) {
-            if ($key === 'options' || $key === 'params') $return_false = true;
+            if ($key === 'options' || $key === 'params') {
+                $return_false = true;
+            }
 
             $config = (null === $result) ? MfE::$config : $result;
 
@@ -57,20 +59,5 @@ trait TApplicationEngine
     public function getParam($param)
     {
         return self::getConfigData('params.' . $param);
-    }
-
-    /**
-     * @param $dependence
-     * @throws CException
-     */
-    static public function dependence($dependence)
-    {
-        if (is_string($dependence)) {
-            if (!class_exists($dependence, false)) throw new CException('Not found dependence class: ' . $dependence);
-        } elseif (is_array($dependence) && !empty($dependence)) {
-            foreach ($dependence as $value) {
-                if (!class_exists($value, false)) throw new CException('Not found dependence class: ' . $value);
-            }
-        }
     }
 }

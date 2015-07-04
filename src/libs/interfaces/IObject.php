@@ -1,10 +1,10 @@
 <?php namespace mfe\core\libs\interfaces;
 
 /**
- * Class IoC
+ * Class IObject
  * @package mfe\core\libs\system
  */
-interface IIoC
+interface IObject
 {
     /**
      * @param $key

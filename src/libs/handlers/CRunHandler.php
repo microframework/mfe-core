@@ -4,6 +4,7 @@ use mfe\core\libs\components\CDebug;
 
 /**
  * Class CRunHandler
+ *
  * @package mfe\core\libs\handlers
  */
 class CRunHandler
@@ -19,7 +20,9 @@ class CRunHandler
 
     static public function run($handler = null)
     {
-        if (null !== $handler) self::$currentHandler = $handler;
+        if (null !== $handler) {
+            self::$currentHandler = $handler;
+        }
         return true;
     }
 

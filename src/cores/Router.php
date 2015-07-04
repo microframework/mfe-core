@@ -1,9 +1,6 @@
 <?php namespace mfe\core\cores;
 
-use mfe\core\libs\interfaces\IComponent;
-
 use mfe\core\libs\base\CCore;
-use mfe\core\mfe;
 
 //mfe::dependence('request');
 
@@ -13,7 +10,7 @@ use mfe\core\mfe;
  * @deprecated
  * @package mfe\core\cores
  */
-class Router extends CCore implements IComponent
+class Router extends CCore
 {
     const COMPONENT_NAME = 'Router';
     const COMPONENT_VERSION = '1.0.0';
@@ -26,11 +23,5 @@ class Router extends CCore implements IComponent
     public function routerInit()
     {
         $this->route = '';
-    }
-
-    static public function registerComponent()
-    {
-        MfE::registerCoreComponent('router', [static::class, 'routerInit']);
-        return true;
     }
 }

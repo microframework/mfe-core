@@ -9,4 +9,4 @@ use mfe\core\applications\WebApplication;
 $application = new WebApplication();
 $application->run();
 
-WebApplication::app();
+//WebApplication::app();

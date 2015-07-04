@@ -14,9 +14,6 @@ abstract class CManager extends CComponent
     /** @var ArrayObject */
     private $globalRegister;
 
-    /** @var CManager */
-    static public $instance;
-
     public function __construct()
     {
         $this->localRegister = new ArrayObject();

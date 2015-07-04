@@ -13,7 +13,7 @@ class CFilterVariable
     const FILTER_STRING = 'filter_string';
     const FILTER_ARRAY = 'filter_array';
 
-    private $value = null;
+    private $value;
 
     public function __construct($value)
     {

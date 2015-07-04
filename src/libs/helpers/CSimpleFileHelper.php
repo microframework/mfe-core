@@ -16,23 +16,29 @@ class CSimpleFileHelper
 
     /**
      * @param $dir
-     * @param null $trim
+     * @param null|integer $trim
      * @return array
      */
     final static public function scandir_recursive($dir, $trim = null)
     {
         $result = [];
-        if (null === $trim) $trim = strlen($dir);
+        if (null === $trim) {
+            $trim = strlen($dir);
+        }
         if (file_exists($dir) && is_dir($dir)) {
             $path = scandir($dir);
             foreach ($path as $fileInfo) {
                 $file = $dir . self::$SEPARATOR . $fileInfo;
-                if (is_dir($file) && $fileInfo != '.' && $fileInfo != '..') {
+                if ('.' !== $fileInfo && '..' !== $fileInfo && is_dir($file)) {
+                    /** @noinspection SlowArrayOperationsInLoopInspection */
                     $result = array_merge($result, self::scandir_recursive($file, $trim));
                 }
-                if (is_file($file) && $fileInfo != '.' && $fileInfo != '..') {
+                if ('.' !== $fileInfo && '..' !== $fileInfo && is_file($file)) {
                     $line = substr($file, $trim);
-                    if ('/' == substr($line, 0, 1) || '\\' == substr($line, 0, 1)) $line = substr($line, 1);
+                    $separator = substr($line, 0, 1);
+                    if ('/' === $separator || '\\' === $separator) {
+                        $line = substr($line, 1);
+                    }
                     $result[] = str_replace(['//'], '/', $line);
                 }
             }
@@ -40,9 +46,13 @@ class CSimpleFileHelper
         return $result;
     }
 
+    /**
+     * @param $size
+     * @return string
+     */
     static public function convert_size($size)
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
-        return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[intval($i)];
+        return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[(int)$i];
     }
 }

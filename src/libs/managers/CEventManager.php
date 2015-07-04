@@ -33,7 +33,7 @@ class CEventManager extends CManager
 
         if ((is_object($callback) && ($callback instanceof Closure || $callback instanceof IEvent))) {
             return (string)md5(spl_object_hash($callback));
-        } elseif (is_array($callback) && 2 == count($callback)) {
+        } elseif (is_array($callback) && 2 === count($callback)) {
             return md5(implode(';', $callback));
         } elseif (is_string($callback)) {
             return md5($callback);
@@ -49,6 +49,7 @@ class CEventManager extends CManager
      * @param $eventName
      * @param $callback
      * @return $this
+     * @throws CException
      */
     protected function callOn($eventName, $callback)
     {
@@ -74,6 +75,7 @@ class CEventManager extends CManager
      * @param $eventName
      * @param $callback
      * @return $this
+     * @throws CException
      */
     protected function callOff($eventName, $callback)
     {
@@ -101,9 +103,9 @@ class CEventManager extends CManager
      * @throws CException
      * @return mixed|null
      */
-    protected function callTrigger($eventName, $arguments = [], Closure $callback = null)
+    protected function callTrigger($eventName, array $arguments = [], Closure $callback = null)
     {
-        if (!array_key_exists($eventName, $this->getRegister()) || 0 == count($this->getRegister()[$eventName])) {
+        if (!array_key_exists($eventName, $this->getRegister()) || 0 === count($this->getRegister()[$eventName])) {
             return $this;
         }
         foreach ($this->getRegister()[$eventName] as $hash => $event) {

@@ -1,8 +1,6 @@
 <?php namespace mfe\core\libs\base;
 
 /*
-TODO:: Ядра, как они инициализируются внутри системы?
-TODO:: Если объекты трейтов реализуются клонированием, нужно ли наследовать трейты?!
 TODO:: Регистрация компонентов? она же ведь должна проходить исключительно в приложении?
 */
 
@@ -30,21 +28,15 @@ abstract class CApplication extends CComponent
     use TStandardApplication;
 
     /** @var string */
-    public $result;
-
-    /** @var CApplication $class */
-    static public $instance;
+    protected $result;
 
     /**
-     *
+     * @throws \Exception
      */
     public function __construct()
     {
         $this->init();
-
-        if (null === self::$instance) {
-            $this->globalOverrideApplicationInstance();
-        }
+        $this->globalOverrideApplicationInstance();
     }
 
     /**
@@ -52,12 +44,9 @@ abstract class CApplication extends CComponent
      */
     public function init()
     {
-        if(null !== static::APPLICATION_DIR) {
+        if (null !== static::APPLICATION_DIR) {
             self::addConfigPath(static::APPLICATION_DIR, static::class);
         }
-
-        //$this->cloneOptions();
-        //$this->cloneRegister();
     }
 
 
@@ -71,50 +60,19 @@ abstract class CApplication extends CComponent
         $DIR = $_DIR . '/' . (new \ReflectionClass($className))->getShortName();
         (defined('ROOT')) or define('ROOT', $DIR);
 
-        if (!file_exists($DIR)) {
-            if (is_writable($_DIR)) {
-                mkdir($DIR, 0666, true);
-            }
+        if (!file_exists($DIR) && is_writable($_DIR)) {
+            mkdir($DIR, 0666, true);
         }
 
         return Init::addConfigPath($DIR, Init::DIR_TYPE_APP);
     }
 
     /**
-     *
+     * @throws \Exception
      */
     public function globalOverrideApplicationInstance()
     {
-        MfE::getInstance()->registerApplication(self::$instance = $this);
-    }
-
-    /**
-     *
-     */
-    protected function cloneRegister()
-    {
-
-    }
-
-    /**
-     *
-     */
-    protected function cloneOptions()
-    {
-
-    }
-
-    /**
-     * @return CApplication
-     */
-    static public function getInstance()
-    {
-        if (null === self::$instance) {
-            /** @var CApplication $class */
-            $class = static::class;
-            new $class();
-        }
-        return self::$instance;
+        MfE::getInstance()->registerApplication($this);
     }
 
     /**
@@ -137,14 +95,6 @@ abstract class CApplication extends CComponent
      */
     public function run()
     {
-        self::display($this->result, CDisplay::TYPE_PAGE);
-    }
-
-    /**
-     * @return CApplication
-     */
-    static public function app()
-    {
-        return self::getInstance();
+        self::display($this->result . PHP_EOL, CDisplay::TYPE_PAGE);
     }
 }

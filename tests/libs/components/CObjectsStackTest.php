@@ -17,7 +17,8 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
 
     protected function printStackTable(CObjectsStack $stack) {
         $result = '|';
-        for ($j = 0; $j < count($stack); $j++) {
+        $count = count($stack);
+        for ($j = 0; $j < $count; $j++) {
             $result .= $j . '|';
         }
         $result .= PHP_EOL . '|';
@@ -35,8 +36,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testInterfaceInstance() {
-        $this->assertInstanceOf('mfe\core\libs\interfaces\IObjectsStack', $this->stack,
-            '');
+        static::assertInstanceOf('mfe\core\libs\interfaces\IObjectsStack', $this->stack, '');
     }
 
     public function testCreate() {
@@ -47,7 +47,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
             $temp_array[] = $value;
         }
 
-        $this->assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], $temp_array, 'Stack not formed array when iterated');
+        static::assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], $temp_array, 'Stack not formed array when iterated');
         $this->debugTable('TestCreate', $this->stack);
     }
 
@@ -63,7 +63,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
             $temp_array[] = $value;
         }
 
-        $this->assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], $temp_array, 'Stack not formed array when iterated');
+        static::assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], $temp_array, 'Stack not formed array when iterated');
         $this->debugTable('TestAdd', $this->stack);
     }
 
@@ -76,7 +76,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
             $temp_array[] = $value;
         }
 
-        $this->assertEquals([1, 2, 3], $temp_array, 'Stack not formed array when iterated');
+        static::assertEquals([1, 2, 3], $temp_array, 'Stack not formed array when iterated');
         $this->debugTable('TestRemove', $this->stack);
     }
 
@@ -88,7 +88,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
             $temp_array[] = $value;
         }
 
-        $this->assertEquals([], $temp_array, 'Stack not formed array when iterated');
+        static::assertEquals([], $temp_array, 'Stack not formed array when iterated');
         $this->debugTable('TestFlush', $this->stack);
     }
 
@@ -102,7 +102,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
             $temp_array[] = $value;
         }
 
-        $this->assertEquals([0, 1, 3, 4, 5, 6, 7, 8, 2, 9], $temp_array, 'Stack not formed array when iterated');
+        static::assertEquals([0, 1, 3, 4, 5, 6, 7, 8, 2, 9], $temp_array, 'Stack not formed array when iterated');
         $this->debugTable('TestUp', $this->stack);
     }
 
@@ -116,7 +116,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
             $temp_array[] = $value;
         }
 
-        $this->assertEquals([3, 0, 1, 2, 4, 5, 6, 7, 8, 9], $temp_array, 'Stack not formed array when iterated');
+        static::assertEquals([3, 0, 1, 2, 4, 5, 6, 7, 8, 9], $temp_array, 'Stack not formed array when iterated');
         $this->debugTable('TestDown', $this->stack);
     }
 }

@@ -33,11 +33,11 @@ class PageTest extends \PHPUnit_Framework_TestCase {
         ];
 
         $this->page->addData($this->data);
-        $this->assertEquals(array_merge($data, $this->data), $this->page->getData());
+        static::assertEquals(array_merge($data, $this->data), $this->page->getData());
     }
 
     public function testSetData() {
         $this->page->setData($this->data);
-        $this->assertEquals($this->data, $this->page->getData());
+        static::assertEquals($this->data, $this->page->getData());
     }
 }

@@ -22,13 +22,15 @@ class CLayout extends CComponent
      * @param bool $layout
      * @param array $data
      */
-    public function __construct($layout = false, $data = [])
+    public function __construct($layout = false, array $data = [])
     {
-        if (!is_null($layout)) {
+        if (null !== $layout) {
             $this->setLayout($layout);
         }
 
-        if (is_array($data) && !empty($data)) $this->data = $data;
+        if (is_array($data) && [] !== $data) {
+            $this->data = $data;
+        }
     }
 
     /**
@@ -45,7 +47,7 @@ class CLayout extends CComponent
      */
     public function __get($value)
     {
-        return (isset($this->data[$value])) ? $this->data[$value] : null;
+        return (array_key_exists($value, $this->data)) ? $this->data[$value] : null;
     }
 
     /**
@@ -54,7 +56,7 @@ class CLayout extends CComponent
      */
     public function __isset($value)
     {
-        return (isset($this->data[$value])) ? true : false;
+        return (array_key_exists($value, $this->data)) ? true : false;
     }
 
     /**
@@ -83,7 +85,9 @@ class CLayout extends CComponent
      */
     public function setData($data)
     {
-        if (is_array($data) && !empty($data)) $this->data = $data;
+        if (is_array($data) && [] !== $data) {
+            $this->data = $data;
+        }
     }
 
     /**
@@ -93,7 +97,7 @@ class CLayout extends CComponent
     protected function parse($layout)
     {
         return preg_replace_callback(
-            '#\{([a-z0-9\-_\#]*?)\}#Ssi',
+            '#\{([a-z0-9\-_\#]*?)\}#Si',
             function ($match) {
                 return $this->{substr($match[0], 1, -1)};
             }, $layout);
@@ -116,26 +120,25 @@ class CLayout extends CComponent
 
     /**
      * @return string
+     * @throws CException
      */
     public function render()
     {
         if (!($this->layout)) {
-            //CLog::getInstance()->_error('[' . __CLASS__ . '] Layout file not selected!');
             mfe::stop(0x00000E3);
         }
 
         ob_start(function ($layout) {
             return preg_replace_callback(
-                '#\{([a-z0-9\-_\#]*?)\}#Ssi',
+                '#\{([a-z0-9\-_\#]*?)\}#Si',
                 function ($match) {
                     return isset($this->{substr($match[0], 1, -1)}) ? $this->{substr($match[0], 1, -1)} : $match[0];
                 }, $layout);
         });
 
         if (!$this->loadLayout()) {
-            //CLog::getInstance()->_error('[' . __CLASS__ . '] Not found layout file: ' . $this->layout . $this->layout_extension . ' in directories: '
-            //    . PHP_EOL . implode('; ' . PHP_EOL, mfe::app()->loader->getRealPaths('@engine.@layout.', true)));
             mfe::stop(0x00000E3);
+            // throw new CException('Not found layout file: ' . $this->layout . $this->layout_extension);
         }
         $this->result = ob_get_contents();
         ob_clean();

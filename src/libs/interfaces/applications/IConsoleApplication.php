@@ -6,5 +6,5 @@
  */
 interface IConsoleApplication extends IStandardApplication
 {
-
+    public function run();
 }
