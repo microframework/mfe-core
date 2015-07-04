@@ -19,7 +19,7 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
 
     public function __construct($array = [], $sid = null)
     {
-        if (!is_null($sid)) $this->sid = md5($sid);
+        if (null !== $sid) $this->sid = md5($sid);
         if (is_array($array) && !empty($array)) {
             foreach ($array as $key => $value) {
                 $this->$key = $value;
@@ -78,10 +78,10 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
     {
         $this->index = 0;
         foreach (parent::getArrayCopy() as $key => $value) {
-            if (!is_null($value)) parent::offsetUnset($key);
+            if (null !== $value) parent::offsetUnset($key);
         }
         foreach ($this->objectStack as $key => $value) {
-            if (!is_null($value)) $this->$key = $value;
+            if (null !== $value) $this->$key = $value;
         }
         return $this;
     }
@@ -97,7 +97,7 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         if ($position == $to_position) return $this;
         $value = (parent::offsetExists($to_position)) ? parent::offsetGet($to_position) : null;
         parent::offsetSet($to_position, parent::offsetGet($position));
-        if (!is_null($value)) {
+        if (null !== $value) {
             parent::offsetSet($position, $value);
         } else {
             parent::offsetUnset($position);
@@ -120,14 +120,14 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         $inserted = false;
         $this->index = 0;
         foreach (parent::getArrayCopy() as $offset => $value) {
-            if (!is_null($value)) parent::offsetUnset($offset);
+            if (null !== $value) parent::offsetUnset($offset);
         }
         foreach ($this->objectStack as $offset => $value) {
             if ($this->index == $new_position) {
                 $this->$key = $temp_value;
                 $inserted = true;
             }
-            if (!is_null($value)) $this->{$offset} = $value;
+            if (null !== $value) $this->{$offset} = $value;
         }
         if (!$inserted) $this->$key = $temp_value;
         $this->save_reposition();
@@ -148,14 +148,14 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         $inserted = false;
         $this->index = 0;
         foreach (parent::getArrayCopy() as $offset => $value) {
-            if (!is_null($value)) parent::offsetUnset($offset);
+            if (null !== $value) parent::offsetUnset($offset);
         }
         foreach ($this->objectStack as $offset => $value) {
             if ($this->index == $new_position) {
                 $this->$key = $temp_value;
                 $inserted = true;
             }
-            if (!is_null($value)) $this->{$offset} = $value;
+            if (null !== $value) $this->{$offset} = $value;
         }
         if (!$inserted) $this->$key = $temp_value;
         $this->save_reposition();
@@ -177,12 +177,12 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
 
         $array = [];
         foreach ($copy_stack as $key => $value) {
-            if (!is_null($value)) $array[array_search($value, $copy_array, true)] = $value;
+            if (null !== $value) $array[array_search($value, $copy_array, true)] = $value;
         }
 
         $this->flush();
         foreach ($array as $key => $value) {
-            if (!is_null($value)) $this->{$key} = $value;
+            if (null !== $value) $this->{$key} = $value;
         }
         return $this;
     }

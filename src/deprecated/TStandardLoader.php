@@ -3,7 +3,6 @@
 use mfe\core\libs\interfaces\ILoader;
 
 use mfe\core\libs\components\CObjectsStack;
-use mfe\core\libs\traits\application\TApplicationLoader;
 use mfe\core\mfe;
 
 //TODO:: Добавить документацию ко всем методам

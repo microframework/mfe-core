@@ -8,13 +8,17 @@ use mfe\core\libs\base\CComponent;
  */
 class CDisplay extends CComponent
 {
+    const TYPE_PAGE = 'page';
+    const TYPE_DEBUG = 'debug';
+
     /** @var CDisplay */
     static public $instance;
 
     /**
      * @param $data
+     * @param $type
      */
-    static public function display($data)
+    static public function display($data, $type)
     {
         print $data;
     }

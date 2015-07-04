@@ -28,7 +28,7 @@ class PSR4Autoload
         $prefix = trim($prefix, '\\') . '\\';
         $base_dir = rtrim($base_dir, DIRECTORY_SEPARATOR) . '/';
 
-        if (isset($this->prefixes[$prefix]) === false) {
+        if (false === array_key_exists($prefix, $this->prefixes)) {
             $this->prefixes[$prefix] = [];
         }
 
@@ -68,7 +68,7 @@ class PSR4Autoload
      */
     protected function loadMappedFile($prefix, $relative_class)
     {
-        if (isset($this->prefixes[$prefix]) === false) {
+        if (false === array_key_exists($prefix, $this->prefixes)) {
             return false;
         }
 

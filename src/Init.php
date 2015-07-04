@@ -30,15 +30,17 @@ final class Init
 
     /**
      * Start construct the Init
+     * @param $DIR
+     * @param string $type
      */
-    public function __construct()
+    public function __construct($DIR = null, $type = self::DIR_TYPE_MFE)
     {
         error_reporting(E_ALL);
         ini_set('display_errors', true);
 
-        $this->init();
-        $this->scanFoldersForConfigs();
-        $this->overrideConfigWithConstant();
+        if (null !== $DIR) self::addConfigPath($DIR, $type);
+
+        $this->scanAndOverwrite();
     }
 
     /**
@@ -49,6 +51,14 @@ final class Init
     public function __invoke()
     {
         return $this->config;
+    }
+
+    /**
+     * Reset config data
+     */
+    public function reset()
+    {
+        $this->scanAndOverwrite();
     }
 
     /**
@@ -64,38 +74,13 @@ final class Init
     }
 
     /**
-     * Add path to configs
-     *
-     * @param $dir
-     * @param string $type
-     * @return string
+     * Scan directories and overwrite config
      */
-    static public function addConfigPath($dir, $type = self::DIR_TYPE_DATA)
+    private function scanAndOverwrite()
     {
-        if (file_exists($dir) && is_dir($dir) && is_readable($dir)) {
-            return false;
-        }
-
-        $hash = md5((string)$dir);
-        self::$DIR_PRIORITY[$type][$hash] = $dir;
-
-        return $hash;
-    }
-
-    /**
-     * Remove path to configs
-     *
-     * @param $hash
-     * @param string $type
-     * @return bool
-     */
-    static public function removeConfigPath($hash, $type = self::DIR_TYPE_DATA)
-    {
-        if (isset(self::$DIR_PRIORITY[$type][$hash])) {
-            self::$DIR_PRIORITY[$type][$hash] = null;
-            return true;
-        }
-        return false;
+        $this->init();
+        $this->scanFoldersForConfigs();
+        $this->overrideConfigWithConstant();
     }
 
     /**
@@ -108,7 +93,7 @@ final class Init
             foreach ($constants as $constant => $value) {
                 if (substr($constant, 0, 4) === 'MFE_') {
                     $key = strtolower(substr($constant, 4));
-                    if (isset($this->config['options'][$key])) {
+                    if (array_key_exists($key, $this->config['options']) && $key !== 'time') {
                         $this->config['options'][$key] = $value;
                     }
                 }
@@ -141,5 +126,42 @@ final class Init
         /** @noinspection PhpIncludeInspection */
         $config = include($file);
         $this->config = array_merge_recursive($this->config, $config);
+    }
+
+    /**
+     * Add path to configs
+     *
+     * @param $DIR
+     * @param string $type
+     * @return string
+     */
+    static public function addConfigPath($DIR, $type = self::DIR_TYPE_DATA)
+    {
+        $DIR = str_replace('\\', '/', $DIR);
+
+        if (!file_exists($DIR) || !is_dir($DIR) || !is_readable($DIR)) {
+            return false;
+        }
+
+        $hash = md5((string)$DIR);
+        self::$DIR_PRIORITY[$type][$hash] = $DIR;
+
+        return $hash;
+    }
+
+    /**
+     * Remove path to configs
+     *
+     * @param $hash
+     * @param string $type
+     * @return bool
+     */
+    static public function removeConfigPath($hash, $type = self::DIR_TYPE_DATA)
+    {
+        if (array_key_exists($hash, self::$DIR_PRIORITY[$type])) {
+            self::$DIR_PRIORITY[$type][$hash] = null;
+            return true;
+        }
+        return false;
     }
 }

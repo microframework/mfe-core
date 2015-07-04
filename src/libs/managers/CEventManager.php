@@ -52,7 +52,7 @@ class CEventManager extends CManager
      */
     protected function callOn($eventName, $callback)
     {
-        if (!isset($this->getRegister()[$eventName])) {
+        if (!array_key_exists($eventName, $this->getRegister())) {
             $this->getRegister()[$eventName] = [];
         }
 
@@ -77,13 +77,13 @@ class CEventManager extends CManager
      */
     protected function callOff($eventName, $callback)
     {
-        if (!isset($this->getRegister()[$eventName])) {
+        if (!array_key_exists($eventName, $this->getRegister())) {
             return $this;
         }
 
         $hash = $this->callbackHash($callback);
 
-        if (isset($this->getRegister()[$eventName][$hash])) {
+        if (array_key_exists($hash, $this->getRegister()[$eventName])) {
             $this->getRegister()[$eventName][$hash] = null;
         }
 
@@ -103,7 +103,7 @@ class CEventManager extends CManager
      */
     protected function callTrigger($eventName, $arguments = [], Closure $callback = null)
     {
-        if (!isset($this->getRegister()[$eventName]) || 0 == count($this->getRegister()[$eventName])) {
+        if (!array_key_exists($eventName, $this->getRegister()) || 0 == count($this->getRegister()[$eventName])) {
             return $this;
         }
         foreach ($this->getRegister()[$eventName] as $hash => $event) {

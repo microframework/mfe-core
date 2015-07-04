@@ -7,6 +7,8 @@ use mfe\core\mfe;
 
 /**
  * Class Request
+ *
+ * @deprecated
  * @package mfe\core\cores
  */
 class Request extends CCore implements IComponent
@@ -43,7 +45,7 @@ class Request extends CCore implements IComponent
 
     static public function registerComponent()
     {
-        mfe::registerComponent('request', [static::class, 'initRequest']);
+        MfE::registerComponent('request', [static::class, 'initRequest']);
         return true;
     }
 }

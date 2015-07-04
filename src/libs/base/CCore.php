@@ -14,7 +14,7 @@ abstract class CCore extends CComponent implements IComponent
 
     static public function getInstance()
     {
-        if (is_null(static::$instance)) {
+        if (null === static::$instance) {
             /** @var CCore $class */
             $class = static::class;
             static::$instance = new $class();
@@ -28,7 +28,8 @@ abstract class CCore extends CComponent implements IComponent
      */
     static protected function option($option)
     {
-        return mfe::option($option);
+        //TODO:: Refactor this
+        return MfE::getConfigData('options'. $option);
     }
 
     /**

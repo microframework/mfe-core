@@ -4,7 +4,7 @@
  */
 
 //use mfe\core\core\Page;
-use mfe\core\MfE as engine;
+//use mfe\core\MfE as engine;
 
 ///** @var Page $page */
 //$page = engine::app()->page;
@@ -17,7 +17,7 @@ use mfe\core\MfE as engine;
 //    engine::display($page);
 //}
 
-//if (class_exists('Lua')) {
-//    $lua = new \Lua();
-//    $lua->eval("print('Hello World!');");
-//}
+if (class_exists('Lua')) {
+    $lua = new \Lua();
+    $lua->eval("print('Hello World!');");
+}

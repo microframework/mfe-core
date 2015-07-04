@@ -18,7 +18,7 @@
 		"ext-gd": "*"
 	},
 	"require-dev": {
-        "ext-xdebug": "2.2.*",
+
 		"phpunit/phpunit": "4.5.*",
 		"codeclimate/php-test-reporter": "@dev",
 		"heroku/heroku-buildpack-php": "*"

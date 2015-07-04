@@ -29,7 +29,7 @@ class IoC implements IIoC
      */
     public function get($key)
     {
-        return isset($this->container[$key]) ? $this->container : null;
+        return array_key_exists($key, $this->container) ? $this->container : null;
     }
 
     /**
@@ -51,7 +51,7 @@ class IoC implements IIoC
      */
     public function has($key)
     {
-        return isset($this->container[$key]) ? true : false;
+        return array_key_exists($key, $this->container) ? true : false;
     }
 
     /**

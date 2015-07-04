@@ -1,7 +1,8 @@
-<?php namespace mfe\core\deprecated;
+<?php namespace mfe\core\libs\traits\standard;
 
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\helpers\CSimpleFileHelper;
+use mfe\core\libs\interfaces\IEngine;
 use mfe\core\mfe;
 
 /**
@@ -11,13 +12,16 @@ use mfe\core\mfe;
  */
 trait TStandardEngine
 {
+    static protected $traitsRegister = [];
+
     /**
-     * Trait constructor
+    /**     * Trait constructor
      */
     protected function __TStandardEngine()
     {
-        $stackObject = mfe::option('stackObject');
-        foreach (mfe::$register['TR'] as $stack) {
+        $stackObject = MfE::getConfigData('utility.StackObject');
+
+        foreach (MfE::$traitsRegister as $stack) {
             $this->$stack = new $stackObject;
         }
     }
@@ -29,14 +33,11 @@ trait TStandardEngine
     {
         $class = static::class;
         /** @var mfe $class */
-        if (is_null($class::$instance)) {
+        if (null === $class::$instance) {
             self::initTraitsBefore();
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();
-            //$class::$instance->on('mfe.init', function () {
-            call_user_func_array([mfe::$instance, 'startEngine'], []);
-            //});
-            //$class::$instance->trigger('mfe.init');
+            $class::$instance->startEngine();
         }
         return (object)$class::$instance;
     }
@@ -69,15 +70,25 @@ trait TStandardEngine
         }
     }
 
+    static protected function begin()
+    {
+        set_error_handler([CDebug::class, 'errorHandler'], E_ALL);
+        set_exception_handler([CDebug::class, 'exceptionHandler']);
+        register_shutdown_function([MfE::class, 'stopEngine']);
+    }
+
     /**
      * Print end time
+     * @param MfE|IEngine $application
      */
-    static protected function end()
+    static protected function end(&$application)
     {
+        if (!$application::$DEBUG) return;
+
         /** @var mfe $class */
         $class = static::class;
         /** @var CSimpleFileHelper $FileHelper */
-        $FileHelper = $class::option('FileHelper');
+        $FileHelper = MfE::getConfigData('utility.FileHelper');
 
         $time = round(microtime(true) - MFE_TIME, 3);
 

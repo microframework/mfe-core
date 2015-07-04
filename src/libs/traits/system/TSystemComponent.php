@@ -7,6 +7,7 @@
 trait TSystemComponent
 {
     /**
+     * @deprecated please use ::class
      * @return string
      */
     static public function className()
