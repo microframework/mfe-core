@@ -7,28 +7,28 @@
 interface IObject
 {
     /**
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
     public function get($key);
 
     /**
-     * @param $key
-     * @param $DIObject
-     * @return $this
+     * @param string $key
+     * @param object $DIObject
+     * @return object|null $this
      */
     public function set($key, $DIObject);
 
     /**
-     * @param $key
+     * @param string $key
      * @return bool
      */
     public function has($key);
 
     /**
-     * @param $key
-     * @param $arguments
+     * @param string $key
+     * @param array $arguments
      * @return mixed
      */
-    public function call($key, $arguments);
+    public function call($key, array $arguments);
 }

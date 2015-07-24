@@ -168,7 +168,11 @@ class CDebug
                     $data .= '  Stack trace:' . PHP_EOL;
                 }
                 foreach ($error[4] as $value) {
-                    if (('_debug' !== $value['class'] && 'debug' !== $value['class'])) {
+                    $value['class'] = (array_key_exists('class', $value)) ? $value['class'] : null;
+                    $value['file'] = (array_key_exists('file', $value)) ? $value['file'] : null;
+                    $value['line'] = (array_key_exists('line', $value)) ? $value['line'] : null;
+
+                    if (null !== $value['class'] && ('_debug' !== $value['class'] && 'debug' !== $value['class'])) {
                         $data .= '  ' . $countStack++ . '. ' . $value['class'] . $value['type'] . $value['function'] . '()';
                         if ($value['file']) {
                             $data .= ' in ' . $value['file'];

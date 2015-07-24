@@ -11,7 +11,7 @@ abstract class CManager extends CComponent
     /** @var ArrayObject */
     private $localRegister;
 
-    /** @var ArrayObject */
+    /** @var ArrayObject|callable */
     private $globalRegister;
 
     public function __construct()
@@ -38,5 +38,22 @@ abstract class CManager extends CComponent
     {
         $registerClass = get_class($register);
         return $this->globalRegister = new $registerClass(array_merge((array)$register, (array)$this->localRegister));
+    }
+
+    public function flushRegister()
+    {
+        $this->localRegister = new ArrayObject();
+
+        if (null !== $this->globalRegister) {
+            $class = get_class($this->globalRegister);
+            $config = (method_exists($this->globalRegister, 'getConfig'))
+                ? call_user_func([$this->globalRegister, 'getConfig'])
+                : null;
+
+            $this->globalRegister = new $class;
+            if (null !== $config) {
+                call_user_func_array([$this->getRegister(), 'setConfig'], []);
+            }
+        }
     }
 }

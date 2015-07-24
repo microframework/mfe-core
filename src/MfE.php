@@ -1,8 +1,8 @@
 <?php namespace mfe\core;
 
+use mfe\core\libs\components\CException;
+use mfe\core\libs\interfaces\IObject;
 use mfe\core\libs\system\PSR4Autoload;
-
-use mfe\core\libs\system\Object;
 
 use mfe\core\libs\interfaces\IEngine;
 use mfe\core\libs\interfaces\applications\IStandardApplication;
@@ -52,7 +52,7 @@ require_once __DIR__ . '/Init.php';
  * @standards MFS-4.1, MFS-5
  * @package mfe\core
  */
-class MfE extends Object implements IEngine, IStandardApplication
+class MfE implements IObject, IEngine, IStandardApplication
 {
     const ENGINE_NAME = 'MicroFramework Engine';
     const ENGINE_VERSION = '1.0.7e'; // !if mod this, mod & doc before commit!
@@ -79,6 +79,7 @@ class MfE extends Object implements IEngine, IStandardApplication
     /**
      * Singleton wrapper
      * @return MfE
+     * @throws CException
      */
     static public function getInstance()
     {
@@ -88,7 +89,7 @@ class MfE extends Object implements IEngine, IStandardApplication
     /**
      * Destructor
      *
-     * @throws \mfe\core\libs\components\CException
+     * @throws CException
      */
     public function __destruct()
     {

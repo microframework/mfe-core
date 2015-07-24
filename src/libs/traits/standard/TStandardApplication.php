@@ -1,10 +1,14 @@
 <?php namespace mfe\core\libs\traits\standard;
 
+use ArrayObject;
 use mfe\core\libs\base\CApplication;
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
+use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\Init;
+use mfe\core\libs\managers\CComponentManager;
+use mfe\core\libs\system\SystemException;
 use mfe\core\mfe;
 
 /**
@@ -14,13 +18,18 @@ use mfe\core\mfe;
  */
 trait TStandardApplication
 {
-    public $currentApplication;
-    static protected $config = [];
-
     /** @var CObjectsStack */
     protected $applications;
-    static public $_STATUS = 0x0000000;
 
+    public $currentApplication;
+
+    /** @var CComponentManager */ //TODO:: to interface
+    protected $componentManager;
+
+    private $container = [];
+
+    static protected $config = [];
+    static public $_STATUS = 0x0000000;
 
     /**
      * Behavior trait constructor
@@ -28,27 +37,6 @@ trait TStandardApplication
     static public function TStandardApplication()
     {
         MfE::$traitsRegister[] = 'applications';
-    }
-
-    /**
-     * TODO:: Application stack
-     *
-     * @param Init $config
-     * @return mfe
-     */
-    static public function app(Init $config = null)
-    {
-        if (null !== $config && is_callable($config)) {
-            static::$config = $config();
-        }
-
-        if (!count(MfE::getInstance()->applications)) {
-            $application = MfE::getInstance();
-        } else {
-            $application = MfE::getInstance()->applications->{MfE::getInstance()->currentApplication};
-        }
-
-        return $application;
     }
 
     /**
@@ -64,6 +52,51 @@ trait TStandardApplication
         }
         MfE::getInstance()->applications->add(get_class($application), $application);
         return true;
+    }
+
+    /**
+     * @return bool
+     * @throws CException
+     */
+    public function registerComponentManager()
+    {
+        if ($componentManager = MfE::getConfigData('components.di')) {
+            if (!class_exists($componentManager['class'])) {
+                throw new CException("Defined components.di~>[class]|{$componentManager['class']} in config is not exists!");
+            }
+            $this->container = new ArrayObject($this->container);
+
+            $this->componentManager = new $componentManager['class'];
+            $this->componentManager
+                ->initComponentManager($componentManager)
+                ->setComponents(MfE::getConfigData('components'))
+                ->setRegister($this->container);
+        } else {
+            throw new CException('Not defined components.di~>[class] in configs file');
+        }
+        return true;
+    }
+
+    /**
+     * TODO:: Application stack
+     *
+     * @param Init $config
+     * @return mfe
+     * @throws CException
+     */
+    static public function app(Init $config = null)
+    {
+        if (null !== $config && is_callable($config)) {
+            static::$config = $config();
+        }
+
+        if (!count(MfE::getInstance()->applications)) {
+            $application = MfE::getInstance();
+        } else {
+            $application = MfE::getInstance()->applications->{MfE::getInstance()->currentApplication};
+        }
+
+        return $application;
     }
 
     /**
@@ -85,8 +118,89 @@ trait TStandardApplication
         CDisplay::display($data, $type);
     }
 
+    /**
+     * @param string $key
+     *
+     * @return mixed|null:
+     * @throws SystemException
+     * @throws CException
+     */
+    public function get($key)
+    {
+        if (!$this->componentManager) {
+            throw new CException('ComponentManager not initialized!');
+        }
+        return array_key_exists($key, $this->container) ? $this->container : $this->componentManager->get($key);
+    }
 
-    /** Заглушки */
+    /**
+     * @param string $key
+     * @param object $value
+     *
+     * @return $this
+     * @throws CException
+     */
+    public function set($key, $value)
+    {
+        if (!$this->componentManager) {
+            throw new CException('ComponentManager not initialized!');
+        }
+        $this->componentManager->set($key, $value);
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     * @throws CException
+     */
+    public function has($key)
+    {
+        if (!$this->componentManager) {
+            throw new CException('ComponentManager not initialized!');
+        }
+        return $this->componentManager->has($key);
+    }
+
+    /**
+     * @param string $key
+     * @param array $arguments
+     *
+     * @return mixed
+     * @throws SystemException
+     * @throws CException
+     */
+    public function call($key, array $arguments = [])
+    {
+        if (!$this->componentManager) {
+            throw new CException('ComponentManager not initialized!');
+        }
+        $this->componentManager->call($key, $arguments);
+    }
+
+
+    /*** @Заглушки ***/
+
+    /**
+     * Components getter handler
+     *
+     * @param $key
+     *
+     * @return mixed|null
+     * @throws SystemException
+     * @throws CException
+     */
+    public function __get($key)
+    {
+        return $this->get($key);
+    }
+
+    public function __isset($key)
+    {
+        return $this->has($key);
+    }
+
     /*
         public function __invoke($arguments)
         {

@@ -1,6 +1,7 @@
 <?php namespace mfe\core\libs\traits\standard;
 
 use mfe\core\libs\components\CDebug;
+use mfe\core\libs\components\CException;
 use mfe\core\libs\helpers\CSimpleFileHelper;
 use mfe\core\libs\interfaces\IEngine;
 use mfe\core\mfe;
@@ -30,6 +31,7 @@ trait TStandardEngine
 
     /**
      * @return MfE
+     * @throws CException
      */
     static public function createEngine()
     {
@@ -39,6 +41,7 @@ trait TStandardEngine
             self::initTraitsBefore();
             $class::$instance = new $class();
             $class::$instance->__initTraitsAfter();
+            $class::$instance->registerComponentManager();
             $class::$instance->startEngine();
         }
         return (object)$class::$instance;

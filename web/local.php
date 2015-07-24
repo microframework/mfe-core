@@ -17,7 +17,35 @@
 //    engine::display($page);
 //}
 
-if (class_exists('Lua')) {
-    $lua = new \Lua();
-    $lua->eval("print('Hello World!');");
+
+class Example
+{
+    public $test = 'Hello';
+
+    public function __construct()
+    {
+
+    }
+
 }
+
+$box = new \mfe\core\libs\system\IoC();
+
+$box->singleton([
+    'class' => Example::class,
+    'test' => 'Hello World'
+]);
+
+$box->
+
+$a = $box->make();
+$a->test = 'Bu';
+echo $a->test;
+
+$b = $box->make('Example');
+echo $b->test;
+
+//if (class_exists('Lua')) {
+//    $lua = new \Lua();
+//    $lua->eval("print('Hello World!');");
+//}

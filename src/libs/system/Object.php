@@ -1,6 +1,5 @@
 <?php namespace mfe\core\libs\system;
 
-use mfe\core\libs\components\CException;
 use mfe\core\libs\interfaces\IObject;
 
 /**
@@ -12,29 +11,33 @@ class Object implements IObject
     private $container = [];
 
     /**
-     * @param $key
+     * @param string $key
+     *
      * @return mixed|null
-     * @throws CException
+     * @throws SystemException
      */
-    public function __get($key){
-        if($this->has($key)) {
+    public function __get($key)
+    {
+        if ($this->has($key)) {
             return $this->get($key);
         }
-        throw new CException('Getting unknown property: '. $key);
+        throw new SystemException('Getting unknown property: ' . $key);
     }
 
     /**
-     * @param $key
+     * @param string $key
+     *
      * @return mixed|null
      */
     public function get($key)
     {
-        return array_key_exists($key, $this->container) ? $this->container : null;
+        return array_key_exists($key, $this->container) ? $this->container[$key] : null;
     }
 
     /**
-     * @param $key
-     * @param $DIObject
+     * @param string $key
+     * @param object $DIObject
+     *
      * @return $this
      */
     public function set($key, $DIObject)
@@ -46,7 +49,8 @@ class Object implements IObject
     }
 
     /**
-     * @param $key
+     * @param string $key
+     *
      * @return bool
      */
     public function has($key)
@@ -55,15 +59,32 @@ class Object implements IObject
     }
 
     /**
-     * @param $key
-     * @param $arguments
+     * @param string $key
+     * @param array $arguments
+     *
      * @return mixed
      */
-    public function call($key, $arguments)
+    public function call($key, array $arguments)
     {
         if ($this->has($key) && is_callable($this->container[$key])) {
             return call_user_func_array($this->container[$key], $arguments);
         }
         return null;
+    }
+
+    /**
+     * @param $container
+     */
+    protected function setContainer($container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getContainer()
+    {
+        return $this->container;
     }
 }
