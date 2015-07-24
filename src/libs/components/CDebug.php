@@ -1,5 +1,6 @@
 <?php namespace mfe\core\libs\components;
 
+use ArrayObject;
 use Exception;
 use mfe\core\mfe;
 
@@ -115,7 +116,9 @@ class CDebug
 
     /**
      * @param $code
+     *
      * @return bool|null
+     * @throws CException
      */
     static protected function logAndSplashScreen($code)
     {
@@ -125,7 +128,9 @@ class CDebug
 
     /**
      * @param $instance
+     *
      * @return null
+     * @throws CException
      */
     static public function displayErrors($instance)
     {
@@ -149,7 +154,7 @@ class CDebug
                 if (!self::$ENABLED) {
                     self::logAndSplashScreen(500);
                 } else {
-                    CDebug::display('views.html5.Debug', 500, new \ArrayObject(self::$errors));
+                    CDebug::display('views.html5.Debug', 500, new ArrayObject(self::$errors));
                 }
             }
         }
@@ -190,33 +195,38 @@ class CDebug
 
     static public function renderSourceCode($file, $errorLine, $maxLines)
     {
-        $errorLine--;
-        if ($errorLine < 0 || ($lines = @file($file)) === false || ($lineCount = count($lines)) <= $errorLine) {
-            return '';
-        }
-
-        $halfLines = (int)($maxLines / 2);
-        $beginLine = $errorLine - $halfLines > 0 ? $errorLine - $halfLines : 0;
-        $endLine = $errorLine + $halfLines < $lineCount ? $errorLine + $halfLines : $lineCount - 1;
-        $lineNumberWidth = strlen($endLine + 1);
-
-        $output = '';
-        for ($i = $beginLine; $i <= $endLine; ++$i) {
-            $isErrorLine = $i === $errorLine;
-            $code = sprintf("<span class=\"ln" . "\">%0{$lineNumberWidth}d</span> %s", $i + 1, str_replace("\t", '    ', $lines[$i]));
-            if (!$isErrorLine) {
-                $output .= $code;
-            } else {
-                $output .= '<span class="error">' . $code . '</span>';
+        if (file_exists($file) && is_readable($file)) {
+            $errorLine--;
+            if ($errorLine < 0 || ($lines = file($file)) === false || ($lineCount = count($lines)) <= $errorLine) {
+                return '';
             }
+
+            $halfLines = (int)($maxLines / 2);
+            $beginLine = $errorLine - $halfLines > 0 ? $errorLine - $halfLines : 0;
+            $endLine = $errorLine + $halfLines < $lineCount ? $errorLine + $halfLines : $lineCount - 1;
+            $lineNumberWidth = strlen($endLine + 1);
+
+            $output = '';
+            for ($i = $beginLine; $i <= $endLine; ++$i) {
+                $isErrorLine = $i === $errorLine;
+                $code = sprintf("<span class=\"ln" . "\">%0{$lineNumberWidth}d</span> %s", $i + 1, str_replace("\t", '    ', $lines[$i]));
+                if (!$isErrorLine) {
+                    $output .= $code;
+                } else {
+                    $output .= '<span class="error">' . $code . '</span>';
+                }
+            }
+            return '<div class="code"><pre>' . $output . '</pre></div>';
         }
-        return '<div class="code"><pre>' . $output . '</pre></div>';
+        return false;
     }
 
     /**
      * @param $layout
      * @param $code
      * @param null $errors
+     *
+     * @throws CException
      */
     static protected function display($layout, $code, $errors = null)
     {

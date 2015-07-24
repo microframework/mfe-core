@@ -66,8 +66,7 @@ class IoC extends Object
      */
     public function instance(array $definition, $overwrite = false)
     {
-        $this->currentObjectAlias = $definition['class'];
-        $this->currentType = IoC::TYPE_INSTANCE;
+        $this->setCurrentObject($definition['class'], IoC::TYPE_INSTANCE);
 
         if (!$overwrite && array_key_exists($definition['class'], $this->instances)) {
             throw new SystemException('Not allowed to overwrite this instance.');
@@ -75,7 +74,7 @@ class IoC extends Object
 
         $this->instances[$definition['class']] = array_merge($definition, [
             'class' => $definition['class'],
-            'type' => 'Instance'
+            'type' => IoC::TYPE_INSTANCE
         ]);
         return $this;
     }
@@ -89,8 +88,7 @@ class IoC extends Object
      */
     public function singleton(array $definition, $overwrite = false)
     {
-        $this->currentObjectAlias = $definition['class'];
-        $this->currentType = IoC::TYPE_SINGLETON;
+        $this->setCurrentObject($definition['class'], IoC::TYPE_SINGLETON);
 
         if (!$overwrite && array_key_exists($definition['class'], $this->singletons)) {
             throw new SystemException('Not allowed to overwrite this singleton.');
@@ -98,9 +96,19 @@ class IoC extends Object
 
         $this->singletons[$definition['class']] = array_merge($definition, [
             'class' => $definition['class'],
-            'type' => 'Instance'
+            'type' => IoC::TYPE_SINGLETON
         ]);
         return $this;
+    }
+
+    /**
+     * @param $class
+     * @param $type
+     */
+    protected function setCurrentObject($class, $type)
+    {
+        $this->currentObjectAlias = $class;
+        $this->currentType = $type;
     }
 
     /**
