@@ -1,4 +1,7 @@
 /.idea
+/.flooignore
+/.floo
+
 /composer.phar
 /vendor
 
