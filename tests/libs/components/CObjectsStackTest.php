@@ -9,7 +9,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
     /** @var CObjectsStack $stack */
     private $stack;
 
-    private $enablePrintDebugTables = false;
+    private $printDebugTables = false;
 
     public function setUp() {
         $this->stack = new CObjectsStack([0, 1, 2, 3, 4]);
@@ -29,7 +29,7 @@ class CObjectsStackTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function debugTable($message, CObjectsStack $stack) {
-        if ($this->enablePrintDebugTables) {
+        if ($this->printDebugTables) {
             print PHP_EOL . $message . ':' . PHP_EOL;
             $this->printStackTable($stack);
         }

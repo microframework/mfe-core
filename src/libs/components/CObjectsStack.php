@@ -160,28 +160,7 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
             return $this;
         }
 
-        $temp_value = $this->objectStack[$key];
-        $this->remove($position, false);
-
-        $inserted = false;
-        $this->index = 0;
-        foreach (parent::getArrayCopy() as $offset => $value) {
-            if (null !== $value) {
-                parent::offsetUnset($offset);
-            }
-        }
-        foreach ($this->objectStack as $offset => $value) {
-            if ($this->index === $new_position) {
-                $this->$key = $temp_value;
-                $inserted = true;
-            }
-            if (null !== $value) {
-                $this->{$offset} = $value;
-            }
-        }
-        if (!$inserted) {
-            $this->$key = $temp_value;
-        }
+        $this->re_sort($key, $position, $new_position);
         $this->save_reposition();
         return $this;
     }
@@ -200,6 +179,13 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
             return $this;
         }
 
+        $this->re_sort($key, $position, $new_position);
+        $this->save_reposition();
+        return $this;
+    }
+
+    protected function re_sort($key, $position, $new_position)
+    {
         $temp_value = $this->objectStack[$key];
         $this->remove($position, false);
 
@@ -222,8 +208,6 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         if (!$inserted) {
             $this->$key = $temp_value;
         }
-        $this->save_reposition();
-        return $this;
     }
 
     public function flush()
