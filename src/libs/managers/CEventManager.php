@@ -11,7 +11,7 @@ use mfe\core\libs\interfaces\IEvent;
  *
  * @method static CEventManager on(string $eventName, mixed $callback)
  * @method static CEventManager off(string $eventName, mixed $callback)
- * @method static CEventManager trigger(string $eventName, array $arguments, Closure $callback)
+ * @method static CEventManager trigger(string $eventName, array $arguments = [], Closure $callback = null)
  *
  * @package mfe\core\libs\managers
  */
