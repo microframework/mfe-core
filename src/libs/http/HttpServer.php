@@ -114,8 +114,6 @@ class HttpServer
                 $reader->getData();
             }
 
-            echo 'open: ' . (int)$connect . PHP_EOL;
-
             while ((!$reader->isClose || !$firstConnect) && !$reader->isWebSocket && !feof($connect)) {
                 if (!array_key_exists(intval($connect), $this->upgradedConnects)) {
                     $firstConnect = true;
@@ -145,7 +143,6 @@ class HttpServer
             }
 
             if ($reader->isClose) {
-                echo 'close: ' . (int)$connect . PHP_EOL;
                 if (array_key_exists((int)$connect, $this->upgradedConnects)) {
                     unset($this->upgradedConnects[(int)$connect]);
                 }

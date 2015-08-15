@@ -44,7 +44,6 @@ class SocketWriter
 
     public function broadcast($data, $excludeSelf = false)
     {
-        var_dump($this->isEncoded);
         if ($this->isEncoded && '' !== trim($data)) {
             foreach ($this->connects as $connect) {
                 if (!($excludeSelf && $connect === $this->connect)) {
