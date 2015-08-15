@@ -11,31 +11,32 @@ class SocketWriter
 
     private $connect;
     private $connects = [];
-    private $isEncoded = false;
+    public $isEncoded = false;
+    public $keepAlive = false;
 
     /**
      * @param resource $connect
      * @param resource[] $connects
-     * @param bool $isEncoded
      */
-    public function __construct($connect, &$connects, $isEncoded = false)
+    public function __construct($connect, &$connects)
     {
         $this->connect = $connect;
-        $this->connects = $connects;
-        $this->isEncoded = $isEncoded;
+        $this->connects = &$connects;
     }
 
     public function send($data)
     {
         if ('' === trim($data)) return;
         if (!$this->isEncoded) {
-            fwrite($this->connect,
-                'HTTP/1.1 200 OK' . static::EOL .
+            $response = 'HTTP/1.1 200 OK' . static::EOL .
                 'Content-Type: text/html;charset=utf-8' . static::EOL .
-                'Connection: close' . static::EOL . static::EOL .
+                'Content-Length: ' . strlen($data) . static::EOL .
+                'Connection: ' . ((!$this->keepAlive) ? 'close' : 'keep-alive') .
+                static::EOL . static::EOL .
 
-                $data
-            );
+                $data;
+
+            fwrite($this->connect, $response);
         } else {
             fwrite($this->connect, WebSocketHelper::encode($data));
         }
@@ -43,6 +44,7 @@ class SocketWriter
 
     public function broadcast($data, $excludeSelf = false)
     {
+        var_dump($this->isEncoded);
         if ($this->isEncoded && '' !== trim($data)) {
             foreach ($this->connects as $connect) {
                 if (!($excludeSelf && $connect === $this->connect)) {

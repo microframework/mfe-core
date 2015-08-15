@@ -72,8 +72,8 @@ class MfE implements IObject, IEngine, IStandardApplication
      */
     protected function __construct()
     {
-        ini_set('display_errors', false);
-        self::begin();
+        //ini_set('display_errors', false);
+        //self::begin();
     }
 
     /**

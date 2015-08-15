@@ -11,6 +11,7 @@ class SocketReader
 
     public $isWebSocket = false;
     public $isClose = false;
+    public $keepAlive = false;
 
     public $headers = [];
     public $info = [];
@@ -31,6 +32,10 @@ class SocketReader
         while (strlen($buffer = rtrim(fread($this->connect, 1024))) || !feof($this->connect)) {
             foreach (explode(static::EOL, $buffer) as $i => $line) {
                 if ($i === 0) {
+                    if ('' === $line) {
+                        $this->isClose = true;
+                        break;
+                    }
                     $line = explode(' ', $line);
                     $this->info = [
                         'method' => $line[0],
@@ -45,9 +50,10 @@ class SocketReader
         }
 
         $address = explode(':', stream_socket_get_name($this->connect, true));
-        $info['ip'] = $address[0];
-        $info['port'] = $address[1];
+        $this->info['ip'] = $address[0];
+        $this->info['port'] = $address[1];
 
+        $this->tryKeepAlive();
         $this->tryWebsocketUpgrade();
     }
 
@@ -59,6 +65,18 @@ class SocketReader
             return false;
         }
         return $this->data = WebSocketHelper::decode($data)['payload'];
+    }
+
+    protected function tryKeepAlive()
+    {
+        if (isset($this->headers['Expect']) && '100-continue' === $this->headers['Expect']) {
+            $this->isClose = true;
+            return $this->keepAlive = false;
+        }
+        if (isset($this->headers['Connection']) && 'keep-alive' === $this->headers['Connection']) {
+            return $this->keepAlive = true;
+        }
+        return $this->isClose = true;
     }
 
     protected function tryWebsocketUpgrade()
@@ -79,6 +97,7 @@ class SocketReader
             "Connection: Upgrade" . static::EOL .
             "Sec-WebSocket-Accept: {$SecWebSocketAccept}" . static::EOL . static::EOL;
         fwrite($this->connect, $upgrade);
+        $this->isClose = false;
         return $this->isWebSocket = true;
     }
 }

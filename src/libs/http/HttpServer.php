@@ -15,6 +15,8 @@ class HttpServer
     const ENV_IP = '0.0.0.0';
     const ENV_PORT = '8000';
 
+    public $keepAliveEnable = true;
+
     public $bind_ip;
     public $bind_port;
 
@@ -53,6 +55,7 @@ class HttpServer
     {
         //stream_set_chunk_size($this->server, 1024);
         //stream_set_blocking($this->server, 0);
+        stream_set_timeout($this->server, 5);
 
         $this->events->trigger('server.start', [$this->server]);
         fwrite(STDOUT, "Server started at: {$this->bind_ip}:{$this->bind_port}." . PHP_EOL);
@@ -81,7 +84,7 @@ class HttpServer
     {
         while (true) {
             $connections = $this->connects;
-            $connections[] = $this->server;
+            $connections[(int)$this->server] = $this->server;
             $write = $except = null;
 
             if (!stream_select($connections, $write, $except, null)) {
@@ -90,8 +93,8 @@ class HttpServer
 
             if (in_array($this->server, $connections)) {
                 $connect = stream_socket_accept($this->server, -1);
-                $this->connects[intval($connect)] = $connect;
-                unset($connections[array_search($this->server, $connections)]);
+                $this->connects[(int)$connect] = $connect;
+                unset($connections[(int)$this->server]);
             }
 
             $this->processConnection($connections);
@@ -103,38 +106,50 @@ class HttpServer
         foreach ($connections as $connect) {
             $firstConnect = false;
             $reader = new SocketReader($connect);
+            $writer = new SocketWriter($connect, $this->upgradedConnects);
 
-            if (!array_key_exists(intval($connect), $this->upgradedConnects)) {
-                $reader->getHeaders();
-                if ($reader->isWebSocket) {
-                    $this->upgradedConnects[intval($connect)] = $connect;
-                }
-                $firstConnect = true;
-            } else {
+            if (array_key_exists((int)$connect, $this->upgradedConnects)) {
                 $reader->isWebSocket = true;
+                $writer->isEncoded = true;
                 $reader->getData();
             }
 
-            $writer = new SocketWriter($connect, $this->upgradedConnects, $reader->isWebSocket);
+            echo 'open: ' . (int)$connect . PHP_EOL;
 
-            if (!$reader->isClose) {
+            while ((!$reader->isClose || !$firstConnect) && !$reader->isWebSocket && !feof($connect)) {
+                if (!array_key_exists(intval($connect), $this->upgradedConnects)) {
+                    $firstConnect = true;
+                    $reader->getHeaders();
+                }
+
+                if ($reader->isWebSocket && !array_key_exists((int)$connect, $this->upgradedConnects)) {
+                    $this->upgradedConnects[(int)$connect] = $connect;
+                    $writer->isEncoded = true;
+                }
+                if ($this->keepAliveEnable && $reader->keepAlive) {
+                    $writer->keepAlive = true;
+                } elseif(!$reader->isWebSocket) {
+                    $reader->isClose = true;
+                }
+
                 if ($firstConnect) {
                     $this->events->trigger('server.connection.open', [$reader, $writer, $connect]);
                 }
-                if ((!$firstConnect && $reader->isWebSocket) ||
-                    ($firstConnect && !$reader->isWebSocket)
-                ) {
+                if ($firstConnect && !$reader->isWebSocket) {
                     $this->events->trigger('server.connection.data', [$reader, $writer, $connect]);
-                }
-
-                if (!$reader->isWebSocket) {
-                    $reader->isClose = true;
                 }
             }
 
+            if (!$firstConnect && $reader->isWebSocket) {
+                $this->events->trigger('server.connection.data', [$reader, $writer, $connect]);
+            }
+
             if ($reader->isClose) {
-                unset($this->upgradedConnects[intval($connect)]);
-                unset($this->connects[intval($connect)]);
+                echo 'close: ' . (int)$connect . PHP_EOL;
+                if (array_key_exists((int)$connect, $this->upgradedConnects)) {
+                    unset($this->upgradedConnects[(int)$connect]);
+                }
+                unset($this->connects[(int)$connect]);
                 fclose($connect);
                 $this->events->trigger('server.connection.close', [$reader, $writer]);
             }
@@ -143,7 +158,6 @@ class HttpServer
 }
 
 $events = MfE::app()->events;
-$time = time();
 
 $events->on('server.connection.open', function ($reader, $writer) {
     /**
@@ -167,7 +181,7 @@ $events->on('server.connection.data', function ($reader, $writer) {
     }
 });
 
-$events->on('server.connection.close', function ($reader, $writer) use ($time) {
+$events->on('server.connection.close', function ($reader, $writer) {
     /**
      * @var SocketReader $reader
      * @var SocketWriter $writer
