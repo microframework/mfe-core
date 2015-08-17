@@ -1,9 +1,9 @@
-<?php namespace mfe\core\libs\http;
+<?php namespace mfe\core\libs\http\server;
 
 /**
  * Class WebSocketHelper
  *
- * @package mfe\core\libs\http
+ * @package mfe\core\libs\http\server
  */
 class WebSocketHelper
 {

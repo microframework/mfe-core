@@ -1,11 +1,11 @@
-<?php namespace mfe\core\libs\http;
+<?php namespace mfe\core\libs\http\server;
 
 use mfe\core\libs\components\CException;
 
 /**
  * Class HttpException
  *
- * @package mfe\core\libs\http
+ * @package mfe\core\libs\http\server
  */
 class HttpException extends CException
 {

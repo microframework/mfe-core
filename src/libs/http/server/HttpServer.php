@@ -1,4 +1,4 @@
-<?php namespace mfe\core\libs\http;
+<?php namespace mfe\core\libs\http\server;
 
 use mfe\core\libs\managers\CEventManager;
 use mfe\core\MfE;
@@ -6,7 +6,7 @@ use mfe\core\MfE;
 /**
  * Class HttpServer
  *
- * @package mfe\core\libs\http
+ * @package mfe\core\libs\http\server
  */
 class HttpServer
 {

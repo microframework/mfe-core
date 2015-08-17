@@ -1,9 +1,9 @@
 <?php
 
 use mfe\core\api\events\managers\IEventsManager;
-use mfe\core\libs\http\HttpServer;
-use mfe\core\libs\http\SocketReader;
-use mfe\core\libs\http\SocketWriter;
+use mfe\core\libs\http\server\HttpServer;
+use mfe\core\libs\http\server\SocketReader;
+use mfe\core\libs\http\server\SocketWriter;
 use mfe\core\MfE;
 
 require_once __DIR__ . '/src/MfE.php';
