@@ -39,7 +39,7 @@ class CObjectsStackTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testInterfaceInstance() {
-        static::assertInstanceOf('mfe\core\libs\interfaces\IObjectsStack', $this->stack, '');
+        static::assertInstanceOf('mfe\core\api\stack\IObjectsStack', $this->stack, '');
     }
 
     public function testCreate() {
