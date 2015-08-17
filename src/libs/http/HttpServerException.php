@@ -2,4 +2,11 @@
 
 use Exception;
 
-class HttpServerException extends Exception {}
+/**
+ * Class HttpServerException
+ *
+ * @package mfe\core\libs\http
+ */
+class HttpServerException extends Exception
+{
+}

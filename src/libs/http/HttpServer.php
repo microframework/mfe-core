@@ -153,37 +153,3 @@ class HttpServer
         }
     }
 }
-
-$events = MfE::app()->events;
-
-$events->on('server.connection.open', function ($reader, $writer) {
-    /**
-     * @var SocketReader $reader
-     * @var SocketWriter $writer
-     */
-    if ($reader->isWebSocket) {
-        $writer->broadcast('Присоеденился новый.');
-    }
-});
-
-$events->on('server.connection.data', function ($reader, $writer) {
-    /**
-     * @var SocketReader $reader
-     * @var SocketWriter $writer
-     */
-    if ($reader->isWebSocket) {
-        $writer->broadcast($reader->data);
-    } else {
-        $writer->send('Привет');
-    }
-});
-
-$events->on('server.connection.close', function ($reader, $writer) {
-    /**
-     * @var SocketReader $reader
-     * @var SocketWriter $writer
-     */
-    if ($reader->isWebSocket) {
-        $writer->broadcast('Кто-то отвалился!');
-    }
-});

@@ -4,6 +4,7 @@ use ArrayObject;
 
 /**
  * Class CManager
+ *
  * @package mfe\core\libs\base
  */
 abstract class CManager extends CComponent
@@ -32,6 +33,7 @@ abstract class CManager extends CComponent
 
     /**
      * @param ArrayObject $register
+     *
      * @return $this
      */
     public function setRegister(ArrayObject $register)

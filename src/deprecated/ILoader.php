@@ -1,10 +1,11 @@
-<?php namespace mfe\core\libs\interfaces;
+<?php namespace mfe\core\deprecated;
 /**
  * Interface ILoader
  *
  * This Interface dictates coding rules for loader of MFE
  * Этот интерфейс диктует правила написания Загружчика для MFE
  *
+ * @deprecated
  * @standards MFS-1, MFS-2, MFS-4, MFS-5.3, MFS-6
  * @package mfe\core\libs\interfaces
  */

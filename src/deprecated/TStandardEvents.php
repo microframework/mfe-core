@@ -1,6 +1,5 @@
 <?php namespace mfe\core\deprecated;
 
-use mfe\core\libs\traits\application\TApplicationEvents;
 use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\mfe;
@@ -16,6 +15,7 @@ use mfe\core\mfe;
  * @method static bool on
  * @method static bool off
  *
+ * @deprecated
  * @package mfe\core\libs\traits\standard
  */
 trait TStandardEvents

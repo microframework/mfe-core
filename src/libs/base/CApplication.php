@@ -13,6 +13,7 @@ use mfe\core\mfe;
 
 /**
  * Class CApplication
+ *
  * @package mfe\core\libs\base
  */
 abstract class CApplication extends CComponent
@@ -53,6 +54,7 @@ abstract class CApplication extends CComponent
     /**
      * @param $_DIR
      * @param $className
+     *
      * @return bool|string
      */
     public function addConfigPath($_DIR, $className)

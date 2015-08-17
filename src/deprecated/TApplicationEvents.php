@@ -4,6 +4,8 @@ use mfe\core\libs\components\CException;
 
 /**
  * Class TApplicationEvents
+ *
+ * @deprecated
  * @package mfe\core\libs\traits\application
  */
 trait TApplicationEvents

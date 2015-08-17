@@ -4,7 +4,7 @@ use ArrayObject;
 use Closure;
 use mfe\core\libs\base\CManager;
 use mfe\core\libs\components\CException;
-use mfe\core\libs\interfaces\IObject;
+use mfe\core\api\base\IObject;
 use mfe\core\libs\system\IoC;
 use mfe\core\libs\system\SystemException;
 

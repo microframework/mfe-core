@@ -2,6 +2,8 @@
 
 /**
  * Class CRequest
+ *
+ * @deprecated
  * @package mfe\core\libs\http
  */
 class CRequest

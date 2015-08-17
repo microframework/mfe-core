@@ -1,7 +1,5 @@
 <?php namespace mfe\core\deprecated;
 
-use mfe\core\libs\interfaces\ILoader;
-
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\mfe;
 
@@ -21,6 +19,7 @@ use mfe\core\mfe;
  * @method static mixed map
  * @method static bool loadMap
  *
+ * @deprecated
  * @package mfe\core\libs\traits\standard
  */
 trait TStandardLoader

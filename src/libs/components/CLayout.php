@@ -43,6 +43,7 @@ class CLayout extends CComponent
 
     /**
      * @param $value
+     *
      * @return null
      */
     public function __get($value)
@@ -52,6 +53,7 @@ class CLayout extends CComponent
 
     /**
      * @param $value
+     *
      * @return bool
      */
     public function __isset($value)
@@ -62,6 +64,7 @@ class CLayout extends CComponent
     /**
      * @param $key
      * @param $value
+     *
      * @return bool
      */
     public function __set($key, $value)
@@ -72,6 +75,7 @@ class CLayout extends CComponent
 
     /**
      * @param $layout
+     *
      * @return $this
      */
     public function setLayout($layout)
@@ -92,6 +96,7 @@ class CLayout extends CComponent
 
     /**
      * @param $layout
+     *
      * @return mixed
      */
     protected function parse($layout)

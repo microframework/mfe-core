@@ -11,6 +11,7 @@ defined('E_EXCEPTION') or define('E_EXCEPTION', 5040);
 
 /**
  * Class CDebug
+ *
  * @package mfe\core\libs\components
  */
 class CDebug
@@ -50,6 +51,7 @@ class CDebug
 
     /**
      * @param $code
+     *
      * @return bool|null
      */
     static public function criticalStopEngine($code)
@@ -63,6 +65,7 @@ class CDebug
 
     /**
      * @param $error
+     *
      * @return bool|null
      */
     static public function errorHandler($error)
@@ -105,6 +108,7 @@ class CDebug
 
     /**
      * @param Exception $e
+     *
      * @return bool|null
      */
     static public function exceptionHandler($e)

@@ -1,7 +1,7 @@
 <?php namespace mfe\core\libs\components;
 
 use Closure;
-use mfe\core\libs\interfaces\IEvent;
+use mfe\core\api\events\IEvent;
 
 /**
  * Class CEvent

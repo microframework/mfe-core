@@ -1,4 +1,4 @@
-<?php namespace mfe\core\libs\interfaces;
+<?php namespace mfe\core\api\engines;
 /**
  * Interface IEngine
  *
@@ -6,7 +6,7 @@
  * Этот интерфейс диктует правила написания двигателей для MicroFramework
  *
  * @standards MFS-4.1, MFS-5.[1,2]
- * @package mfe\core\libs\interfaces
+ * @package mfe\core\api\engines
  */
 interface IEngine
 {

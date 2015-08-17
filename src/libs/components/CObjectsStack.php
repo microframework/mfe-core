@@ -1,6 +1,6 @@
 <?php namespace mfe\core\libs\components;
 
-use mfe\core\libs\interfaces\IObjectsStack;
+use mfe\core\api\stack\IObjectsStack;
 use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
@@ -118,6 +118,7 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
     /**
      * @param $key
      * @param bool|integer $to_position
+     *
      * @return $this|mixed
      */
     public function position($key, $to_position = false)

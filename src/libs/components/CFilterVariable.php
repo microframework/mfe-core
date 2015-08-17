@@ -2,6 +2,7 @@
 
 /**
  * Class CVariable
+ *
  * @package mfe\core\libs\components
  */
 class CFilterVariable

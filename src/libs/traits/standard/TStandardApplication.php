@@ -42,6 +42,7 @@ trait TStandardApplication
     /**
      * @param CApplication $application
      * @param bool $setAsCurrentApplication
+     *
      * @return bool
      * @throws \Exception
      */
@@ -81,6 +82,7 @@ trait TStandardApplication
      * TODO:: Application stack
      *
      * @param Init $config
+     *
      * @return mfe
      * @throws CException
      */
@@ -101,6 +103,7 @@ trait TStandardApplication
 
     /**
      * @param $error_code
+     *
      * @return bool|null
      */
     static public function stop($error_code)

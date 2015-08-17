@@ -2,9 +2,7 @@
 
 use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
-use mfe\core\libs\traits\application\TApplicationComponents;
 use mfe\core\mfe;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 //TODO:: Полная документация
 
@@ -30,6 +28,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
  * @method static null unRegisterCoreComponent
  * @method static null unRegisterClosingComponent
  *
+ * @deprecated
  * @package mfe\core\libs\traits\standard
  */
 trait TStandardComponents

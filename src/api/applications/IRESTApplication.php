@@ -1,8 +1,9 @@
-<?php namespace mfe\core\libs\interfaces\applications;
+<?php namespace mfe\core\api\applications;
 
 /**
  * Interface IRESTApplication
- * @package mfe\core\libs\interfaces
+ *
+ * @package mfe\core\api\applications
  */
 interface IRESTApplication extends IStandardApplication, IConsoleApplication
 {

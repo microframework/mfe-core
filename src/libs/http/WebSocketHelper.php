@@ -1,6 +1,10 @@
 <?php namespace mfe\core\libs\http;
 
-
+/**
+ * Class WebSocketHelper
+ *
+ * @package mfe\core\libs\http
+ */
 class WebSocketHelper
 {
     static function encode($payload, $type = 'text', $masked = false)

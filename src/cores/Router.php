@@ -2,8 +2,6 @@
 
 use mfe\core\libs\base\CCore;
 
-//mfe::dependence('request');
-
 /**
  * Class Router
  *

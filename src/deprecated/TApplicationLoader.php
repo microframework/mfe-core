@@ -4,6 +4,8 @@ use mfe\core\mfe;
 
 /**
  * Class TApplicationLoader
+ *
+ * @deprecated
  * @package mfe\core\libs\traits\application
  */
 trait TApplicationLoader

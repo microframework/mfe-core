@@ -6,6 +6,7 @@ use mfe\core\libs\traits\system\TSystemComponent;
 
 /**
  * Class CComponent
+ *
  * @package mfe\core\libs\base
  */
 abstract class CComponent extends Object
@@ -32,6 +33,7 @@ abstract class CComponent extends Object
     /**
      * @param $key
      * @param $value
+     *
      * @return mixed
      * @throws CException
      */
@@ -51,6 +53,7 @@ abstract class CComponent extends Object
 
     /**
      * @param $key
+     *
      * @return mixed
      * @throws CException
      */
@@ -75,6 +78,7 @@ abstract class CComponent extends Object
     /**
      * @param $method
      * @param array $arguments
+     *
      * @return mixed
      * @throws CException
      */

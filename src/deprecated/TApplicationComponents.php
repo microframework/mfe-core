@@ -2,6 +2,8 @@
 
 /**
  * Class TApplicationComponents
+ *
+ * @deprecated
  * @package mfe\core\libs\traits\application
  */
 trait TApplicationComponents

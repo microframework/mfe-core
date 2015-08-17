@@ -1,7 +1,8 @@
-<?php namespace mfe\core\libs\interfaces;
+<?php namespace mfe\core\api\components;
 /**
  * Interface IComponent
- * @package mfe\core\libs\interfaces
+ *
+ * @package mfe\core\api\components
  */
 interface IComponent
 {

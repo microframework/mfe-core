@@ -121,6 +121,7 @@ final class Init
      * Load config with recursive merging previous
      *
      * @param $file
+     *
      * @return string
      */
     private function loadConfigAndMerge($file)
@@ -135,6 +136,7 @@ final class Init
      *
      * @param $DIR
      * @param string $type
+     *
      * @return string
      */
     static public function addConfigPath($DIR, $type = self::DIR_TYPE_DATA)
@@ -156,6 +158,7 @@ final class Init
      *
      * @param $hash
      * @param string $type
+     *
      * @return bool
      */
     static public function removeConfigPath($hash, $type = self::DIR_TYPE_DATA)

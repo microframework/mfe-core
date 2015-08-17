@@ -1,12 +1,13 @@
 <?php namespace mfe\core\cores;
 
+use PHPUnit_Framework_TestCase;
+
 /**
- * Created by PhpStorm.
- * User: eak
- * Date: 15.12.2014
- * Time: 22:03
+ * Class PageTest
+ *
+ * @package mfe\core\cores
  */
-class PageTest extends \PHPUnit_Framework_TestCase {
+class PageTest extends PHPUnit_Framework_TestCase {
     /** @var array */
     private $data;
 

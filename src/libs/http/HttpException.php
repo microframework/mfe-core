@@ -2,4 +2,11 @@
 
 use mfe\core\libs\components\CException;
 
-class HttpException extends CException {}
+/**
+ * Class HttpException
+ *
+ * @package mfe\core\libs\http
+ */
+class HttpException extends CException
+{
+}

@@ -1,7 +1,6 @@
 <?php namespace mfe\core\cores;
 
 use mfe\core\libs\components\CException;
-use mfe\core\libs\interfaces\IComponent;
 
 use mfe\core\libs\base\CCore;
 use mfe\core\mfe;

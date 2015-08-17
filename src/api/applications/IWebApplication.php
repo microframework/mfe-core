@@ -1,10 +1,14 @@
-<?php namespace mfe\core\libs\interfaces\applications;
+<?php namespace mfe\core\api\applications;
 
 /**
  * Interface IWebApplication
- * @package mfe\core\libs\interfaces
+ *
+ * @package mfe\core\api\applications
  */
 interface IWebApplication extends IStandardApplication
 {
+    /**
+     * @return void
+     */
     public function run();
 }

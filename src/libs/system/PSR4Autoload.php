@@ -2,6 +2,7 @@
 
 /**
  * Class PSR4Autoload
+ *
  * @package mfe\core\libs\system
  */
 class PSR4Autoload
@@ -21,6 +22,7 @@ class PSR4Autoload
      * @param string $prefix
      * @param string $base_dir
      * @param bool $prepend
+     *
      * @return void
      */
     public function addNamespace($prefix, $base_dir, $prepend = false)
@@ -41,6 +43,7 @@ class PSR4Autoload
 
     /**
      * @param string $class
+     *
      * @return mixed
      */
     public function loadClass($class)
@@ -64,6 +67,7 @@ class PSR4Autoload
     /**
      * @param string $prefix
      * @param string $relative_class
+     *
      * @return mixed
      */
     protected function loadMappedFile($prefix, $relative_class)

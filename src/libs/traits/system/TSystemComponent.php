@@ -2,12 +2,13 @@
 
 /**
  * Class TSystemComponent
+ *
  * @package mfe\core\libs\traits\system
  */
 trait TSystemComponent
 {
     /**
-     * @deprecated please use ::class
+     * @deprecated Please use ::class
      * @return string
      */
     static public function className()

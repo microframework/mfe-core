@@ -1,8 +1,9 @@
-<?php namespace mfe\core\libs\interfaces\applications;
+<?php namespace mfe\core\api\applications;
 
 /**
  * Interface IHybridApplication
- * @package mfe\core\libs\interfaces
+ *
+ * @package mfe\core\api\application
  */
 interface IHybridApplication extends IStandardApplication, IWebApplication, IConsoleApplication
 {

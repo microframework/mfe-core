@@ -5,6 +5,7 @@ use mfe\core\mfe;
 
 /**
  * Class TApplicationEngine
+ *
  * @package mfe\core\libs\traits\application
  */
 trait TApplicationEngine
@@ -13,6 +14,7 @@ trait TApplicationEngine
 
     /**
      * @param $path
+     *
      * @return null
      * @throws CException
      */
@@ -43,6 +45,7 @@ trait TApplicationEngine
 
     /**
      * @param $option
+     *
      * @return null|bool|mixed
      * @throws CException
      */
@@ -53,6 +56,7 @@ trait TApplicationEngine
 
     /**
      * @param $param
+     *
      * @return null|bool|mixed
      * @throws CException
      */

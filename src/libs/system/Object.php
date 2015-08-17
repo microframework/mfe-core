@@ -1,9 +1,10 @@
 <?php namespace mfe\core\libs\system;
 
-use mfe\core\libs\interfaces\IObject;
+use mfe\core\api\base\IObject;
 
 /**
  * Class Object
+ *
  * @package mfe\core\libs\system
  */
 class Object implements IObject

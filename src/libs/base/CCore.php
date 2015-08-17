@@ -1,17 +1,19 @@
 <?php namespace mfe\core\libs\base;
 
 use mfe\core\libs\components\CException;
-use mfe\core\libs\interfaces\IComponent;
+use mfe\core\api\components\IComponent;
 use mfe\core\mfe;
 
 /**
  * Class CCore
+ *
  * @package mfe\core\libs\base
  */
 abstract class CCore extends CComponent implements IComponent
 {
     /**
      * @param $option
+     *
      * @return bool|null
      * @throws CException
      */
@@ -32,6 +34,7 @@ abstract class CCore extends CComponent implements IComponent
     /**
      * @param $key
      * @param $value
+     *
      * @return mixed
      * @throws CException
      */
@@ -42,6 +45,7 @@ abstract class CCore extends CComponent implements IComponent
 
     /**
      * @param $key
+     *
      * @return mixed
      * @throws CException
      */

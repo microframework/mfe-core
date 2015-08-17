@@ -1,11 +1,11 @@
 <?php namespace mfe\core;
 
 use mfe\core\libs\components\CException;
-use mfe\core\libs\interfaces\IObject;
+use mfe\core\api\base\IObject;
 use mfe\core\libs\system\PSR4Autoload;
 
-use mfe\core\libs\interfaces\IEngine;
-use mfe\core\libs\interfaces\applications\IStandardApplication;
+use mfe\core\api\engines\IEngine;
+use mfe\core\api\applications\IStandardApplication;
 
 use mfe\core\libs\traits\application\TApplicationEngine;
 use mfe\core\libs\traits\standard\TStandardEngine;
@@ -78,6 +78,7 @@ class MfE implements IObject, IEngine, IStandardApplication
 
     /**
      * Singleton wrapper
+     *
      * @return MfE
      * @throws CException
      */
@@ -123,6 +124,7 @@ class MfE implements IObject, IEngine, IStandardApplication
 
 /**
  * Auto register self in system
+ *
  * @standards MFS-5.5
  */
 MfE::app(new Init(__DIR__));

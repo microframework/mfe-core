@@ -131,6 +131,7 @@ class IoC extends Object
 
     /**
      * @param $name
+     *
      * @return array|bool
      */
     public function find($name)
@@ -145,6 +146,7 @@ class IoC extends Object
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function isSingleton($name)

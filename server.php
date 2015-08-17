@@ -1,6 +1,10 @@
 <?php
 
+use mfe\core\api\events\managers\IEventsManager;
 use mfe\core\libs\http\HttpServer;
+use mfe\core\libs\http\SocketReader;
+use mfe\core\libs\http\SocketWriter;
+use mfe\core\MfE;
 
 require_once __DIR__ . '/src/MfE.php';
 
@@ -28,6 +32,41 @@ if (in_array('--ip', $argv, true)) {
 if (in_array('--port', $argv, true)) {
     $port = $argv[array_search('--port', $argv, true) + 1];
 }
+
+/** @var IEventsManager $events*/
+$events = MfE::app()->events;
+
+$events->on('server.connection.open', function ($reader, $writer) {
+    /**
+     * @var SocketReader $reader
+     * @var SocketWriter $writer
+     */
+    if ($reader->isWebSocket) {
+        $writer->broadcast('Присоеденился новый.');
+    }
+});
+
+$events->on('server.connection.data', function ($reader, $writer) {
+    /**
+     * @var SocketReader $reader
+     * @var SocketWriter $writer
+     */
+    if ($reader->isWebSocket) {
+        $writer->broadcast($reader->data);
+    } else {
+        $writer->send('Привет');
+    }
+});
+
+$events->on('server.connection.close', function ($reader, $writer) {
+    /**
+     * @var SocketReader $reader
+     * @var SocketWriter $writer
+     */
+    if ($reader->isWebSocket) {
+        $writer->broadcast('Кто-то отвалился!');
+    }
+});
 
 $server = new HttpServer($ip, $port);
 $server->run();

@@ -4,7 +4,7 @@ use Closure;
 use mfe\core\libs\base\CManager;
 use mfe\core\libs\components\CEvent;
 use mfe\core\libs\components\CException;
-use mfe\core\libs\interfaces\IEvent;
+use mfe\core\api\events\IEvent;
 
 /**
  * Class CEventManager
@@ -22,6 +22,7 @@ class CEventManager extends CManager
 
     /**
      * @param mixed $callback
+     *
      * @return null|string
      * @throws CException
      */
@@ -48,6 +49,7 @@ class CEventManager extends CManager
      *
      * @param $eventName
      * @param $callback
+     *
      * @return $this
      * @throws CException
      */
@@ -74,6 +76,7 @@ class CEventManager extends CManager
      *
      * @param $eventName
      * @param $callback
+     *
      * @return $this
      * @throws CException
      */

@@ -4,6 +4,7 @@ use mfe\core\libs\base\CComponent;
 
 /**
  * Class CDisplay
+ *
  * @package mfe\core\libs\components
  */
 class CDisplay extends CComponent
