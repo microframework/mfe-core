@@ -1,7 +1,8 @@
-<?php namespace mfe\core\libs\http;
+<?php namespace mfe\core\libs\http\client;
 
 use InvalidArgumentException;
 use mfe\core\libs\helpers\CHttpSecurityHelper as HeaderSecurity;
+use mfe\core\libs\http\TMessage;
 use mfe\core\libs\system\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -9,11 +10,11 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Class CResponse
  *
- * @package mfe\core\libs\http
+ * @package mfe\core\libs\http\client
  */
 class CResponse implements ResponseInterface
 {
-    use TMutableMessage;
+    use TMessage;
 
     /** @var array */
     static private $phrases = [
@@ -144,9 +145,10 @@ class CResponse implements ResponseInterface
     public function withStatus($code, $reasonPhrase = '')
     {
         $this->validateStatus($code);
-        $this->statusCode = (int)$code;
-        $this->reasonPhrase = $reasonPhrase;
-        return $this;
+        $new = clone $this;
+        $new->statusCode = (int)$code;
+        $new->reasonPhrase = $reasonPhrase;
+        return $new;
     }
 
     /**

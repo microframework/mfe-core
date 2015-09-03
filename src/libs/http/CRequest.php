@@ -1,143 +1,209 @@
 <?php namespace mfe\core\libs\http;
 
-use mfe\core\api\http\IRequest;
-use mfe\core\libs\system\Object;
+use InvalidArgumentException;
+use mfe\core\libs\system\InputStream;
+use mfe\core\libs\system\Stream;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
-use Psr\Log\InvalidArgumentException;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Class CRequest
  *
  * @package mfe\core\libs\http
  */
-class CRequest extends Object implements IRequest
+class CRequest implements ServerRequestInterface
 {
+    use TRequest;
+    use TMessage;
     /**
-     * @return string
+     * @var array
      */
-    public function getProtocolVersion()
-    {
-        // TODO: Implement getProtocolVersion() method.
-    }
+    private $attributes;
+    /**
+     * @var array
+     */
+    private $cookieParams;
+    /**
+     * @var array
+     */
+    private $parsedBody;
+    /**
+     * @var array
+     */
+    private $queryParams;
+    /**
+     * @var array
+     */
+    private $serverParams;
+    /**
+     * @var array
+     */
+    private $uploadedFiles;
 
     /**
-     * @param string $version
+     * @param array $serverParams
+     * @param array $uploadedFiles
+     * @param null|string $uri URI
+     * @param null|string $method
+     * @param string|resource|StreamInterface $body
+     * @param array $headers
      *
-     * @return self
+     * @throws InvalidArgumentException
      */
-    public function withProtocolVersion($version)
+    public function __construct(
+        array $serverParams = [],
+        array $uploadedFiles = [],
+        $uri = null,
+        $method = null,
+        $body = 'php://input',
+        array $headers = []
+    )
     {
-        // TODO: Implement withProtocolVersion() method.
+        $this->validateUploadedFiles($uploadedFiles);
+        $body = $this->getStream($body);
+        $this->initialize($uri, $method, $body, $headers);
+        $this->serverParams = $serverParams;
+        $this->uploadedFiles = $uploadedFiles;
     }
 
     /**
      * @return array
      */
-    public function getHeaders()
+    public function getServerParams()
     {
-        // TODO: Implement getHeaders() method.
+        return $this->serverParams;
     }
 
     /**
-     * @param string $name
+     * {@inheritdoc}
+     */
+    public function getUploadedFiles()
+    {
+        return $this->uploadedFiles;
+    }
+
+    /**
+     * @param array $uploadedFiles
      *
-     * @return bool
+     * @return CRequest
      */
-    public function hasHeader($name)
+    public function withUploadedFiles(array $uploadedFiles)
     {
-        // TODO: Implement hasHeader() method.
+        $this->validateUploadedFiles($uploadedFiles);
+        $new = clone $this;
+        $new->uploadedFiles = $uploadedFiles;
+        return $new;
     }
 
     /**
-     * @param string $name
+     * @return array
+     */
+    public function getCookieParams()
+    {
+        return $this->cookieParams;
+    }
+
+    /**
+     * @param array $cookies
      *
-     * @return string[]
+     * @return CRequest
      */
-    public function getHeader($name)
+    public function withCookieParams(array $cookies)
     {
-        // TODO: Implement getHeader() method.
+        $new = clone $this;
+        $new->cookieParams = $cookies;
+        return $new;
     }
 
     /**
-     * @param string $name
+     * @return array
+     */
+    public function getQueryParams()
+    {
+        return $this->queryParams;
+    }
+
+    /**
+     * @param array $query
      *
-     * @return string
+     * @return CRequest
      */
-    public function getHeaderLine($name)
+    public function withQueryParams(array $query)
     {
-        // TODO: Implement getHeaderLine() method.
+        $new = clone $this;
+        $new->queryParams = $query;
+        return $new;
     }
 
     /**
-     * @param string $name
-     * @param string|string[] $value
+     * @return array
+     */
+    public function getParsedBody()
+    {
+        return $this->parsedBody;
+    }
+
+    /**
+     * @param array|null|object $data
      *
-     * @return self
-     * @throws InvalidArgumentException
+     * @return CRequest
      */
-    public function withHeader($name, $value)
+    public function withParsedBody($data)
     {
-        // TODO: Implement withHeader() method.
+        $new = clone $this;
+        $new->parsedBody = $data;
+        return $new;
     }
 
     /**
-     * @param string $name
-     * @param string|string[] $value
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @param string $attribute
+     * @param null $default
      *
-     * @return self
-     * @throws InvalidArgumentException
+     * @return null
      */
-    public function withAddedHeader($name, $value)
+    public function getAttribute($attribute, $default = null)
     {
-        // TODO: Implement withAddedHeader() method.
+        if (!array_key_exists($attribute, $this->attributes)) {
+            return $default;
+        }
+        return $this->attributes[$attribute];
     }
 
     /**
-     * @param string $name
+     * @param string $attribute
+     * @param mixed $value
      *
-     * @return self
+     * @return CRequest
      */
-    public function withoutHeader($name)
+    public function withAttribute($attribute, $value)
     {
-        // TODO: Implement withoutHeader() method.
+        $new = clone $this;
+        $new->attributes[$attribute] = $value;
+        return $new;
     }
 
     /**
-     * @return StreamInterface
-     */
-    public function getBody()
-    {
-        // TODO: Implement getBody() method.
-    }
-
-    /**
-     * @param StreamInterface $body
+     * @param string $attribute
      *
-     * @return self
-     * @throws InvalidArgumentException
+     * @return CRequest
      */
-    public function withBody(StreamInterface $body)
+    public function withoutAttribute($attribute)
     {
-        // TODO: Implement withBody() method.
-    }
-
-    /**
-     * @return string
-     */
-    public function getRequestTarget()
-    {
-        // TODO: Implement getRequestTarget() method.
-    }
-
-    /**
-     * @param mixed $requestTarget
-     *
-     * @return self
-     */
-    public function withRequestTarget($requestTarget)
-    {
-        // TODO: Implement withRequestTarget() method.
+        if (!array_key_exists($attribute, $this->attributes)) {
+            return clone $this;
+        }
+        $new = clone $this;
+        unset($new->attributes[$attribute]);
+        return $new;
     }
 
     /**
@@ -145,7 +211,10 @@ class CRequest extends Object implements IRequest
      */
     public function getMethod()
     {
-        // TODO: Implement getMethod() method.
+        if ('' === $this->method) {
+            return 'GET';
+        }
+        return $this->method;
     }
 
     /**
@@ -156,147 +225,51 @@ class CRequest extends Object implements IRequest
      */
     public function withMethod($method)
     {
-        // TODO: Implement withMethod() method.
+        $this->validateMethod($method);
+        $new = clone $this;
+        $new->method = $method;
+        return $new;
     }
 
     /**
-     * @return UriInterface
-     */
-    public function getUri()
-    {
-        // TODO: Implement getUri() method.
-    }
-
-    /**
-     * @param UriInterface $uri
-     * @param bool $preserveHost
+     * @param string|resource|StreamInterface $stream
      *
-     * @return self
+     * @return string
+     * @throws InvalidArgumentException
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    private function getStream($stream)
     {
-        // TODO: Implement withUri() method.
-    }
-
-    /**
-     * @return array
-     */
-    public function getServerParams()
-    {
-        // TODO: Implement getServerParams() method.
-    }
-
-    /**
-     * @return array
-     */
-    public function getCookieParams()
-    {
-        // TODO: Implement getCookieParams() method.
-    }
-
-    /**
-     * @param array $cookies
-     *
-     * @return self
-     */
-    public function withCookieParams(array $cookies)
-    {
-        // TODO: Implement withCookieParams() method.
-    }
-
-    /**
-     * @return array
-     */
-    public function getQueryParams()
-    {
-        // TODO: Implement getQueryParams() method.
-    }
-
-    /**
-     * @param array $query
-     *
-     * @return self
-     */
-    public function withQueryParams(array $query)
-    {
-        // TODO: Implement withQueryParams() method.
-    }
-
-    /**
-     * @return array
-     */
-    public function getUploadedFiles()
-    {
-        // TODO: Implement getUploadedFiles() method.
+        if ($stream === 'php://input') {
+            return new InputStream();
+        }
+        if (!is_string($stream) && !is_resource($stream) && !$stream instanceof StreamInterface) {
+            throw new InvalidArgumentException(
+                'Stream must be a string stream resource identifier, '
+                . 'an actual stream resource, '
+                . 'or a Psr\Http\Message\StreamInterface implementation'
+            );
+        }
+        if (!$stream instanceof StreamInterface) {
+            return new Stream($stream, 'r');
+        }
+        return $stream;
     }
 
     /**
      * @param array $uploadedFiles
      *
-     * @return self
      * @throws InvalidArgumentException
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    private function validateUploadedFiles(array $uploadedFiles)
     {
-        // TODO: Implement withUploadedFiles() method.
-    }
-
-    /**
-     * @return null|array|object
-     */
-    public function getParsedBody()
-    {
-        // TODO: Implement getParsedBody() method.
-    }
-
-    /**
-     * @param null|array|object $data
-     *
-     * @return self
-     * @throws InvalidArgumentException
-     */
-    public function withParsedBody($data)
-    {
-        // TODO: Implement withParsedBody() method.
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes()
-    {
-        // TODO: Implement getAttributes() method.
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $default
-     *
-     * @return mixed
-     */
-    public function getAttribute($name, $default = null)
-    {
-        // TODO: Implement getAttribute() method.
-    }
-
-    /**
-     * @param string $name The attribute name.
-     * @param mixed $value The value of the attribute.
-     *
-     * @return self
-     */
-    public function withAttribute($name, $value)
-    {
-        // TODO: Implement withAttribute() method.
-    }
-
-    /**
-     * @param string $name The attribute name.
-     *
-     * @return self
-     */
-    public function withoutAttribute($name)
-    {
-        // TODO: Implement withoutAttribute() method.
+        foreach ($uploadedFiles as $file) {
+            if (is_array($file)) {
+                $this->validateUploadedFiles($file);
+                continue;
+            }
+            if (!$file instanceof UploadedFileInterface) {
+                throw new InvalidArgumentException('Invalid leaf in uploaded files structure');
+            }
+        }
     }
 }

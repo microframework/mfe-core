@@ -1,14 +1,13 @@
-<?php namespace mfe\core\libs\base;
+<?php namespace mfe\core\libs\applications;
 
-/*
-TODO:: Регистрация компонентов? она же ведь должна проходить исключительно в приложении?
-*/
-
+use Exception;
+use mfe\core\api\applications\IStandardApplication;
 use mfe\core\Init;
+use mfe\core\libs\base\CComponent;
 use mfe\core\libs\components\CDisplay;
-use mfe\core\libs\traits\application\TApplicationEngine;
+use mfe\core\libs\components\CException;
 use mfe\core\libs\traits\standard\TStandardApplication;
-use mfe\core\libs\traits\system\TSystemComponent;
+use mfe\core\libs\system\TSystemComponent;
 use mfe\core\mfe;
 
 /**
@@ -16,7 +15,7 @@ use mfe\core\mfe;
  *
  * @package mfe\core\libs\base
  */
-abstract class CApplication extends CComponent
+abstract class CApplication extends CComponent implements IStandardApplication
 {
     const APPLICATION_NAME = 'Default application';
     const APPLICATION_TYPE = 'IHybridApplication';
@@ -32,22 +31,31 @@ abstract class CApplication extends CComponent
     protected $result;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
         $this->init();
+        MfE::getInstance()->importComponentManager($this->componentManager);
+        $this->setup();
         $this->globalOverrideApplicationInstance();
     }
 
     /**
-     *
+     * @return void
      */
     public function init()
     {
         if (null !== static::APPLICATION_DIR) {
             self::addConfigPath(static::APPLICATION_DIR, static::class);
         }
+    }
+
+    /**
+     * @return void
+     */
+    protected function setup()
+    {
     }
 
 
@@ -70,10 +78,12 @@ abstract class CApplication extends CComponent
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function globalOverrideApplicationInstance()
     {
+        $this->set('request', MfE::getInstance()->request);
+        $this->set('response', MfE::getInstance()->response);
         MfE::getInstance()->registerApplication($this);
     }
 
@@ -93,10 +103,17 @@ abstract class CApplication extends CComponent
     }
 
     /**
-     *
+     * @return void
+     */
+    public function main(){}
+
+    /**
+     * @return void
+     * @throws CException
      */
     public function run()
     {
-        self::display($this->result . PHP_EOL, CDisplay::TYPE_PAGE);
+        $this->main();
+        MfE::getInstance()->events->trigger('application.run');
     }
 }

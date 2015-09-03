@@ -27,19 +27,5 @@ return [
         'loader' => [
             'class' => \mfe\core\libs\system\Loader::class
         ]
-    ],
-    'cores' => [
-        'loader' => [
-            'class' => \mfe\core\cores\Loader::class
-        ],
-        'page' => [
-            'class' => \mfe\core\cores\Page::class
-        ],
-        'request' => [
-            'class' => \mfe\core\cores\Request::class
-        ],
-        'router' => [
-            'class' => \mfe\core\cores\Router::class
-        ]
     ]
 ];

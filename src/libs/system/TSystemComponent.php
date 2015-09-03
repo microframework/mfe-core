@@ -1,9 +1,9 @@
-<?php namespace mfe\core\libs\traits\system;
+<?php namespace mfe\core\libs\system;
 
 /**
  * Class TSystemComponent
  *
- * @package mfe\core\libs\traits\system
+ * @package mfe\core\libs\system
  */
 trait TSystemComponent
 {

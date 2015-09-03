@@ -1,7 +1,8 @@
 <?php namespace mfe\core\libs\traits\standard;
 
 use ArrayObject;
-use mfe\core\libs\base\CApplication;
+use Exception;
+use mfe\core\libs\applications\CApplication;
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\components\CException;
@@ -44,7 +45,7 @@ trait TStandardApplication
      * @param bool $setAsCurrentApplication
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function registerApplication(CApplication $application, $setAsCurrentApplication = true)
     {
@@ -61,6 +62,7 @@ trait TStandardApplication
      */
     public function registerComponentManager()
     {
+        /** @var array $componentManager */
         if ($componentManager = MfE::getConfigData('components.di')) {
             if (!class_exists($componentManager['class'])) {
                 throw new CException("Defined components.di~>[class]|{$componentManager['class']} in config is not exists!");
@@ -75,6 +77,22 @@ trait TStandardApplication
         } else {
             throw new CException('Not defined components.di~>[class] in configs file');
         }
+        return true;
+    }
+
+    /**
+     * @param $componentManager
+     *
+     * @return bool
+     * @throws CException
+     */
+    public function importComponentManager(&$componentManager)
+    {
+        if (!$this->componentManager) {
+            $this->registerComponentManager();
+        }
+
+        $componentManager = $this->componentManager;
         return true;
     }
 
@@ -133,7 +151,7 @@ trait TStandardApplication
         if (!$this->componentManager) {
             throw new CException('ComponentManager not initialized!');
         }
-        return array_key_exists($key, $this->container) ? $this->container : $this->componentManager->get($key);
+        return array_key_exists($key, $this->container) ? $this->container[$key] : $this->componentManager->get($key);
     }
 
     /**

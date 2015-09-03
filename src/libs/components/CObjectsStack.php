@@ -1,7 +1,7 @@
 <?php namespace mfe\core\libs\components;
 
 use mfe\core\api\stack\IObjectsStack;
-use mfe\core\libs\traits\system\TSystemComponent;
+use mfe\core\libs\system\TSystemComponent;
 
 /**
  * Class CObjectsStack

@@ -6,6 +6,8 @@ use mfe\core\libs\http\server\SocketReader;
 use mfe\core\libs\http\server\SocketWriter;
 use mfe\core\MfE;
 
+(defined('MFE_SERVER')) or define('MFE_SERVER', true);
+
 require_once __DIR__ . '/src/MfE.php';
 
 $ip = '0.0.0.0';

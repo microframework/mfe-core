@@ -76,7 +76,7 @@ class Object implements IObject
     /**
      * @param $container
      */
-    protected function setContainer($container)
+    public function setContainer($container)
     {
         $this->container = $container;
     }
@@ -84,7 +84,7 @@ class Object implements IObject
     /**
      * @return array
      */
-    protected function getContainer()
+    public function getContainer()
     {
         return $this->container;
     }

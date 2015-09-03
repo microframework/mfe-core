@@ -1,6 +1,7 @@
 <?php namespace mfe\core\libs\components;
 
 use mfe\core\libs\base\CComponent;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class CDisplay
@@ -9,18 +10,16 @@ use mfe\core\libs\base\CComponent;
  */
 class CDisplay extends CComponent
 {
-    const TYPE_PAGE = 'page';
     const TYPE_DEBUG = 'debug';
-
-    /** @var CDisplay */
-    static public $instance;
+    const TYPE_HTML5 = 'html5';
+    const TYPE_JSON = 'json';
 
     /**
-     * @param $data
-     * @param $type
+     * @param ResponseInterface $response
+     * @param string $type
      */
-    static public function display($data, $type = self::TYPE_PAGE)
+    static public function display(ResponseInterface $response, $type = self::TYPE_HTML5)
     {
-        print $data;
+        print (string)$response->getBody();
     }
 }

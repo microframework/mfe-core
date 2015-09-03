@@ -7,7 +7,7 @@ use mfe\core\libs\system\PSR4Autoload;
 use mfe\core\api\engines\IEngine;
 use mfe\core\api\applications\IStandardApplication;
 
-use mfe\core\libs\traits\application\TApplicationEngine;
+use mfe\core\libs\applications\TApplicationEngine;
 use mfe\core\libs\traits\standard\TStandardEngine;
 use mfe\core\libs\traits\standard\TStandardApplication;
 
@@ -18,6 +18,8 @@ if (!class_exists('\Composer\Autoload\ClassLoader')) {
 
     $loader = new PSR4Autoload;
     $loader->register();
+    $loader->addNamespace('Psr\\Http\\Message\\',
+        dirname(__DIR__) . '/vendor/psr/http-message/src');
     $loader->addNamespace(__NAMESPACE__, __DIR__);
 }
 
@@ -42,6 +44,7 @@ require_once __DIR__ . '/Init.php';
 
 (defined('ROOT')) or define('ROOT', __DIR__);
 (defined('MFE_TIME')) or define('MFE_TIME', microtime(true));
+(defined('MFE_SERVER')) or define('MFE_SERVER', false);
 
 /**
  * Class MfE
@@ -107,6 +110,7 @@ class MfE implements IObject, IEngine, IStandardApplication
      */
     final public function startEngine()
     {
+        CRunHandler::run();
         return true;
     }
 

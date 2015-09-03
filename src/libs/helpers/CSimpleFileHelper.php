@@ -1,6 +1,6 @@
 <?php namespace mfe\core\libs\helpers;
 
-use mfe\core\libs\traits\system\TSystemComponent;
+use mfe\core\libs\system\TSystemComponent;
 
 /**
  * Class CSimpleFileHelper

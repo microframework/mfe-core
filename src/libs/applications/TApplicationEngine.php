@@ -1,4 +1,4 @@
-<?php namespace mfe\core\libs\traits\application;
+<?php namespace mfe\core\libs\applications;
 
 use mfe\core\libs\components\CException;
 use mfe\core\mfe;
@@ -6,7 +6,7 @@ use mfe\core\mfe;
 /**
  * Class TApplicationEngine
  *
- * @package mfe\core\libs\traits\application
+ * @package mfe\core\libs\application
  */
 trait TApplicationEngine
 {

@@ -23,7 +23,7 @@ abstract class CManager extends CComponent
     /**
      * @return ArrayObject
      */
-    protected function getRegister()
+    public function getRegister()
     {
         if (null !== $this->globalRegister) {
             return $this->globalRegister;

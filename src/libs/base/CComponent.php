@@ -2,7 +2,7 @@
 
 use mfe\core\libs\components\CException;
 use mfe\core\libs\system\Object;
-use mfe\core\libs\traits\system\TSystemComponent;
+use mfe\core\libs\system\TSystemComponent;
 
 /**
  * Class CComponent

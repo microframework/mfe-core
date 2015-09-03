@@ -2,6 +2,7 @@
 
 use ArrayObject;
 use Closure;
+use mfe\core\api\components\managers\IComponentManager;
 use mfe\core\libs\base\CManager;
 use mfe\core\libs\components\CException;
 use mfe\core\api\base\IObject;
@@ -14,7 +15,7 @@ use mfe\core\libs\system\SystemException;
  * @pattern ServiceLocator
  * @package mfe\core\libs\managers
  */
-class CComponentManager extends CManager implements IObject
+class CComponentManager extends CManager implements IObject, IComponentManager
 {
     const COMPONENT_NAME = 'ComponentManager';
     const COMPONENT_VERSION = '1.0.0';
@@ -132,6 +133,7 @@ class CComponentManager extends CManager implements IObject
 
         if (is_object($definition) || is_callable($definition, true)) {
             $this->definitions[$key] = $definition;
+            return true;
         } elseif (is_array($definition)) {
             if (array_key_exists('class', $definition)) {
                 $this->definitions[$key] = $definition;
@@ -162,7 +164,7 @@ class CComponentManager extends CManager implements IObject
      * @return bool|mixed|null
      * @throws SystemException
      */
-    private function buildComponent($definition)
+    public function buildComponent($definition)
     {
         if (is_string($definition)) {
             return $this->IoC->instance(['class' => $definition])->make();
