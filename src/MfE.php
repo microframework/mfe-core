@@ -1,17 +1,14 @@
 <?php namespace mfe\core;
 
-use mfe\core\libs\components\CException;
+use mfe\core\api\applications\IApplication;
 use mfe\core\api\base\IObject;
-use mfe\core\libs\system\PSR4Autoload;
-
 use mfe\core\api\engines\IEngine;
-use mfe\core\api\applications\IStandardApplication;
-
 use mfe\core\libs\applications\TApplicationEngine;
-use mfe\core\libs\traits\standard\TStandardEngine;
-use mfe\core\libs\traits\standard\TStandardApplication;
-
+use mfe\core\libs\components\CException;
 use mfe\core\libs\handlers\CRunHandler;
+use mfe\core\libs\system\PSR4Autoload;
+use mfe\core\libs\traits\standard\TStandardApplication;
+use mfe\core\libs\traits\standard\TStandardEngine;
 
 if (!class_exists('\Composer\Autoload\ClassLoader')) {
     require_once __DIR__ . '/libs/system/PSR4Autoload.php';
@@ -55,7 +52,7 @@ require_once __DIR__ . '/Init.php';
  * @standards MFS-4.1, MFS-5
  * @package mfe\core
  */
-class MfE implements IObject, IEngine, IStandardApplication
+class MfE implements IObject, IEngine, IApplication
 {
     const ENGINE_NAME = 'MicroFramework Engine';
     const ENGINE_VERSION = '1.0.7e'; // !if mod this, mod & doc before commit!
@@ -91,6 +88,17 @@ class MfE implements IObject, IEngine, IStandardApplication
     }
 
     /**
+     * Stop engine
+     *
+     * @return bool|null
+     */
+    final static public function stopEngine()
+    {
+        CRunHandler::debugHandler();
+        return (bool)(self::$instance or false);
+    }
+
+    /**
      * Destructor
      *
      * @throws CException
@@ -112,17 +120,6 @@ class MfE implements IObject, IEngine, IStandardApplication
     {
         CRunHandler::run();
         return true;
-    }
-
-    /**
-     * Stop engine
-     *
-     * @return bool|null
-     */
-    final static public function stopEngine()
-    {
-        CRunHandler::debugHandler();
-        return (bool)(self::$instance or false);
     }
 }
 

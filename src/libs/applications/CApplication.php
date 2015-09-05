@@ -1,21 +1,24 @@
 <?php namespace mfe\core\libs\applications;
 
 use Exception;
+use mfe\core\api\applications\IApplication;
 use mfe\core\api\applications\IStandardApplication;
 use mfe\core\Init;
 use mfe\core\libs\base\CComponent;
-use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\components\CException;
-use mfe\core\libs\traits\standard\TStandardApplication;
+use mfe\core\libs\http\CResponse;
 use mfe\core\libs\system\TSystemComponent;
+use mfe\core\libs\traits\standard\TStandardApplication;
 use mfe\core\mfe;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class CApplication
  *
  * @package mfe\core\libs\base
  */
-abstract class CApplication extends CComponent implements IStandardApplication
+abstract class CApplication extends CComponent implements IStandardApplication, IApplication
 {
     const APPLICATION_NAME = 'Default application';
     const APPLICATION_TYPE = 'IHybridApplication';
@@ -27,8 +30,11 @@ abstract class CApplication extends CComponent implements IStandardApplication
     use TApplicationEngine;
     use TStandardApplication;
 
-    /** @var string */
-    protected $result;
+    /** @var ServerRequestInterface */
+    public $request;
+
+    /** @var ResponseInterface */
+    public $response;
 
     /**
      * @throws Exception
@@ -49,15 +55,8 @@ abstract class CApplication extends CComponent implements IStandardApplication
         if (null !== static::APPLICATION_DIR) {
             self::addConfigPath(static::APPLICATION_DIR, static::class);
         }
+        $this->response = new CResponse();
     }
-
-    /**
-     * @return void
-     */
-    protected function setup()
-    {
-    }
-
 
     /**
      * @param $_DIR
@@ -78,12 +77,17 @@ abstract class CApplication extends CComponent implements IStandardApplication
     }
 
     /**
+     * @return void
+     */
+    public function setup()
+    {
+    }
+
+    /**
      * @throws Exception
      */
     public function globalOverrideApplicationInstance()
     {
-        $this->set('request', MfE::getInstance()->request);
-        $this->set('response', MfE::getInstance()->response);
         MfE::getInstance()->registerApplication($this);
     }
 
@@ -104,16 +108,18 @@ abstract class CApplication extends CComponent implements IStandardApplication
 
     /**
      * @return void
-     */
-    public function main(){}
-
-    /**
-     * @return void
      * @throws CException
      */
     public function run()
     {
         $this->main();
         MfE::getInstance()->events->trigger('application.run');
+    }
+
+    /**
+     * @return void
+     */
+    public function main()
+    {
     }
 }

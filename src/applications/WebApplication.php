@@ -3,10 +3,8 @@
 use InvalidArgumentException;
 use mfe\core\api\applications\IHybridApplication;
 use mfe\core\libs\applications\CApplication;
-
-use mfe\core\libs\http\CRequest;
-use mfe\core\libs\http\CResponse;
 use mfe\core\libs\system\Stream;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 /**
@@ -30,7 +28,7 @@ class WebApplication extends CApplication implements IHybridApplication
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    protected function setup()
+    public function setup()
     {
     }
 
@@ -42,7 +40,7 @@ class WebApplication extends CApplication implements IHybridApplication
     public function main()
     {
         $this->events->on('application.request',
-            function (CRequest $request, CResponse $response) {
+            function (CApplication $application) {
 //                if ($request->isSocket) {
 //                    $packetManager = new NetworkPacketManager($request->data);
 //                    $packetManager->addNamespace(__NAMESPACE__ . '/' . self::APPLICATION_TYPE);
@@ -57,7 +55,8 @@ class WebApplication extends CApplication implements IHybridApplication
                 $text = new Stream('php://memory', 'w+');
                 $text->write('Hello from Application');
 
-                $response->withBody($text);
+                /** @var ResponseInterface $response */
+                $application->response = $application->response->withBody($text);
             }
         );
     }

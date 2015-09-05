@@ -13,7 +13,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class CResponse implements ResponseInterface
 {
-    use TMutableMessage;
+    use TMessage;
 
     /** @var array */
     static private $phrases = [
@@ -114,6 +114,38 @@ class CResponse implements ResponseInterface
     }
 
     /**
+     * @param int|float|string $code
+     *
+     * @throws InvalidArgumentException
+     */
+    private function validateStatus($code)
+    {
+        if (!is_numeric($code)
+            || is_float($code)
+            || $code < 100
+            || $code >= 600
+        ) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid status code "%s"; must be an integer between 100 and 599, inclusive',
+                (is_scalar($code) ? $code : gettype($code))
+            ));
+        }
+    }
+
+    /**
+     * @param array $headers
+     *
+     * @throws InvalidArgumentException
+     */
+    private function assertHeaders(array $headers)
+    {
+        foreach ($headers as $name => $headerValues) {
+            HeaderSecurity::assertValidName($name);
+            array_walk($headerValues, __NAMESPACE__ . '\HeaderSecurity::assertValid');
+        }
+    }
+
+    /**
      * @return int
      */
     public function getStatusCode()
@@ -144,40 +176,9 @@ class CResponse implements ResponseInterface
     public function withStatus($code, $reasonPhrase = '')
     {
         $this->validateStatus($code);
-        $this->statusCode = (int)$code;
-        $this->reasonPhrase = $reasonPhrase;
-        return $this;
-    }
-
-    /**
-     * @param int|float|string $code
-     *
-     * @throws InvalidArgumentException
-     */
-    private function validateStatus($code)
-    {
-        if (!is_numeric($code)
-            || is_float($code)
-            || $code < 100
-            || $code >= 600
-        ) {
-            throw new InvalidArgumentException(sprintf(
-                'Invalid status code "%s"; must be an integer between 100 and 599, inclusive',
-                (is_scalar($code) ? $code : gettype($code))
-            ));
-        }
-    }
-
-    /**
-     * @param array $headers
-     *
-     * @throws InvalidArgumentException
-     */
-    private function assertHeaders(array $headers)
-    {
-        foreach ($headers as $name => $headerValues) {
-            HeaderSecurity::assertValidName($name);
-            array_walk($headerValues, __NAMESPACE__ . '\HeaderSecurity::assertValid');
-        }
+        $new = clone $this;
+        $new->statusCode = (int)$code;
+        $new->reasonPhrase = $reasonPhrase;
+        return $new;
     }
 }

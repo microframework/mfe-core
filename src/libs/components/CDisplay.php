@@ -1,7 +1,7 @@
 <?php namespace mfe\core\libs\components;
 
+use mfe\core\libs\applications\CApplication;
 use mfe\core\libs\base\CComponent;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class CDisplay
@@ -15,11 +15,11 @@ class CDisplay extends CComponent
     const TYPE_JSON = 'json';
 
     /**
-     * @param ResponseInterface $response
+     * @param CApplication $application
      * @param string $type
      */
-    static public function display(ResponseInterface $response, $type = self::TYPE_HTML5)
+    static public function display(CApplication $application, $type = self::TYPE_HTML5)
     {
-        print (string)$response->getBody();
+        print (string)$application->response->getBody();
     }
 }

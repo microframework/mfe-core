@@ -1,6 +1,7 @@
 <?php (require_once dirname(__DIR__) . '/vendor/autoload.php');
 
-define('MFE_DEBUG', false);
+(defined('MFE_DEBUG')) or define('MFE_DEBUG', false);
+(defined('MFE_SERVER')) or define('MFE_SERVER', true);
 
 use mfe\core\MfE;
 
