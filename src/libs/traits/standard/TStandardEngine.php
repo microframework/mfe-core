@@ -112,7 +112,7 @@ trait TStandardEngine
             ((!$class::$_STATUS)
                 ? 'Done: '
                 : ('Error: ' . CDebug::$_CODE[$class::$_STATUS] . ', at ')
-            ) . $time . $memory . PHP_EOL
+            ) . $time . $memory . PHP_EOL . PHP_EOL
         );
     }
 

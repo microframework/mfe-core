@@ -9,7 +9,7 @@ use mfe\core\libs\components\CException;
 use mfe\core\libs\http\CResponse;
 use mfe\core\libs\system\TSystemComponent;
 use mfe\core\libs\traits\standard\TStandardApplication;
-use mfe\core\mfe;
+use mfe\core\MfE;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

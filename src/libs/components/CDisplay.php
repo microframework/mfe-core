@@ -1,6 +1,6 @@
 <?php namespace mfe\core\libs\components;
 
-use mfe\core\libs\applications\CApplication;
+use mfe\core\api\applications\IApplication;
 use mfe\core\libs\base\CComponent;
 
 /**
@@ -10,16 +10,19 @@ use mfe\core\libs\base\CComponent;
  */
 class CDisplay extends CComponent
 {
-    const TYPE_DEBUG = 'debug';
-    const TYPE_HTML5 = 'html5';
-    const TYPE_JSON = 'json';
+    const TYPE_EMITTER_SAPI = 'SApi';
+    const TYPE_EMITTER_SERIAL = 'Serialized';
+
+    const EmitterNamespace = 'mfe\\core\\libs\\http\\emitters';
 
     /**
-     * @param CApplication $application
+     * @param IApplication $application
      * @param string $type
+     * @param null $bufferLevel
      */
-    static public function display(CApplication $application, $type = self::TYPE_HTML5)
+    static public function display(IApplication $application, $type = self::TYPE_EMITTER_SAPI, $bufferLevel = null)
     {
-        print (string)$application->response->getBody();
+        $emitter = static::EmitterNamespace . '\\' . $type . 'Emitter';
+        new $emitter($application->response, $bufferLevel);
     }
 }

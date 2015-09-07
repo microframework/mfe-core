@@ -13,12 +13,11 @@ class CRunHandler
 {
     static protected $handlers = [
         'server' => [],
-        'engine' => [],
         'console' => [],
         'application' => [],
     ];
 
-    static protected $currentHandler = 'server';
+    static protected $currentHandler = 'application';
 
     static public function run($handler = null)
     {
@@ -26,14 +25,19 @@ class CRunHandler
             self::$currentHandler = $handler;
         }
 
-        if (!MFE_SERVER) {
-            MfE::app()->events->on('application.run', function () {
-                $application = MfE::app();
-                $application->request = CRequestFactory::fromGlobals();
-                $application->events->trigger('application.request', [$application]);
+        switch (self::$currentHandler) {
+            case 'application':
+                MfE::app()->events->on('application.run', function () {
+                    $application = MfE::app();
+                    $application->request = CRequestFactory::fromGlobals();
 
-                CDisplay::display($application, CDisplay::TYPE_HTML5, 'utf-8');
-            });
+                    ob_start();
+                    $bufferLevel = ob_get_level();
+                    $application->events->trigger('application.request', [$application]);
+
+                    CDisplay::display($application, CDisplay::TYPE_EMITTER_SAPI, $bufferLevel);
+                });
+                break;
         }
 
         return true;

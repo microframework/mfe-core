@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'name' => \mfe\core\mfe::ENGINE_NAME,
-    'version' => \mfe\core\mfe::ENGINE_VERSION,
+    'name' => \mfe\core\MfE::ENGINE_NAME,
+    'version' => \mfe\core\MfE::ENGINE_VERSION,
     'params' => [],
     'options' => [
         'autoload' => false,
