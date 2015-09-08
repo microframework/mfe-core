@@ -12,12 +12,12 @@ class CUri implements UriInterface
 {
 
     /** @const string */
-    const CHAR_DELIMITERS = '!\$&\'\(\)\*\+,;=';
+    const CHAR_SUB_DELIMS = '!\$&\'\(\)\*\+,;=';
 
     /** @const string */
     const CHAR_UNRESERVED = 'a-zA-Z0-9_\-\.~';
 
-    /** @var int[] Array */
+    /** @var int[] */
     protected $allowedSchemes = [
         'http' => 80,
         'https' => 443,
@@ -55,9 +55,10 @@ class CUri implements UriInterface
     public function __construct($uri = '')
     {
         if (!is_string($uri)) {
+            /** @var object $uri */
             throw new InvalidArgumentException(sprintf(
                 'URI passed to constructor must be a string; received "%s"',
-                gettype($uri)
+                (is_object($uri) ? get_class($uri) : gettype($uri))
             ));
         }
         if ('' === $uri) {
@@ -66,7 +67,7 @@ class CUri implements UriInterface
     }
 
     /**
-     *
+     * @clone
      */
     public function __clone()
     {
@@ -74,19 +75,25 @@ class CUri implements UriInterface
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function __toString()
     {
         if (null !== $this->uriString) {
             return (string)$this->uriString;
         }
-        $this->uriString = $this->createUriString();
+        $this->uriString = static::createUriString(
+            $this->scheme,
+            $this->getAuthority(),
+            $this->getPath(),
+            $this->query,
+            $this->fragment
+        );
         return (string)$this->uriString;
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getScheme()
     {
@@ -94,7 +101,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getAuthority()
     {
@@ -112,7 +119,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getUserInfo()
     {
@@ -120,7 +127,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getHost()
     {
@@ -128,7 +135,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return int|null
      */
     public function getPort()
     {
@@ -138,7 +145,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getPath()
     {
@@ -146,7 +153,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getQuery()
     {
@@ -154,7 +161,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getFragment()
     {
@@ -162,13 +169,20 @@ class CUri implements UriInterface
     }
 
     /**
-     * @param $scheme
+     * @param string $scheme
      *
-     * @return CUri
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withScheme($scheme)
     {
+        if (!is_string($scheme)) {
+            /** @var object $scheme */
+            throw new InvalidArgumentException(sprintf(
+                '%s expects a string argument; received %s', __METHOD__,
+                (is_object($scheme) ? get_class($scheme) : gettype($scheme))
+            ));
+        }
         $scheme = $this->filterScheme($scheme);
         if ($scheme === $this->scheme) {
             return clone $this;
@@ -179,10 +193,28 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @param null|string $user
+     * @param null|string $password
+     *
+     * @return static
+     * @throws InvalidArgumentException
      */
     public function withUserInfo($user, $password = null)
     {
+        if (!is_string($user)) {
+            /** @var object $user */
+            throw new InvalidArgumentException(sprintf(
+                '%s expects a string user argument; received %s', __METHOD__,
+                (is_object($user) ? get_class($user) : gettype($user))
+            ));
+        }
+        if (null !== $password && !is_string($password)) {
+            /** @var object $password */
+            throw new InvalidArgumentException(sprintf(
+                '%s expects a string password argument; received %s', __METHOD__,
+                (is_object($password) ? get_class($password) : gettype($password))
+            ));
+        }
         $info = $user;
         if ($password) {
             $info .= ':' . $password;
@@ -196,10 +228,20 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $host
+     *
+     * @return static
+     * @throws InvalidArgumentException
      */
     public function withHost($host)
     {
+        if (!is_string($host)) {
+            /** @var object $host */
+            throw new InvalidArgumentException(sprintf(
+                '%s expects a string argument; received %s', __METHOD__,
+                (is_object($host) ? get_class($host) : gettype($host))
+            ));
+        }
         if ($host === $this->host) {
             return clone $this;
         }
@@ -209,24 +251,25 @@ class CUri implements UriInterface
     }
 
     /**
-     * @param int|string|null $port
+     * @param int $port
      *
-     * @return CUri
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withPort($port)
     {
-        if (!(is_int($port) || (is_string($port) && is_numeric($port)))) {
+        if (!is_numeric($port)) {
+            /** @var object $port */
             throw new InvalidArgumentException(sprintf(
                 'Invalid port "%s" specified; must be an integer or integer string',
-                gettype($port)
+                (is_object($port) ? get_class($port) : gettype($port))
             ));
         }
         $port = (int)$port;
         if ($port === $this->port) {
             return clone $this;
         }
-        if (1 > $port || 65535 < $port) {
+        if ($port < 1 || $port > 65535) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid port "%d" specified; must be a valid TCP/UDP port',
                 $port
@@ -238,9 +281,9 @@ class CUri implements UriInterface
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
-     * @return CUri
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withPath($path)
@@ -250,12 +293,12 @@ class CUri implements UriInterface
                 'Invalid path provided; must be a string'
             );
         }
-        if (false !== strpos($path, '?')) {
+        if (strpos($path, '?') !== false) {
             throw new InvalidArgumentException(
                 'Invalid path provided; must not contain a query string'
             );
         }
-        if (false !== strpos($path, '#')) {
+        if (strpos($path, '#') !== false) {
             throw new InvalidArgumentException(
                 'Invalid path provided; must not contain a URI fragment'
             );
@@ -272,7 +315,7 @@ class CUri implements UriInterface
     /**
      * @param $query
      *
-     * @return CUri
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withQuery($query)
@@ -282,7 +325,7 @@ class CUri implements UriInterface
                 'Query string must be a string'
             );
         }
-        if (false !== strpos($query, '#')) {
+        if (strpos($query, '#') !== false) {
             throw new InvalidArgumentException(
                 'Query string must not include a URI fragment'
             );
@@ -297,10 +340,20 @@ class CUri implements UriInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $fragment
+     *
+     * @return static
+     * @throws InvalidArgumentException
      */
     public function withFragment($fragment)
     {
+        if (!is_string($fragment)) {
+            /** @var object $fragment */
+            throw new InvalidArgumentException(sprintf(
+                '%s expects a string argument; received %s', __METHOD__,
+                (is_object($fragment) ? get_class($fragment) : gettype($fragment))
+            ));
+        }
         $fragment = $this->filterFragment($fragment);
         if ($fragment === $this->fragment) {
             return clone $this;
@@ -311,7 +364,7 @@ class CUri implements UriInterface
     }
 
     /**
-     * @param $uri
+     * @param string $uri
      *
      * @throws InvalidArgumentException
      */
@@ -336,28 +389,34 @@ class CUri implements UriInterface
     }
 
     /**
+     * @param string $scheme
+     * @param string $authority
+     * @param string $path
+     * @param string $query
+     * @param string $fragment
+     *
      * @return string
      */
-    private function createUriString()
+    private static function createUriString($scheme, $authority, $path, $query, $fragment)
     {
         $uri = '';
-        if ('' !== $this->scheme) {
-            $uri .= sprintf('%s://', $this->scheme);
+        if ('' !== $scheme) {
+            $uri .= sprintf('%s://', $scheme);
         }
-        if ('' !== $authority = $this->getAuthority()) {
+        if ('' !== $authority) {
             $uri .= $authority;
         }
-        if ($path = $this->getPath()) {
+        if ($path) {
             if ('' === $path || '/' !== substr($path, 0, 1)) {
                 $path = '/' . $path;
             }
             $uri .= $path;
         }
-        if ($this->query) {
-            $uri .= sprintf('?%s', $this->query);
+        if ($query) {
+            $uri .= sprintf('?%s', $query);
         }
-        if ($this->fragment) {
-            $uri .= sprintf('#%s', $this->fragment);
+        if ($fragment) {
+            $uri .= sprintf('#%s', $fragment);
         }
         return $uri;
     }
@@ -410,11 +469,18 @@ class CUri implements UriInterface
      */
     private function filterPath($path)
     {
-        return preg_replace_callback(
+        $path = preg_replace_callback(
             '/(?:[^' . self::CHAR_UNRESERVED . ':@&=\+\$,\/;%]+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'urlEncodeChar'],
             $path
         );
+        if ('' === $path) {
+            return $path;
+        }
+        if ('/' !== $path[0]) {
+            return $path;
+        }
+        return '/' . ltrim($path, '/');
     }
 
     /**
@@ -466,10 +532,7 @@ class CUri implements UriInterface
      */
     private function filterFragment($fragment)
     {
-        if (null === $fragment) {
-            $fragment = '';
-        }
-        if ('' !== $fragment && 0 === strpos($fragment, '#')) {
+        if (null !== $fragment && 0 === strpos($fragment, '#')) {
             $fragment = substr($fragment, 1);
         }
         return $this->filterQueryOrFragment($fragment);
@@ -483,7 +546,7 @@ class CUri implements UriInterface
     private function filterQueryOrFragment($value)
     {
         return preg_replace_callback(
-            '/(?:[^' . self::CHAR_UNRESERVED . self::CHAR_DELIMITERS . '%:@\/\?]+|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^' . self::CHAR_UNRESERVED . self::CHAR_SUB_DELIMS . '%:@\/\?]+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'urlEncodeChar'],
             $value
         );

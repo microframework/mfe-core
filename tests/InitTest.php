@@ -1,5 +1,12 @@
 <?php namespace mfe\core;
 
+/**
+ * Class InitTest
+ *
+ * @package mfe\core
+ *
+ * @backupGlobals disabled
+ */
 class InitTest extends \PHPUnit_Framework_TestCase
 {
     private $config;

@@ -16,39 +16,32 @@ class CRequest implements ServerRequestInterface
 {
     use TRequest;
     use TMessage;
-    /**
-     * @var array
-     */
-    private $attributes;
-    /**
-     * @var array
-     */
-    private $cookieParams;
-    /**
-     * @var array
-     */
+
+    /** @var array */
+    private $attributes = [];
+
+    /** @var array */
+    private $cookieParams = [];
+
+    /** @var null|array|object */
     private $parsedBody;
-    /**
-     * @var array
-     */
-    private $queryParams;
-    /**
-     * @var array
-     */
+
+    /** @var array */
+    private $queryParams = [];
+
+    /** @var array */
     private $serverParams;
-    /**
-     * @var array
-     */
+
+    /** @var array */
     private $uploadedFiles;
 
     /**
      * @param array $serverParams
      * @param array $uploadedFiles
-     * @param null|string $uri URI
+     * @param null|string $uri
      * @param null|string $method
      * @param string|resource|StreamInterface $body
      * @param array $headers
-     *
      * @throws InvalidArgumentException
      */
     public function __construct(
@@ -76,7 +69,7 @@ class CRequest implements ServerRequestInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
     public function getUploadedFiles()
     {
@@ -87,6 +80,7 @@ class CRequest implements ServerRequestInterface
      * @param array $uploadedFiles
      *
      * @return CRequest
+     * @throws InvalidArgumentException
      */
     public function withUploadedFiles(array $uploadedFiles)
     {
@@ -137,7 +131,7 @@ class CRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array
+     * @return array|null|object
      */
     public function getParsedBody()
     {
@@ -234,7 +228,7 @@ class CRequest implements ServerRequestInterface
     /**
      * @param string|resource|StreamInterface $stream
      *
-     * @return string
+     * @return string|StreamInterface
      * @throws InvalidArgumentException
      */
     private function getStream($stream)

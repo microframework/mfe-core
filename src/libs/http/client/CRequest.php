@@ -17,14 +17,13 @@ class CRequest implements RequestInterface
     use TRequest;
 
     /**
-     * @param null|string $uri URI for the request, if any.
-     * @param null|string $method HTTP method for the request, if any.
-     * @param string|resource|StreamInterface $body Message body, if any.
-     * @param array $headers Headers for the message, if any.
-     *
-     * @throws InvalidArgumentException for any invalid value.
+     * @param null|string $uri
+     * @param null|string $method
+     * @param string|resource|StreamInterface $body
+     * @param array $headers
+     * @throws InvalidArgumentException
      */
-    public function __construct($uri = null, $method = null, $body = 'php://memory', array $headers = [])
+    public function __construct($uri = null, $method = null, $body = 'php://temp', array $headers = [])
     {
         $this->initialize($uri, $method, $body, $headers);
     }
@@ -60,7 +59,6 @@ class CRequest implements RequestInterface
         }
         $header = $this->headerNames[strtolower($header)];
         $value = $this->headers[$header];
-        $value = is_array($value) ? $value : [$value];
-        return $value;
+        return (array)$value;
     }
 }

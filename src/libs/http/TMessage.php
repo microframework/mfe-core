@@ -2,6 +2,7 @@
 
 use InvalidArgumentException;
 use mfe\core\libs\helpers\CHttpSecurityHelper as HeaderSecurity;
+use mfe\core\libs\helpers\CHttpSecurityHelper;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -13,10 +14,13 @@ trait TMessage
 {
     /** @var array */
     protected $headers = [];
+
     /** @var array */
     protected $headerNames = [];
+
     /** @var string */
     private $protocol = '1.1';
+
     /** @var StreamInterface */
     private $stream;
 
@@ -31,7 +35,7 @@ trait TMessage
     /**
      * @param string $version
      *
-     * @return self
+     * @return static
      */
     public function withProtocolVersion($version)
     {
@@ -59,6 +63,7 @@ trait TMessage
     }
 
     /**
+     * @param string $header
      * @return string[]
      */
     public function getHeader($header)
@@ -68,27 +73,29 @@ trait TMessage
         }
         $header = $this->headerNames[strtolower($header)];
         $value = $this->headers[$header];
-        $value = is_array($value) ? $value : [$value];
-        return $value;
+        return (array)$value;
     }
 
     /**
-     * @return string|null
+     * @param string $name
+     *
+     * @return string
      */
-    public function getHeaderLine($header)
+    public function getHeaderLine($name)
     {
-        $value = $this->getHeader($header);
-        if (empty($value)) {
-            return null;
+        $value = $this->getHeader($name);
+        if (null === $value) {
+            return '';
         }
         return implode(',', $value);
     }
 
     /**
+     * @param string $header
      * @param string|string[] $value
      *
-     * @return self
-     * @throws \InvalidArgumentException
+     * @return static
+     * @throws InvalidArgumentException
      */
     public function withHeader($header, $value)
     {
@@ -110,9 +117,10 @@ trait TMessage
     }
 
     /**
+     * @param string $header
      * @param string|string[] $value
      *
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withAddedHeader($header, $value)
@@ -138,9 +146,9 @@ trait TMessage
     }
 
     /**
-     * @param $header
+     * @param string $header
      *
-     * @return TMessage
+     * @return static
      */
     public function withoutHeader($header)
     {
@@ -155,7 +163,9 @@ trait TMessage
     }
 
     /**
-     * @return StreamInterface
+     * Gets the body of the message.
+     *
+     * @return StreamInterface Returns the body as a stream.
      */
     public function getBody()
     {
@@ -165,8 +175,8 @@ trait TMessage
     /**
      * @param StreamInterface $body
      *
-     * @return self
-     * @throws InvalidArgumentException
+     * @return static
+     * @throws InvalidArgumentException When the body is not valid.
      */
     public function withBody(StreamInterface $body)
     {
@@ -199,8 +209,7 @@ trait TMessage
             }
             if (!is_array($value) && !is_string($value)) {
                 continue;
-            }
-            if (!is_array($value)) {
+            } elseif (!is_array($value)) {
                 $value = [$value];
             }
             $headerNames[strtolower($header)] = $header;
@@ -230,6 +239,6 @@ trait TMessage
      */
     private static function assertValidHeaderValue(array $values)
     {
-        array_walk($values, __NAMESPACE__ . '\HeaderSecurity::assertValid');
+        array_walk($values, CHttpSecurityHelper::class . '::assertValid');
     }
 }

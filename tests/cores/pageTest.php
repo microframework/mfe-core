@@ -6,6 +6,8 @@ use PHPUnit_Framework_TestCase;
  * Class PageTest
  *
  * @package mfe\core\cores
+ *
+ * @backupGlobals disabled
  */
 class PageTest extends PHPUnit_Framework_TestCase {
     /** @var array */

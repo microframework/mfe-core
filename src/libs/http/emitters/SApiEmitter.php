@@ -12,7 +12,7 @@ class SApiEmitter
 {
     /**
      * @param ResponseInterface $response
-     * @param null|int $maxBufferLevel Maximum output buffering level to unwrap.
+     * @param null|int $maxBufferLevel
      *
      * @throws RuntimeException
      */
@@ -41,7 +41,6 @@ class SApiEmitter
     }
 
     /**
-     *
      * @param ResponseInterface $response
      */
     private function emitHeaders(ResponseInterface $response)

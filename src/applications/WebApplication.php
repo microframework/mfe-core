@@ -53,7 +53,7 @@ class WebApplication extends CApplication implements IHybridApplication
 //                $router->run($request->url, $response);
 
                 $text = new Stream('php://memory', 'w+');
-                $text->write('Hello from Application');
+                $text->write('Hello from Application' . PHP_EOL);
 
                 /** @var ResponseInterface $response */
                 $application->response = $application->response->withBody($text);

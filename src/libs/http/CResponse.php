@@ -2,6 +2,7 @@
 
 use InvalidArgumentException;
 use mfe\core\libs\helpers\CHttpSecurityHelper as HeaderSecurity;
+use mfe\core\libs\helpers\CHttpSecurityHelper;
 use mfe\core\libs\system\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -91,7 +92,6 @@ class CResponse implements ResponseInterface
      * @param string|resource|StreamInterface $body
      * @param int $status
      * @param array $headers
-     *
      * @throws InvalidArgumentException
      */
     public function __construct($body = 'php://memory', $status = 200, array $headers = [])
@@ -111,6 +111,43 @@ class CResponse implements ResponseInterface
         list($this->headerNames, $headers) = $this->filterHeaders($headers);
         $this->assertHeaders($headers);
         $this->headers = $headers;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReasonPhrase()
+    {
+        if (!$this->reasonPhrase
+            && array_key_exists($this->statusCode, static::$phrases)
+        ) {
+            $this->reasonPhrase = static::$phrases[$this->statusCode];
+        }
+        return $this->reasonPhrase;
+    }
+
+    /**
+     * @param int $code
+     * @param string $reasonPhrase
+     *
+     * @return static
+     * @throws InvalidArgumentException
+     */
+    public function withStatus($code, $reasonPhrase = '')
+    {
+        $this->validateStatus($code);
+        $new = clone $this;
+        $new->statusCode = (int)$code;
+        $new->reasonPhrase = $reasonPhrase;
+        return $new;
     }
 
     /**
@@ -141,44 +178,7 @@ class CResponse implements ResponseInterface
     {
         foreach ($headers as $name => $headerValues) {
             HeaderSecurity::assertValidName($name);
-            array_walk($headerValues, __NAMESPACE__ . '\HeaderSecurity::assertValid');
+            array_walk($headerValues, CHttpSecurityHelper::class . '\::assertValid');
         }
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getReasonPhrase()
-    {
-        if (!$this->reasonPhrase
-            && array_key_exists($this->statusCode, static::$phrases)
-        ) {
-            $this->reasonPhrase = static::$phrases[$this->statusCode];
-        }
-        return $this->reasonPhrase;
-    }
-
-    /**
-     * @param int $code
-     * @param string $reasonPhrase
-     *
-     * @return CResponse
-     * @throws InvalidArgumentException
-     */
-    public function withStatus($code, $reasonPhrase = '')
-    {
-        $this->validateStatus($code);
-        $new = clone $this;
-        $new->statusCode = (int)$code;
-        $new->reasonPhrase = $reasonPhrase;
-        return $new;
     }
 }

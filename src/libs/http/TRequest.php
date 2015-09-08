@@ -9,34 +9,28 @@ use Psr\Http\Message\UriInterface;
 /**
  * Class TRequest
  *
+ * @property array $headerNames
+ * @property array $headers
+ * @property Stream $stream
+ *
+ * @method filterHeaders(array $headers)
+ * @method hasHeader()
+ *
  * @package mfe\core\libs\http
  */
 trait TRequest
 {
     /** @var string */
-    private $method;
+    private $method = '';
 
     /** @var null|string */
     private $requestTarget;
 
-    /** @var null|UriInterface */
+    /** @var UriInterface|CUri|null */
     private $uri;
 
-    /** @var array */
-    static private $validMethods = [
-        'CONNECT',
-        'DELETE',
-        'GET',
-        'HEAD',
-        'OPTIONS',
-        'PATCH',
-        'POST',
-        'PUT',
-        'TRACE',
-    ];
-
     /**
-     * @param null|string $uri
+     * @param null|string|UriInterface $uri
      * @param null|string $method
      * @param string|resource|StreamInterface $body
      * @param array $headers
@@ -61,10 +55,9 @@ trait TRequest
         if (is_string($uri)) {
             $uri = new CUri($uri);
         }
-        $this->method = $method;
-        $this->uri = $uri;
-
-        $this->stream = ($body instanceof StreamInterface) ? $body : new Stream($body, 'r');
+        $this->method = $method ?: '';
+        $this->uri = $uri ?: new CUri();
+        $this->stream = ($body instanceof StreamInterface) ? $body : new Stream($body, 'wb+');
         list($this->headerNames, $headers) = $this->filterHeaders($headers);
         $this->assertHeaders($headers);
         $this->headers = $headers;
@@ -85,7 +78,7 @@ trait TRequest
         if ($this->uri->getQuery()) {
             $target .= '?' . $this->uri->getQuery();
         }
-        if (empty($target)) {
+        if ('' === $target || null === $target) {
             $target = '/';
         }
         return $target;
@@ -94,7 +87,7 @@ trait TRequest
     /**
      * @param mixed $requestTarget
      *
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withRequestTarget($requestTarget)
@@ -110,7 +103,7 @@ trait TRequest
     }
 
     /**
-     * @return string Returns
+     * @return string
      */
     public function getMethod()
     {
@@ -118,9 +111,9 @@ trait TRequest
     }
 
     /**
-     * @param string $method Case-insensitive method.
+     * @param string $method
      *
-     * @return self
+     * @return static
      * @throws InvalidArgumentException
      */
     public function withMethod($method)
@@ -141,15 +134,15 @@ trait TRequest
 
     /**
      * @param UriInterface|CUri $uri
-     *
      * @param bool $preserveHost
-     * @return self
+     *
+     * @return static
      */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
         $new = clone $this;
         $new->uri = $uri;
-        if ($preserveHost) {
+        if ($preserveHost && $this->hasHeader('Host')) {
             return $new;
         }
         if (!$uri->getHost()) {
@@ -160,35 +153,33 @@ trait TRequest
             $host .= ':' . $uri->getPort();
         }
         $new->headerNames['host'] = 'Host';
-        $new->headers['Host'] = array($host);
+        $new->headers['Host'] = [$host];
         return $new;
     }
 
     /**
      * @param null|string $method
      *
-     * @return bool
      * @throws InvalidArgumentException
      */
     private function validateMethod($method)
     {
         if (null === $method) {
-            return true;
+            return;
         }
         if (!is_string($method)) {
+            /** @var object $method */
             throw new InvalidArgumentException(sprintf(
                 'Unsupported HTTP method; must be a string, received %s',
                 (is_object($method) ? get_class($method) : gettype($method))
             ));
         }
-        $method = strtoupper($method);
-        if (!in_array($method, static::$validMethods, true)) {
+        if (!preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
             throw new InvalidArgumentException(sprintf(
                 'Unsupported HTTP method "%s" provided',
                 $method
             ));
         }
-        return false;
     }
 
     /**

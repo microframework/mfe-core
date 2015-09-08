@@ -16,7 +16,7 @@ class CUploadedFile implements UploadedFileInterface
     /** @var string */
     private $clientFilename;
 
-    /** * @var string */
+    /** @var string */
     private $clientMediaType;
 
     /** @var int */
@@ -35,27 +35,29 @@ class CUploadedFile implements UploadedFileInterface
     private $stream;
 
     /**
-     * @param $streamOrFile
-     * @param $size
-     * @param $errorStatus
-     * @param null $clientFilename
-     * @param null $clientMediaType
+     * @param string|resource|Stream $streamOrFile
+     * @param int $size
+     * @param int $errorStatus
+     * @param null|string $clientFilename
+     * @param null|string $clientMediaType
      *
      * @throws InvalidArgumentException
      */
     public function __construct($streamOrFile, $size, $errorStatus, $clientFilename = null, $clientMediaType = null)
     {
-        if (is_string($streamOrFile)) {
-            $this->file = $streamOrFile;
-        }
-        if (is_resource($streamOrFile)) {
-            $this->stream = new Stream($streamOrFile);
-        }
-        if (!$this->file && !$this->stream) {
-            if (!$streamOrFile instanceof StreamInterface) {
-                throw new InvalidArgumentException('Invalid stream or file provided for UploadedFile');
+        if ($errorStatus === UPLOAD_ERR_OK) {
+            if (is_string($streamOrFile)) {
+                $this->file = $streamOrFile;
             }
-            $this->stream = $streamOrFile;
+            if (is_resource($streamOrFile)) {
+                $this->stream = new Stream($streamOrFile);
+            }
+            if (!$this->file && !$this->stream) {
+                if (!$streamOrFile instanceof StreamInterface) {
+                    throw new InvalidArgumentException('Invalid stream or file provided for UploadedFile');
+                }
+                $this->stream = $streamOrFile;
+            }
         }
         if (!is_int($size)) {
             throw new InvalidArgumentException('Invalid size provided for UploadedFile; must be an int');
@@ -90,6 +92,9 @@ class CUploadedFile implements UploadedFileInterface
      */
     public function getStream()
     {
+        if ($this->error !== UPLOAD_ERR_OK) {
+            throw new RuntimeException('Cannot retrieve stream due to upload error');
+        }
         if ($this->moved) {
             throw new RuntimeException('Cannot retrieve stream after it has already been moved');
         }
@@ -103,17 +108,20 @@ class CUploadedFile implements UploadedFileInterface
     /**
      * @param string $targetPath
      *
-     * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function moveTo($targetPath)
     {
+        if ($this->error !== UPLOAD_ERR_OK) {
+            throw new RuntimeException('Cannot retrieve stream due to upload error');
+        }
         if (!is_string($targetPath)) {
             throw new InvalidArgumentException(
                 'Invalid path provided for move operation; must be a string'
             );
         }
-        if (empty($targetPath)) {
+        if ('' === $targetPath) {
             throw new InvalidArgumentException(
                 'Invalid path provided for move operation; must be a non-empty string'
             );
@@ -122,17 +130,12 @@ class CUploadedFile implements UploadedFileInterface
             throw new RuntimeException('Cannot move file; already moved!');
         }
         $sapi = PHP_SAPI;
-        switch (true) {
-            case (empty($sapi) || 0 === strpos($sapi, 'cli') || !$this->file):
-                // Non-SAPI environment, or no filename present
-                $this->writeFile($targetPath);
-                break;
-            default:
-                // SAPI environment, with file present
-                if (false === move_uploaded_file($this->file, $targetPath)) {
-                    throw new RuntimeException('Error occurred while moving uploaded file');
-                }
-                break;
+        if ((null !== $sapi && '' !== $sapi) || !$this->file || 0 === strpos($sapi, 'cli')) {
+            $this->writeFile($targetPath);
+        } else {
+            if (false === move_uploaded_file($this->file, $targetPath)) {
+                throw new RuntimeException('Error occurred while moving uploaded file');
+            }
         }
         $this->moved = true;
     }
@@ -180,9 +183,10 @@ class CUploadedFile implements UploadedFileInterface
         if (false === $handle) {
             throw new RuntimeException('Unable to write to designated path');
         }
-        $this->stream->rewind();
-        while (!$this->stream->eof()) {
-            fwrite($handle, $this->stream->read(4096));
+        $stream = $this->getStream();
+        $stream->rewind();
+        while (!$stream->eof()) {
+            fwrite($handle, $stream->read(4096));
         }
         fclose($handle);
     }
