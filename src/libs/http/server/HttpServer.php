@@ -1,155 +1,188 @@
 <?php namespace mfe\core\libs\http\server;
 
-use mfe\core\libs\managers\CEventManager;
-use mfe\core\MfE;
+use ArrayObject;
+use mfe\core\api\http\IHttpSocketReader;
+use mfe\core\api\http\IHttpSocketWriter;
+use mfe\core\api\http\IMiddlewareServer;
+use mfe\core\api\http\ITcpServer;
+use mfe\core\api\http\IUpgradeServer;
+use mfe\core\libs\http\HttpSocketReader;
+use mfe\core\libs\http\HttpSocketWriter;
+
+require_once dirname(dirname(dirname(dirname(__DIR__)))) . '/vendor/autoload.php';
 
 /**
  * Class HttpServer
  *
  * @package mfe\core\libs\http\server
  */
-class HttpServer
+class HttpServer implements ITcpServer
 {
-    const VERSION = '0.0.1';
+    public $enableKeepAlive = false;
 
-    const ENV_IP = '0.0.0.0';
-    const ENV_PORT = '8000';
+    /** @var ArrayObject */
+    private $config;
 
-    public $keepAliveEnable = true;
+    /** @var array */
+    private $upgrades = [];
 
-    public $bind_ip;
-    public $bind_port;
+    /** @var array */
+    private $middleware = [];
 
-    public $error = [
-        'type' => 0,
-        'message' => ''
-    ];
+    /** @var IUpgradeServer[] */
+    private $upgradedSockets = [];
 
     /** @var resource */
-    private $server;
+    private $socket;
 
-    /** @var CEventManager */
-    private $events;
+    public $isClose = true;
 
-    /** @var array */
-    private $connects = [];
-
-    /** @var array */
-    private $upgradedConnects = [];
-
-    public function __construct($ip = self::ENV_IP, $port = self::ENV_PORT)
+    /**
+     * @param $socket
+     * @param array $proxy
+     * @param ArrayObject $config
+     */
+    public function __construct($socket, array $proxy, ArrayObject $config)
     {
-        $this->events = MfE::app()->events;
-
-        $this->bind_ip = $ip;
-        $this->bind_port = $port;
+        $this->socket = $socket;
+        $this->setConfig($config);
+        $this->upgrades = $proxy['upgrades'];
+        $this->middleware = $proxy['middleware'];
+        $this->run();
     }
 
-    public function __destruct()
+    public function handle($socket)
     {
-        $this->events->trigger('server.stop');
-        fwrite(STDOUT, 'Server stopped.' . PHP_EOL);
+        $this->socket = $socket;
+        $this->run();
     }
 
-    protected function setup()
+    /**
+     * @param array $upgrades
+     * @param array $middleware
+     *
+     * @return ITcpServer
+     */
+    static public function build(array $upgrades = [], array $middleware = [])
     {
-        //stream_set_chunk_size($this->server, 1024);
-        //stream_set_blocking($this->server, 0);
-        stream_set_timeout($this->server, 5);
+        return [
+            '_CLASS' => __CLASS__,
+            'upgrades' => $upgrades,
+            'middleware' => $middleware
+        ];
+    }
 
-        $this->events->trigger('server.start', [$this->server]);
-        fwrite(STDOUT, "Server started at: {$this->bind_ip}:{$this->bind_port}." . PHP_EOL);
-
-        return $this;
+    /**
+     * @param ArrayObject $config
+     *
+     * @return static
+     */
+    public function setConfig(ArrayObject $config)
+    {
+        $this->config = $config;
     }
 
     public function run()
     {
-        $this->server = stream_socket_server(
-            "tcp://{$this->bind_ip}:{$this->bind_port}",
-            $this->error['type'],
-            $this->error['message']
-        );
-
-        if (!$this->server) {
-            throw new HttpServerException("{$this->error['type']} ({$this->error['message']})" . PHP_EOL);
-        }
-
-        $this->setup()->loop();
-
-        fclose($this->server);
+        $this->handleSocket($this->socket);
     }
 
-    protected function loop()
+    /**
+     * @param resource $socket
+     *
+     * @return bool
+     */
+    protected function handleSocket($socket)
     {
-        while (true) {
-            $connections = $this->connects;
-            $connections[(int)$this->server] = $this->server;
-            $write = $except = null;
+        $reader = new HttpSocketReader($socket);
+        $writer = new HttpSocketWriter($socket, $reader);
 
-            if (!stream_select($connections, $write, $except, null)) {
-                break;
+        $upgrade = null;
+
+        if ([] !== $this->upgrades && array_key_exists((int)$socket, $this->upgradedSockets)) {
+            $upgrade = $this->upgradedSockets[(int)$socket];
+            $upgrade->pipe($socket, $reader, $writer);
+            $this->isClose = $reader->isClose = $upgrade->isClose();
+        } else {
+            $this->pipe($socket, $reader, $writer);
+
+            if ($reader->keepAlive) {
+                $this->keepAliveHandler($socket);
             }
+        }
 
-            if (in_array($this->server, $connections)) {
-                $connect = stream_socket_accept($this->server, -1);
-                $this->connects[(int)$connect] = $connect;
-                unset($connections[(int)$this->server]);
+        if ($this->isClose || $reader->isClose || feof($socket)) {
+            if (array_key_exists((int)$socket, $this->upgradedSockets)) {
+                $upgrade->closeSocket()->pipe($socket, $reader, $writer);
+                unset($this->upgradedSockets[(int)$socket]);
             }
+            fclose($socket);
+        }
 
-            $this->processConnection($connections);
+        return true;
+    }
+
+    /**
+     * @param $socket
+     * @param IHttpSocketReader|HttpSocketReader $reader
+     * @param IHttpSocketWriter $writer
+     *
+     * @return bool
+     */
+    protected function pipe($socket, IHttpSocketReader $reader, IHttpSocketWriter $writer)
+    {
+        if ($upgrade = $reader->parseHeaders()->tryUpgrade($this->upgrades, $this->config)) {
+            $this->upgradedSockets[(int)$socket] = $upgrade->registerMiddleware($this->middleware);
+            $upgrade->pipe($socket, $reader, $writer);
+            $this->isClose = $reader->isClose = $upgrade->isClose();
+        } else {
+            if ($reader->isHttpRequest) {
+                if ($this->enableKeepAlive) {
+                    $reader->tryKeepAlive();
+                }
+                $reader->parseBody();
+                $reader->overrideGlobals();
+                $this->httpRequest($reader, $writer);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param resource $socket
+     */
+    protected function keepAliveHandler($socket)
+    {
+        $keepAlive = true;
+
+        while ($keepAlive && !feof($socket)) {
+            $reader = new HttpSocketReader($socket);
+            $writer = new HttpSocketWriter($socket, $reader);
+
+            $this->pipe($socket, $reader, $writer);
+            $keepAlive = $reader->keepAlive;
+            $this->isClose = !$keepAlive;
         }
     }
 
-    protected function processConnection(array $connections)
+    /**
+     * @param IHttpSocketReader|HttpSocketReader $reader
+     * @param IHttpSocketWriter|HttpSocketWriter $writer
+     *
+     * @return void
+     */
+    protected function httpRequest(IHttpSocketReader $reader, IHttpSocketWriter $writer)
     {
-        foreach ($connections as $connect) {
-            $firstConnect = false;
-            $reader = new SocketReader($connect);
-            $writer = new SocketWriter($connect, $this->upgradedConnects);
+        foreach ($this->middleware as $middleware) {
+            $middleware = new $middleware($this->config);
 
-            if (array_key_exists((int)$connect, $this->upgradedConnects)) {
-                $reader->isWebSocket = true;
-                $writer->isEncoded = true;
-                $reader->getData();
-            }
-
-            while ((!$reader->isClose || !$firstConnect) && !$reader->isWebSocket && !feof($connect)) {
-                if (!array_key_exists(intval($connect), $this->upgradedConnects)) {
-                    $firstConnect = true;
-                    $reader->getHeaders();
-                }
-
-                if ($reader->isWebSocket && !array_key_exists((int)$connect, $this->upgradedConnects)) {
-                    $this->upgradedConnects[(int)$connect] = $connect;
-                    $writer->isEncoded = true;
-                }
-                if ($this->keepAliveEnable && $reader->keepAlive) {
-                    $writer->keepAlive = true;
-                } elseif(!$reader->isWebSocket) {
-                    $reader->isClose = true;
-                }
-
-                if ($firstConnect) {
-                    $this->events->trigger('server.connection.open', [$reader, $writer, $connect]);
-                }
-                if ($firstConnect && !$reader->isWebSocket) {
-                    $this->events->trigger('server.connection.data', [$reader, $writer, $connect]);
-                }
-            }
-
-            if (!$firstConnect && $reader->isWebSocket) {
-                $this->events->trigger('server.connection.data', [$reader, $writer, $connect]);
-            }
-
-            if ($reader->isClose) {
-                if (array_key_exists((int)$connect, $this->upgradedConnects)) {
-                    unset($this->upgradedConnects[(int)$connect]);
-                }
-                unset($this->connects[(int)$connect]);
-                fclose($connect);
-                $this->events->trigger('server.connection.close', [$reader, $writer]);
+            /** @var IMiddlewareServer $middleware */
+            if ($middleware->request($reader, $writer)) {
+                return;
             }
         }
+
+        $writer->setHttpStatus(404)->send('Error 404: Not found file by path ' . $reader->getUriPath());
     }
 }
