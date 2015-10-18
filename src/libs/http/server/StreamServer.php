@@ -1,6 +1,7 @@
 <?php namespace mfe\core\libs\http\server;
 
 use ArrayObject;
+use mfe\core\api\configs\IConfig;
 use mfe\core\api\http\ITcpServer;
 use mfe\core\libs\http\server\exceptions\StreamServerException;
 
@@ -13,7 +14,7 @@ class StreamServer
 {
     use TStreamServer;
 
-    /** @var ArrayObject */
+    /** @var ArrayObject|array */
     private $config;
 
     /** @var array */
@@ -24,9 +25,9 @@ class StreamServer
 
     /**
      * @param string $builder
-     * @param array $config
+     * @param IConfig $config
      */
-    public function __construct($builder, array $config)
+    public function __construct($builder, IConfig $config)
     {
         $this->config = new ArrayObject($config, ArrayObject::ARRAY_AS_PROPS);
         $this->builder = $builder;

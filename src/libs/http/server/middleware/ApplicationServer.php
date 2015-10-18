@@ -1,5 +1,6 @@
 <?php namespace mfe\core\libs\http\server\middleware;
 
+use ArrayObject;
 use mfe\core\api\http\IHttpSocketReader;
 use mfe\core\api\http\IHttpSocketWriter;
 use mfe\core\api\http\IMiddlewareServer;
@@ -12,11 +13,11 @@ use mfe\core\api\http\IMiddlewareServer;
 class ApplicationServer implements IMiddlewareServer
 {
     /**
-     * @param array $params
+     * @param ArrayObject $config
      *
      * @return static
      */
-    static public function setup(array $params)
+    static public function setup(ArrayObject $config)
     {
         return new static;
     }

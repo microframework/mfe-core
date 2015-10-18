@@ -17,12 +17,12 @@ class StaticServer implements IMiddlewareServer
 
     public function __construct(ArrayObject $config)
     {
-        if (isset($config->document_root)) {
-            $this->document_root = str_replace('\\', '/', $config->document_root);
+        if (isset($config->http->static->document_root)) {
+            $this->document_root = str_replace('\\', '/', $config->http->static->document_root);
         }
 
-        if (isset($config->document_index)) {
-            $this->document_index = $config->document_index;
+        if (isset($config->http->static->document_index)) {
+            $this->document_index = $config->http->static->document_index;
         }
     }
 
@@ -35,20 +35,28 @@ class StaticServer implements IMiddlewareServer
     public function request(IHttpSocketReader $reader, IHttpSocketWriter $writer)
     {
         $path = str_replace('..', '/', $reader->getUriPath());
-
+        $files = [];
         if ($path === '/') {
-            $file = $this->document_root . '/' . $this->document_index;
+            if (1 < count($indexes = explode(',', $this->document_index))) {
+                foreach ($indexes as $index) {
+                    $files[] = $this->document_root . '/' . trim($index);
+                }
+            } else {
+                $files[] = $this->document_root . '/' . $this->document_index;
+            }
         } else {
-            $file = $this->document_root . $path;
+            $files[] = $this->document_root . $path;
         }
 
-        if (file_exists($file) && is_readable($file) && !is_dir($file)) {
-            $mimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
-            $writer
-                ->setHttpStatus(200)
-                ->addHeader('Content-Type', $mimeType)
-                ->send(file_get_contents($file), false);
-            return true;
+        foreach ($files as $file) {
+            if (file_exists($file) && is_readable($file) && !is_dir($file)) {
+                $mimeType = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
+                $writer
+                    ->setHttpStatus(200)
+                    ->addHeader('Content-Type', $mimeType)
+                    ->send(file_get_contents($file), false);
+                return true;
+            }
         }
 
         return false;
