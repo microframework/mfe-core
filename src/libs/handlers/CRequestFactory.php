@@ -1,9 +1,11 @@
 <?php namespace mfe\core\libs\handlers;
 
 use InvalidArgumentException;
+use mfe\core\api\http\IHttpSocketReader;
 use mfe\core\libs\http\CRequest;
 use mfe\core\libs\http\CUploadedFile;
 use mfe\core\libs\http\CUri;
+use mfe\core\libs\http\HttpSocketReader;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use stdClass;
@@ -304,6 +306,10 @@ class CRequestFactory
             $accumulator->host = substr($accumulator->host, 0, -1 * (strlen($matches[1]) + 1));
             $accumulator->port = (int)$matches[1];
         }
+
+        if(null === $accumulator->port) {
+            $accumulator->port = 80;
+        }
     }
 
     /**
@@ -323,6 +329,7 @@ class CRequestFactory
      * @param array $value $_FILES
      *
      * @return array|UploadedFileInterface
+     * @throws InvalidArgumentException
      */
     private static function createUploadedFileFromSpec(array $value)
     {
@@ -342,6 +349,7 @@ class CRequestFactory
      * @param array $files
      *
      * @return UploadedFileInterface[]
+     * @throws InvalidArgumentException
      */
     private static function normalizeNestedFileSpec(array $files = [])
     {

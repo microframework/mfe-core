@@ -59,8 +59,8 @@ if (in_array('--port', $argv, true)) {
 $server = new StreamServer(HttpServer::build([
     WebSocketServer::class
 ], [
-    StaticServer::class,
-    ApplicationServer::class
+    ApplicationServer::class,
+    StaticServer::class
 ]), $config);
 
 $server->listen("{$ip}:{$port}");

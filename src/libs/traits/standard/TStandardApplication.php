@@ -2,15 +2,18 @@
 
 use ArrayObject;
 use Exception;
+use InvalidArgumentException;
 use mfe\core\libs\applications\CApplication;
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\components\CException;
 use mfe\core\libs\components\CObjectsStack;
 use mfe\core\Init;
+use mfe\core\libs\http\CResponse;
 use mfe\core\libs\managers\CComponentManager;
 use mfe\core\libs\system\SystemException;
 use mfe\core\mfe;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TStandardApplication
@@ -29,6 +32,9 @@ trait TStandardApplication
 
     private $container = [];
 
+    /** @var ResponseInterface */
+    public $response;
+
     static protected $config = [];
     static public $_STATUS = 0x0000000;
 
@@ -38,6 +44,16 @@ trait TStandardApplication
     static public function TStandardApplication()
     {
         MfE::$traitsRegister[] = 'applications';
+    }
+
+    /**
+     * Trait Constructor
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __TStandardApplication()
+    {
+        $this->response = new CResponse();
     }
 
     /**
@@ -117,6 +133,20 @@ trait TStandardApplication
         }
 
         return $application;
+    }
+
+    public function loadApplication($name)
+    {
+        if ($this instanceof $name) {
+            return $this;
+        }
+        if (class_exists($name) && !MfE::getInstance()->currentApplication) {
+            MfE::getInstance()->currentApplication = $name;
+            new $name;
+            return MfE::getInstance()->applications->{MfE::getInstance()->currentApplication};
+        }
+
+        throw new CException('Unknown application: ' . $name);
     }
 
     /**

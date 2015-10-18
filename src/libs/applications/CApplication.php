@@ -1,6 +1,7 @@
 <?php namespace mfe\core\libs\applications;
 
 use Exception;
+use InvalidArgumentException;
 use mfe\core\api\applications\IApplication;
 use mfe\core\api\applications\IStandardApplication;
 use mfe\core\Init;
@@ -10,7 +11,6 @@ use mfe\core\libs\http\CResponse;
 use mfe\core\libs\system\TSystemComponent;
 use mfe\core\libs\traits\standard\TStandardApplication;
 use mfe\core\MfE;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -33,9 +33,6 @@ abstract class CApplication extends CComponent implements IStandardApplication, 
     /** @var ServerRequestInterface */
     public $request;
 
-    /** @var ResponseInterface */
-    public $response;
-
     /**
      * @throws Exception
      */
@@ -49,6 +46,7 @@ abstract class CApplication extends CComponent implements IStandardApplication, 
 
     /**
      * @return void
+     * @throws InvalidArgumentException
      */
     public function init()
     {
