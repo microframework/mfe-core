@@ -11,6 +11,8 @@ use mfe\core\libs\components\CObjectsStack;
 use mfe\core\Init;
 use mfe\core\libs\http\CResponse;
 use mfe\core\libs\managers\CComponentManager;
+use mfe\core\libs\system\page\SystemMfEPage;
+use mfe\core\libs\system\Stream;
 use mfe\core\libs\system\SystemException;
 use mfe\core\mfe;
 use Psr\Http\Message\ResponseInterface;
@@ -54,6 +56,7 @@ trait TStandardApplication
     public function __TStandardApplication()
     {
         $this->response = new CResponse();
+        $this->registerSystemPageStub();
     }
 
     /**
@@ -113,6 +116,16 @@ trait TStandardApplication
     }
 
     /**
+     * @param string $applicationName
+     *
+     * @return ArrayObject|array
+     */
+    public function importInitConfig($applicationName)
+    {
+        return new ArrayObject();
+    }
+
+    /**
      * TODO:: Application stack
      *
      * @param Init $config
@@ -135,6 +148,14 @@ trait TStandardApplication
         return $application;
     }
 
+    /**
+     * TODO:: Refactor this to AppStack
+     *
+     * @param string $name
+     *
+     * @return static $this
+     * @throws CException
+     */
     public function loadApplication($name)
     {
         if ($this instanceof $name) {
@@ -250,6 +271,13 @@ trait TStandardApplication
     public function __isset($key)
     {
         return $this->has($key);
+    }
+
+    protected function registerSystemPageStub()
+    {
+        $buffer = new Stream('php://memory', 'w+');
+        $buffer->write((string)new SystemMfEPage());
+        $this->response = $this->response->withBody($buffer);
     }
 
     /*

@@ -54,6 +54,7 @@ abstract class CApplication extends CComponent implements IStandardApplication, 
             self::addConfigPath(static::APPLICATION_DIR, static::class);
         }
         $this->response = new CResponse();
+        $this->registerSystemPageStub();
     }
 
     /**

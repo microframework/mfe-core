@@ -1,10 +1,12 @@
 <?php namespace mfe\core\applications;
 
+use ArrayObject;
 use InvalidArgumentException;
 use mfe\core\api\applications\IHybridApplication;
 use mfe\core\libs\applications\CApplication;
-use mfe\core\libs\system\Stream;
-use Psr\Http\Message\ResponseInterface;
+use mfe\core\libs\components\CException;
+use mfe\core\libs\managers\CRouteManager;
+use mfe\core\MfE;
 use RuntimeException;
 
 /**
@@ -21,15 +23,19 @@ class WebApplication extends CApplication implements IHybridApplication
     /** @constant string, Please not modify! */
     const APPLICATION_DIR = __DIR__;
 
+    /** @var ArrayObject|array */
+    static protected $config;
+
     /**
      * @setup
      *
      * @return void
-     * @throws InvalidArgumentException
-     * @throws RuntimeException
+     * @throws CException
      */
     public function setup()
     {
+        // TODO:: load & import configs
+        static::$config = MfE::app()->importInitConfig(__CLASS__);
     }
 
     /**
@@ -48,15 +54,18 @@ class WebApplication extends CApplication implements IHybridApplication
 //                    return;
 //                }
 
-//                $router = new RouterManager($this->config->router, $this->config->router->rules);
-//                $router->addNamespace(__NAMESPACE__ . '/' . self::APPLICATION_TYPE);
-//                $router->run($request->url, $response);
+                $router = new CRouteManager(
+                    // (static::$config->router) ?: null,
+                    // (static::$config->router && static::$config->router->rules) ?: null
+                );
+                $router->addNamespace(__NAMESPACE__ . '/' . self::APPLICATION_TYPE);
+                $router->run($application->request->getUri(), $application->response);
 
-                $text = new Stream('php://memory', 'w+');
-                $text->write('Hello from Application' . PHP_EOL);
-
-                /** @var ResponseInterface $response */
-                $application->response = $application->response->withBody($text);
+//                $text = new Stream('php://memory', 'w+');
+//                $text->write('Hello from Application' . PHP_EOL);
+//
+//                /** @var ResponseInterface $response */
+//                $application->response = $application->response->withBody($text);
             }
         );
     }
