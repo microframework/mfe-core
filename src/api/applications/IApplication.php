@@ -20,5 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface IApplication
 {
+    public function load();
 
+    public function unload();
 }

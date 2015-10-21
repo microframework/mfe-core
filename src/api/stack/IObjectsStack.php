@@ -1,4 +1,5 @@
 <?php namespace mfe\core\api\stack;
+
 /**
  * Interface IObjectsStack
  *
@@ -28,6 +29,13 @@ interface IObjectsStack
      * @return mixed
      */
     public function add($key, $value);
+
+    /**
+     * @param $key
+     *
+     * @return bool
+     */
+    public function has($key);
 
     /**
      * @param $key

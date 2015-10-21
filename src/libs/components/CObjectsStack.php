@@ -27,6 +27,10 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
     /** @var integer */
     protected $min_limit = 16;
 
+    /**
+     * @param array $array
+     * @param null $sid
+     */
     public function __construct($array = [], $sid = null)
     {
         parent::__construct();
@@ -56,11 +60,23 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         $this->index = $new_index;
     }
 
+    /**
+     * @param $key
+     *
+     * @return mixed
+     */
     public function __get($key)
     {
         return $this->objectStack[$key];
     }
 
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return void
+     * @throws CException
+     */
     public function __set($key, $value)
     {
         if ($this->index > $this->limit) {
@@ -74,6 +90,13 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         $this->index++;
     }
 
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return $this
+     * @throws CException
+     */
     public function add($key, $value)
     {
         if ($this->index > $this->limit) {
@@ -88,6 +111,17 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         return $this;
     }
 
+    public function has($key)
+    {
+        return array_key_exists($key, $this->objectStack);
+    }
+
+    /**
+     * @param $key
+     * @param bool $reorder
+     *
+     * @return $this
+     */
     public function remove($key, $reorder = true)
     {
         $offset = array_search($this->objectStack[$key], parent::getArrayCopy(), true);
@@ -147,6 +181,13 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         return $this;
     }
 
+    /**
+     * @param $key
+     * @param int $count_steps
+     * @param bool $reorder
+     *
+     * @return $this
+     */
     public function up($key, $count_steps = 1, $reorder = true)
     {
         $position = array_search($this->objectStack[$key], parent::getArrayCopy(), true);
@@ -166,6 +207,12 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         return $this;
     }
 
+    /**
+     * @param $key
+     * @param int $count_steps
+     *
+     * @return $this
+     */
     public function down($key, $count_steps = 1)
     {
         $position = array_search($this->objectStack[$key], parent::getArrayCopy(), true);
@@ -211,6 +258,9 @@ class CObjectsStack extends \ArrayObject implements IObjectsStack
         }
     }
 
+    /**
+     * @return $this
+     */
     public function flush()
     {
         foreach ($this->objectStack as $key => $value) {
