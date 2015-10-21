@@ -1,4 +1,5 @@
 <?php namespace mfe\core\libs\system\page;
+
 use mfe\core\MfE;
 
 /**

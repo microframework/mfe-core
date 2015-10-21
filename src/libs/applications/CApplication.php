@@ -34,14 +34,16 @@ abstract class CApplication extends CComponent implements IStandardApplication, 
     public $request;
 
     /**
+     * @param bool $autoload
+     *
      * @throws Exception
      */
-    public function __construct()
+    public function __construct($autoload = false)
     {
         $this->init();
         MfE::getInstance()->importComponentManager($this->componentManager);
         $this->setup();
-        $this->globalOverrideApplicationInstance();
+        $this->globalOverrideApplicationInstance($autoload);
     }
 
     /**
@@ -83,11 +85,18 @@ abstract class CApplication extends CComponent implements IStandardApplication, 
     }
 
     /**
+     * @param bool $autoload
+     *
      * @throws Exception
      */
-    public function globalOverrideApplicationInstance()
+    public function globalOverrideApplicationInstance($autoload)
     {
-        MfE::getInstance()->registerApplication($this);
+        $applicationManager = MfE::getInstance()->getApplicationManager();
+
+        $applicationManager->registerApplication($this);
+        if ($autoload) {
+            $applicationManager->loadApplication($this);
+        }
     }
 
     /**

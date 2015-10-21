@@ -6,7 +6,9 @@ use mfe\core\api\applications\IHybridApplication;
 use mfe\core\libs\applications\CApplication;
 use mfe\core\libs\components\CException;
 use mfe\core\libs\managers\CRouteManager;
+use mfe\core\libs\system\Stream;
 use mfe\core\MfE;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 /**
@@ -43,7 +45,7 @@ class WebApplication extends CApplication implements IHybridApplication
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    public function main()
+    public function load()
     {
         $this->events->on('application.request',
             function (CApplication $application) {
@@ -55,17 +57,17 @@ class WebApplication extends CApplication implements IHybridApplication
 //                }
 
                 $router = new CRouteManager(
-                    // (static::$config->router) ?: null,
-                    // (static::$config->router && static::$config->router->rules) ?: null
+                // (static::$config->router) ?: null,
+                // (static::$config->router && static::$config->router->rules) ?: null
                 );
                 $router->addNamespace(__NAMESPACE__ . '/' . self::APPLICATION_TYPE);
                 $router->run($application->request->getUri(), $application->response);
 
-//                $text = new Stream('php://memory', 'w+');
-//                $text->write('Hello from Application' . PHP_EOL);
-//
-//                /** @var ResponseInterface $response */
-//                $application->response = $application->response->withBody($text);
+                $text = new Stream('php://memory', 'w+');
+                $text->write('Hello from Application' . PHP_EOL);
+
+                /** @var ResponseInterface $response */
+                $application->response = $application->response->withBody($text);
             }
         );
     }

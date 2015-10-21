@@ -6,7 +6,7 @@ use mfe\core\applications\WebApplication;
  * This file only for micro test, delete it when build
  */
 
-$application = new WebApplication();
+$application = new WebApplication(true);
 $application->run();
 
 //WebApplication::app();

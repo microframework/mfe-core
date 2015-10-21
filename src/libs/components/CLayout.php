@@ -146,7 +146,7 @@ class CLayout extends CComponent
             // throw new CException('Not found layout file: ' . $this->layout . $this->layout_extension);
         }
         $this->result = ob_get_contents();
-        ob_clean();
+        ob_end_clean();
 
         return $this->result;
     }

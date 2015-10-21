@@ -43,7 +43,7 @@ class CApplicationManager extends CManager implements IApplicationManager
             $this->registerApplication($application);
             $this->loadApplication($application);
 
-            $this->currentApplication = get_class($application);
+            $this->defaultApplication = get_class($application);
         }
     }
 
@@ -53,27 +53,60 @@ class CApplicationManager extends CManager implements IApplicationManager
     public function application()
     {
         if ($this->currentApplication) {
-            return $this->applicationStack[$this->currentApplication];
+            return $this->applicationStack->{$this->currentApplication};
         }
         return null;
     }
 
     /**
-     * @param IApplication $application
+     * @param IApplication|string $application
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
-    public function registerApplication(IApplication $application)
+    public function registerApplication($application)
     {
-        $this->applicationStack->add(get_class($application), $application);
+        if ($application instanceof IApplication) {
+            $applicationName = get_class($application);
+            if ($this->currentApplication !== $applicationName) {
+                $this->applicationStack->add($applicationName, $application);
+            }
+        } elseif (is_string($application) && class_exists($application)) {
+            if ($this->currentApplication !== $application) {
+                $this->applicationStack->add($application, new $application);
+            }
+        } else {
+            throw new CException('Unknown application: ' . (is_string($application) ?
+                    $application : get_class($application))
+            );
+        }
+
         return $this;
     }
 
     /**
      * @param IApplication|string $application
      *
-     * @return static
+     * @return $this
+     * @throws CException
+     */
+    public function registerAsDefault($application)
+    {
+        $this->registerApplication($application);
+        $this->loadApplication($application);
+
+        if ($application instanceof IApplication) {
+            $this->defaultApplication = get_class($application);
+        } else {
+            $this->defaultApplication = $application;
+        }
+
+    }
+
+    /**
+     * @param IApplication|string $application
+     *
+     * @return $this
      */
     public function removeApplication($application)
     {
@@ -86,53 +119,60 @@ class CApplicationManager extends CManager implements IApplicationManager
     }
 
     /**
-     * @param IApplication $application
+     * @param IApplication|string $applicationName
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
-    public function loadApplication(IApplication $application)
+    public function loadApplication($applicationName)
     {
-        $applicationName = get_class($application);
+        if ($applicationName instanceof IApplication) {
+            $applicationName = get_class($applicationName);
+        }
 
         if (!$this->applicationStack->has($applicationName)) {
             throw new CException('Load unregistered application:' . $applicationName);
         }
 
-        if (null !== $this->currentApplication) {
-            $oldApplication = $this->applicationStack[$this->currentApplication];
-            $oldApplication->unload();
+        if ($this->currentApplication !== $applicationName) {
+            if (null !== $this->currentApplication) {
+                $oldApplication = $this->applicationStack->{$this->currentApplication};
+                $oldApplication->unload();
+            }
+
+            $this->currentApplication = $applicationName;
+            $this->applicationStack->{$applicationName}->load();
         }
 
-        $this->currentApplication = $applicationName;
-        $application->load();
         return $this;
     }
 
     /**
-     * @param IApplication $application
+     * @param IApplication|string $applicationName
      * @param bool $loadDefaultApplication
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
-    public function unloadApplication(IApplication $application, $loadDefaultApplication = true)
+    public function unloadApplication($applicationName, $loadDefaultApplication = true)
     {
-        $applicationName = get_class($application);
+        if ($applicationName instanceof IApplication) {
+            $applicationName = get_class($applicationName);
+        }
 
         if (!$this->applicationStack->has($applicationName)) {
             throw new CException('Unload unregistered application:' . $applicationName);
         }
 
         $this->currentApplication = null;
-        $application->unload();
+        $this->applicationStack->{$applicationName}->unload();
 
         // Load default application if exist
         if ($loadDefaultApplication && null !== $this->defaultApplication
-            && $application = $this->applicationStack[$this->defaultApplication]
+            && $defaultApplication = $this->applicationStack->{$this->defaultApplication}
         ) {
             $this->currentApplication = $this->defaultApplication;
-            $application->load();
+            $defaultApplication->load();
         }
         return $this;
     }
@@ -154,7 +194,7 @@ class CApplicationManager extends CManager implements IApplicationManager
      *
      * @param ArrayObject $applicationStack
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
     public function setRegister(ArrayObject $applicationStack)
@@ -169,7 +209,7 @@ class CApplicationManager extends CManager implements IApplicationManager
     /**
      * @Override
      *
-     * @return static
+     * @return $this
      */
     public function flushRegister()
     {

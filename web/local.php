@@ -36,8 +36,6 @@ $box->singleton([
     'test' => 'Hello World'
 ]);
 
-$box->
-
 $a = $box->make();
 $a->test = 'Bu';
 echo $a->test;

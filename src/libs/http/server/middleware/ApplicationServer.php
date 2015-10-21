@@ -41,20 +41,28 @@ class ApplicationServer implements IMiddlewareServer
      */
     public function request(IHttpSocketReader $reader, IHttpSocketWriter $writer)
     {
+        ob_start();
+
         /** @var IHybridApplication|CApplication $application */
-        $application = MfE::app()->loadApplication($this->application);
-        // TODO:: AppStack
+        $application = MfE::getInstance()->getApplicationManager()
+            ->registerApplication($this->application)
+            ->loadApplication($this->application)
+            ->application();
+
         $application->request = CRequestFactory::fromGlobals();
         $application->run();
 
-        ob_start();
         $application->events->trigger('application.request', [$application]);
-        ob_end_flush();
+
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        fwrite(STDOUT, $content, strlen($content));
 
         // TODO TO EMITTER!!!
 
         $writer->send($application->response->getBody());
-
+        echo $content;
         return true;
     }
 }

@@ -3,6 +3,7 @@
 return [
     'name' => \mfe\core\MfE::ENGINE_NAME,
     'version' => \mfe\core\MfE::ENGINE_VERSION,
+    'defaultApplication' => \mfe\core\applications\DefaultApplication::class,
     'params' => [],
     'options' => [
         'autoload' => false,

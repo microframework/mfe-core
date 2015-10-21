@@ -14,11 +14,12 @@ trait TApplicationEngine
 
     /**
      * @param $path
+     * @param bool $throwException
      *
      * @return null
      * @throws CException
      */
-    static public function getConfigData($path)
+    static public function getConfigData($path, $throwException = true)
     {
         $params = explode('.', $path);
         $result = null;
@@ -36,7 +37,10 @@ trait TApplicationEngine
                 return false;
             } else {
                 //TODO:: более удобный вид array.array.array
-                throw new CException('Config Error, not found ' . $path);
+                if ($throwException) {
+                    throw new CException('Config Error, not found ' . $path);
+                }
+                return false;
             }
         }
 

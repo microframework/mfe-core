@@ -3,15 +3,15 @@
 use ArrayObject;
 use Exception;
 use InvalidArgumentException;
-use mfe\core\libs\applications\CApplication;
+use mfe\core\api\applications\managers\IApplicationManager;
+use mfe\core\api\components\managers\IComponentManager;
+use mfe\core\applications\DefaultApplication;
 use mfe\core\libs\components\CDebug;
 use mfe\core\libs\components\CDisplay;
 use mfe\core\libs\components\CException;
-use mfe\core\libs\components\CObjectsStack;
 use mfe\core\Init;
 use mfe\core\libs\http\CResponse;
-use mfe\core\libs\managers\CComponentManager;
-use mfe\core\libs\system\page\SystemMfEPage;
+use mfe\core\libs\managers\CApplicationManager;
 use mfe\core\libs\system\Stream;
 use mfe\core\libs\system\SystemException;
 use mfe\core\mfe;
@@ -24,12 +24,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 trait TStandardApplication
 {
-    /** @var CObjectsStack */
-    protected $applications;
+    /** @var IApplicationManager */
+    protected $applicationManager;
 
-    public $currentApplication;
-
-    /** @var CComponentManager */ //TODO:: to interface
+    /** @var IComponentManager */
     protected $componentManager;
 
     private $container = [];
@@ -52,27 +50,19 @@ trait TStandardApplication
      * Trait Constructor
      *
      * @throws InvalidArgumentException
+     * @throws CException
+     * @throws Exception
      */
     public function __TStandardApplication()
     {
-        $this->response = new CResponse();
-        $this->registerSystemPageStub();
-    }
+        $this->applicationManager = new CApplicationManager();
 
-    /**
-     * @param CApplication $application
-     * @param bool $setAsCurrentApplication
-     *
-     * @return bool
-     * @throws Exception
-     */
-    public function registerApplication(CApplication $application, $setAsCurrentApplication = true)
-    {
-        if ($setAsCurrentApplication) {
-            $this->currentApplication = get_class($application);
+        if ($defaultApplication = MfE::getConfigData('defaultApplication', false)) {
+            $this->applicationManager->registerAsDefault(new DefaultApplication());
         }
-        MfE::getInstance()->applications->add(get_class($application), $application);
-        return true;
+        $this->response = new CResponse();
+
+        $this->registerSystemPageStub();
     }
 
     /**
@@ -115,6 +105,11 @@ trait TStandardApplication
         return true;
     }
 
+    public function getApplicationManager()
+    {
+        return $this->applicationManager;
+    }
+
     /**
      * @param string $applicationName
      *
@@ -122,6 +117,7 @@ trait TStandardApplication
      */
     public function importInitConfig($applicationName)
     {
+        // TODO::
         return new ArrayObject();
     }
 
@@ -139,35 +135,12 @@ trait TStandardApplication
             static::$config = $config();
         }
 
-        if (!count(MfE::getInstance()->applications)) {
+        $application = MfE::getInstance()->applicationManager->application();
+        if (!$application) {
             $application = MfE::getInstance();
-        } else {
-            $application = MfE::getInstance()->applications->{MfE::getInstance()->currentApplication};
         }
 
         return $application;
-    }
-
-    /**
-     * TODO:: Refactor this to AppStack
-     *
-     * @param string $name
-     *
-     * @return static $this
-     * @throws CException
-     */
-    public function loadApplication($name)
-    {
-        if ($this instanceof $name) {
-            return $this;
-        }
-        if (class_exists($name) && !MfE::getInstance()->currentApplication) {
-            MfE::getInstance()->currentApplication = $name;
-            new $name;
-            return MfE::getInstance()->applications->{MfE::getInstance()->currentApplication};
-        }
-
-        throw new CException('Unknown application: ' . $name);
     }
 
     /**
@@ -207,7 +180,7 @@ trait TStandardApplication
 
     /**
      * @param string $key
-     * @param object $value
+     * @param mixed|Object $value
      *
      * @return $this
      * @throws CException
@@ -251,6 +224,13 @@ trait TStandardApplication
         $this->componentManager->call($key, $arguments);
     }
 
+    public function load()
+    {
+    }
+
+    public function unload()
+    {
+    }
 
     /*** @Заглушки ***/
 
@@ -276,7 +256,7 @@ trait TStandardApplication
     protected function registerSystemPageStub()
     {
         $buffer = new Stream('php://memory', 'w+');
-        $buffer->write((string)new SystemMfEPage());
+        //$buffer->write((string)new SystemMfEPage());
         $this->response = $this->response->withBody($buffer);
     }
 

@@ -16,35 +16,43 @@ interface IApplicationManager
     public function application();
 
     /**
-     * @param IApplication $application
+     * @param IApplication|string $application
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
-    public function registerApplication(IApplication $application);
+    public function registerApplication($application);
 
     /**
      * @param IApplication|string $application
      *
-     * @return static
+     * @return $this
+     * @throws CException
+     */
+    public function registerAsDefault($application);
+
+    /**
+     * @param IApplication|string $application
+     *
+     * @return $this
      */
     public function removeApplication($application);
 
     /**
-     * @param IApplication $application
+     * @param IApplication|string $applicationName
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
-    public function loadApplication(IApplication $application);
+    public function loadApplication($applicationName);
 
     /**
-     * @param IApplication $application
+     * @param IApplication|string $applicationName
      * @param bool $loadDefaultApplication
      *
-     * @return static
+     * @return $this
      * @throws CException
      */
-    public function unloadApplication(IApplication $application, $loadDefaultApplication = true);
+    public function unloadApplication($applicationName, $loadDefaultApplication = true);
 }
 

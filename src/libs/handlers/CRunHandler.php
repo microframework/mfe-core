@@ -27,13 +27,14 @@ class CRunHandler
 
         switch (self::$currentHandler) {
             case 'application':
-                MfE::app()->events->on('application.run', function () {
+                MfE::getInstance()->events->on('application.run', function () {
                     $application = MfE::app();
                     $application->request = CRequestFactory::fromGlobals();
 
                     ob_start();
                     $bufferLevel = ob_get_level();
                     $application->events->trigger('application.request', [$application]);
+                    ob_end_clean();
 
                     CDisplay::display($application, CDisplay::TYPE_EMITTER_SAPI, $bufferLevel);
                 });
